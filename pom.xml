@@ -10,6 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>example-aop</module>
+        <module>example-my-ioc</module>
     </modules>
 
 
@@ -19,6 +20,7 @@
         <junit.version>4.12</junit.version>
         <spring.version>4.3.7.RELEASE</spring.version>
         <aspectj.version>1.8.10</aspectj.version>
+        <lin.ioc.version>1.0-SNAPSHOT</lin.ioc.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
@@ -81,6 +83,11 @@
                 <version>${aspectj.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.youthlin</groupId>
+                <artifactId>ioc</artifactId>
+                <version>${lin.ioc.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
