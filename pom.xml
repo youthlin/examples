@@ -11,6 +11,7 @@
     <modules>
         <module>example-aop</module>
         <module>example-my-ioc</module>
+        <module>example-mini-mvc</module>
     </modules>
 
 
@@ -20,7 +21,7 @@
         <junit.version>4.12</junit.version>
         <spring.version>4.3.7.RELEASE</spring.version>
         <aspectj.version>1.8.10</aspectj.version>
-        <lin.ioc.version>1.0-SNAPSHOT</lin.ioc.version>
+        <mini-framework.version>1.0.1-SNAPSHOT</mini-framework.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
@@ -85,9 +86,22 @@
 
             <dependency>
                 <groupId>com.youthlin</groupId>
-                <artifactId>ioc</artifactId>
-                <version>${lin.ioc.version}</version>
+                <artifactId>mini-ioc</artifactId>
+                <version>${mini-framework.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.youthlin</groupId>
+                <artifactId>mini-mvc</artifactId>
+                <version>${mini-framework.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

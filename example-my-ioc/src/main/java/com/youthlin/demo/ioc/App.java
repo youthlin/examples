@@ -2,8 +2,8 @@ package com.youthlin.demo.ioc;
 
 import com.youthlin.demo.ioc.dao.IUserDao;
 import com.youthlin.demo.ioc.service.UserService;
-import com.youthlin.ico.context.ClasspathContext;
-import com.youthlin.ico.context.Context;
+import com.youthlin.ioc.context.ClasspathContext;
+import com.youthlin.ioc.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

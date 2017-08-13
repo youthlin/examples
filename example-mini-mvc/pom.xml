@@ -9,13 +9,19 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>example-my-ioc</artifactId>
+    <artifactId>example-mini-mvc</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.youthlin</groupId>
-            <artifactId>mini-ioc</artifactId>
+            <artifactId>mini-mvc</artifactId>
         </dependency>
-    </dependencies>
 
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
 </project>
