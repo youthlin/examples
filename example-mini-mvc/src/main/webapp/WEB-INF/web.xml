@@ -4,6 +4,14 @@
          http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
     <!--region mini-mvc start-->
+    <context-param>
+        <param-name>view-prefix</param-name>
+        <param-value>/WEB-INF/jsp/</param-value>
+    </context-param>
+    <context-param>
+        <param-name>view-suffix</param-name>
+        <param-value>.jsp</param-value>
+    </context-param>
     <listener>
         <listener-class>com.youthlin.mvc.listener.ContextLoaderListener</listener-class>
     </listener>
@@ -14,7 +22,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>mvc</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
     <!--endregion mini-mvc end-->
 
