@@ -1,6 +1,8 @@
 package com.youthlin.demo.mvc.controller;
 
+import com.youthlin.demo.mvc.model.User;
 import com.youthlin.demo.mvc.service.IUserService;
+import com.youthlin.demo.mvc.support.JsonBody;
 import com.youthlin.ioc.annotaion.Controller;
 import com.youthlin.mvc.annotation.Method;
 import com.youthlin.mvc.annotation.Param;
@@ -31,8 +33,8 @@ public class UserController {
 
     @URL("/mvc")
     public String hello(Map<String, Object> map, @Param("id") int id, HttpServletRequest request,
-                        @Param(value = "a", required = false, defaultValue = "0") int a, @Param("c") char c, @Param("b") boolean b,
-                        HttpServletResponse response) throws IOException {
+            @Param(value = "a", required = false, defaultValue = "0") int a, @Param("c") char c, @Param("b") boolean b,
+            HttpServletResponse response) throws IOException {
         PrintWriter out = response.getWriter();
         out.println("xxx");
         for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -53,9 +55,9 @@ public class UserController {
         return "redirect:/test/get?name=Lin&id=" + id;
     }
 
-    @URL(value = "/get", method = {Method.GET})
+    @URL(value = "/get", method = { Method.GET })
     public String get(@Param("name") String name, @Param("id") int id,
-                      @Param(name = "desc", required = false, defaultValue = "desc") String desc) {
+            @Param(name = "desc", required = false, defaultValue = "desc") String desc) {
         LOGGER.debug("name = {}, desc = {}", name, desc);
         return "hello";
     }
@@ -65,9 +67,15 @@ public class UserController {
         return "post";
     }
 
+    @JsonBody
+    @URL("/saveUser")
+    public User saveUser(@Param("id") Long id, @Param("name") String name) {
+        return userService.save(id, name);
+    }
+
     @ResponseBody
-    @URL("responseBody")
-    public Object responseBody(Map<String,Object> map) {
-        return map;
+    @URL("sayHello")
+    public String sayHello(@Param("id") Long id) {
+        return userService.sayHello(id);
     }
 }
