@@ -23,6 +23,8 @@
         <spring.version>4.3.7.RELEASE</spring.version>
         <aspectj.version>1.8.10</aspectj.version>
         <jackson.version>2.9.0</jackson.version>
+        <mybatis.version>3.4.4</mybatis.version>
+        <h2.version>1.4.196</h2.version>
         <mini-framework.version>1.0.1-SNAPSHOT</mini-framework.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
@@ -120,6 +122,18 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
             </dependency>
 
 

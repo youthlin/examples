@@ -1,13 +1,20 @@
 package com.youthlin.demo.mvc.controller;
 
+import com.youthlin.demo.mvc.dao.IUserDao;
 import com.youthlin.demo.mvc.model.User;
 import com.youthlin.demo.mvc.service.IUserService;
 import com.youthlin.demo.mvc.support.JsonBody;
 import com.youthlin.ioc.annotaion.Controller;
+import com.youthlin.ioc.context.Context;
 import com.youthlin.mvc.annotation.Method;
 import com.youthlin.mvc.annotation.Param;
 import com.youthlin.mvc.annotation.ResponseBody;
 import com.youthlin.mvc.annotation.URL;
+import com.youthlin.mvc.listener.ContextLoaderListener;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +23,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,13 +78,39 @@ public class UserController {
 
     @JsonBody
     @URL("/saveUser")
-    public User saveUser(@Param("id") Long id, @Param("name") String name) {
+    public User saveUser(@Param("id") Long id, @Param("name") String name, HttpServletRequest request)
+            throws IOException {
+        SqlSessionFactory sqlSessionFactory = initMyBatis(request);
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+        userDao.save(new User().setId(id).setName(name));
         return userService.save(id, name);
     }
 
     @ResponseBody
     @URL("sayHello")
-    public String sayHello(@Param("id") Long id) {
+    public String sayHello(@Param("id") Long id) throws IOException {
         return userService.sayHello(id);
+    }
+
+    @JsonBody @URL("/list")
+    public Object list(HttpServletRequest request) throws IOException {
+        SqlSessionFactory sqlSessionFactory = initMyBatis(request);
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+        List<User> userList = userDao.findAll();
+        LOGGER.debug("userList = {}", userList);
+        return userList;
+    }
+
+    private SqlSessionFactory initMyBatis(HttpServletRequest request) throws IOException {
+        Context context = (Context) request.getServletContext().getAttribute(ContextLoaderListener.CONTAINER);
+        SqlSessionFactory sqlSessionFactory = context.getBean(SqlSessionFactory.class);
+        if (sqlSessionFactory == null) {
+            InputStream inputStream = Resources.getResourceAsStream("mybatis/config.xml");
+            sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            context.registerBean(sqlSessionFactory);
+        }
+        return sqlSessionFactory;
     }
 }
