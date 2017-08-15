@@ -40,77 +40,15 @@ public class UserController {
     @Resource
     private IUserService userService;
 
-    @URL("/mvc")
-    public String hello(Map<String, Object> map, @Param("id") int id, HttpServletRequest request,
-            @Param(value = "a", required = false, defaultValue = "0") int a, @Param("c") char c, @Param("b") boolean b,
-            HttpServletResponse response) throws IOException {
-        PrintWriter out = response.getWriter();
-        out.println("xxx");
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            out.println(entry.getKey() + "=" + entry.getValue());
-        }
-        LOGGER.debug("a int = {}", a);
-        LOGGER.debug("b boolean = {}", b);
-        LOGGER.debug("c char = {}", c);
-        LOGGER.debug("l long = {}", id);
-        LOGGER.debug("{}", userService.sayHello(id));
-        ServletContext servletContext = request.getServletContext();
-        Enumeration<String> attributeNames = servletContext.getAttributeNames();
-        while (attributeNames.hasMoreElements()) {
-            String element = attributeNames.nextElement();
-            Object attribute = servletContext.getAttribute(element);
-            LOGGER.debug("attribute:{}={}", element, attribute);
-        }
-        return "redirect:/test/get?name=Lin&id=" + id;
-    }
-
-    @URL(value = "/get", method = { Method.GET })
-    public String get(@Param("name") String name, @Param("id") int id,
-            @Param(name = "desc", required = false, defaultValue = "desc") String desc) {
-        LOGGER.debug("name = {}, desc = {}", name, desc);
-        return "hello";
-    }
-
-    @URL(value = "/post", method = Method.POST)
-    public String post() {
-        return "post";
-    }
-
+    @URL("/sayHello")
     @JsonBody
-    @URL("/saveUser")
-    public User saveUser(@Param("id") Long id, @Param("name") String name, HttpServletRequest request)
-            throws IOException {
-        SqlSessionFactory sqlSessionFactory = initMyBatis(request);
-        SqlSession sqlSession = sqlSessionFactory.openSession();
-        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
-        userDao.save(new User().setId(id).setName(name));
-        return userService.save(id, name);
-    }
-
-    @ResponseBody
-    @URL("sayHello")
-    public String sayHello(@Param("id") Long id) throws IOException {
+    public String sayHello(@Param("id") Long id) {
         return userService.sayHello(id);
     }
 
-    @JsonBody @URL("/list")
-    public Object list(HttpServletRequest request) throws IOException {
-        SqlSessionFactory sqlSessionFactory = initMyBatis(request);
-        SqlSession sqlSession = sqlSessionFactory.openSession();
-        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
-        List<User> userList = userDao.findAll();
-        LOGGER.debug("userList = {}", userList);
-        return userList;
-    }
-
-    private SqlSessionFactory initMyBatis(HttpServletRequest request) throws IOException {
-        Context context = (Context) request.getServletContext().getAttribute(ContextLoaderListener.CONTAINER);
-        SqlSessionFactory sqlSessionFactory = context.getBean(SqlSessionFactory.class);
-        if (sqlSessionFactory == null) {
-            InputStream inputStream = Resources.getResourceAsStream("mybatis/config.xml");
-            sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-            context.registerBean(sqlSessionFactory);
-        }
-        return sqlSessionFactory;
+    @URL("/void")
+    @JsonBody
+    public void aVoid() {
+        LOGGER.debug("aVoid");
     }
 }
