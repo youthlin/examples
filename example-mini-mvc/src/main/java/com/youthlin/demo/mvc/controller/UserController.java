@@ -1,33 +1,16 @@
 package com.youthlin.demo.mvc.controller;
 
-import com.youthlin.demo.mvc.dao.IUserDao;
-import com.youthlin.demo.mvc.model.User;
 import com.youthlin.demo.mvc.service.IUserService;
 import com.youthlin.demo.mvc.support.JsonBody;
 import com.youthlin.ioc.annotaion.Controller;
-import com.youthlin.ioc.context.Context;
-import com.youthlin.mvc.annotation.Method;
+import com.youthlin.mvc.annotation.HttpMethod;
 import com.youthlin.mvc.annotation.Param;
 import com.youthlin.mvc.annotation.ResponseBody;
 import com.youthlin.mvc.annotation.URL;
-import com.youthlin.mvc.listener.ContextLoaderListener;
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 创建： youthlin.chen
@@ -46,9 +29,22 @@ public class UserController {
         return userService.sayHello(id);
     }
 
+    @JsonBody
+    @URL(value = "/get", method = HttpMethod.GET)
+    public String get() {
+        return "get";
+    }
+
     @URL("/void")
     @JsonBody
     public void aVoid() {
         LOGGER.debug("aVoid");
+    }
+
+    // curl -i -X TRACE http://127.0.0.1:8080/test/post
+    @URL(value = "/post", method = HttpMethod.POST)
+    @ResponseBody
+    public void post() {
+
     }
 }

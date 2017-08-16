@@ -34,7 +34,7 @@ public class AllInterceptor implements Interceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object controller, Exception e) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object controller, Throwable e) throws Exception {
         LOGGER.debug("after completion.", e);
     }
 

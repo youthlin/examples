@@ -33,7 +33,7 @@ public class TestInterceptor implements Interceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object controller, Exception e) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object controller, Throwable e) throws Exception {
         LOGGER.debug(".do after completion.", e);
     }
 
