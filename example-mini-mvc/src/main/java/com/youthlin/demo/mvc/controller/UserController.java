@@ -1,16 +1,17 @@
 package com.youthlin.demo.mvc.controller;
 
 import com.youthlin.demo.mvc.service.IUserService;
-import com.youthlin.demo.mvc.support.JsonBody;
 import com.youthlin.ioc.annotaion.Controller;
 import com.youthlin.mvc.annotation.HttpMethod;
 import com.youthlin.mvc.annotation.Param;
 import com.youthlin.mvc.annotation.ResponseBody;
 import com.youthlin.mvc.annotation.URL;
+import com.youthlin.mvc.json.JsonBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * 创建： youthlin.chen
@@ -22,6 +23,12 @@ public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     @Resource
     private IUserService userService;
+
+    @URL(value = "hello")
+    public String hello(Map<String, Object> map) {
+        map.put("name", "Lin");
+        return "hello";
+    }
 
     @URL("/sayHello")
     @JsonBody

@@ -16,6 +16,10 @@
             <groupId>com.youthlin</groupId>
             <artifactId>mini-mvc</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.youthlin</groupId>
+            <artifactId>mini-mvc-jackson</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>javax.servlet</groupId>

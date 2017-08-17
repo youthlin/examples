@@ -104,6 +104,11 @@
                 <artifactId>mini-mvc</artifactId>
                 <version>${mini-framework.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.youthlin</groupId>
+                <artifactId>mini-mvc-jackson</artifactId>
+                <version>${mini-framework.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -112,13 +117,11 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
