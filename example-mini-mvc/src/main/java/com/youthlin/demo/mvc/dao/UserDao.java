@@ -1,7 +1,6 @@
 package com.youthlin.demo.mvc.dao;
 
 import com.youthlin.demo.mvc.model.User;
-import com.youthlin.ioc.annotaion.Dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +11,7 @@ import java.util.Map;
  * 创建： youthlin.chen
  * 时间： 2017-08-13 20:56.
  */
-@Dao
+//@Dao
 public class UserDao implements IUserDao {
     private Map<Long, User> userMap = new HashMap<>();
 
