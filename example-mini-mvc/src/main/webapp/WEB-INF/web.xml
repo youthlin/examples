@@ -42,6 +42,22 @@
         <param-name>th-suffix</param-name>
         <param-value>.html</param-value>
     </context-param>
+    <context-param>
+        <param-name>mybatis-scan-annotation</param-name>
+        <param-value>com.youthlin.demo.mvc.dao.Mapper</param-value>
+    </context-param>
+    <context-param>
+        <param-name>mybatis-scan-packages</param-name>
+        <param-value>com.youthlin.demo.mvc.dao</param-value>
+    </context-param>
+    <context-param>
+        <param-name>mybatis-config-file</param-name>
+        <param-value>mybatis/config.xml</param-value>
+    </context-param>
+    <context-param>
+        <param-name>mybatis-init-file</param-name><!--mybatis-init-sql-->
+        <param-value>mybatis/db/init.sql</param-value>
+    </context-param>
     <!--endregion mini-mvc end-->
 
     <!--其他配置按需要写-->

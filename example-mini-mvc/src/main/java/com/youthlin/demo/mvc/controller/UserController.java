@@ -76,8 +76,7 @@ public class UserController {
 
     @URL("th")
     public String th(Map<String, Object> map) {
-        map.put("user", new User()
-                .setName((String) map.get("name")));
+        map.put("user", new User().setName((String) map.get("name")));
         return "th";
     }
 }
