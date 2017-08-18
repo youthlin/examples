@@ -4,14 +4,15 @@
          http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
     <!--region mini-mvc start-->
-    <context-param>
-        <param-name>view-prefix</param-name>
-        <param-value>/WEB-INF/jsp/</param-value>
-    </context-param>
-    <context-param>
-        <param-name>view-suffix</param-name>
-        <param-value>.jsp</param-value>
-    </context-param>
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>com.youthlin.mvc.support.CharacterEncodingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <listener>
         <listener-class>com.youthlin.mvc.listener.ContextLoaderListener</listener-class>
     </listener>
@@ -24,6 +25,23 @@
         <servlet-name>mvc</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+
+    <context-param>
+        <param-name>view-prefix</param-name>
+        <param-value>/WEB-INF/jsp/</param-value>
+    </context-param>
+    <context-param>
+        <param-name>view-suffix</param-name>
+        <param-value>.jsp</param-value>
+    </context-param>
+    <context-param>
+        <param-name>th-prefix</param-name>
+        <param-value>/WEB-INF/templates/</param-value>
+    </context-param>
+    <context-param>
+        <param-name>th-suffix</param-name>
+        <param-value>.html</param-value>
+    </context-param>
     <!--endregion mini-mvc end-->
 
     <!--其他配置按需要写-->

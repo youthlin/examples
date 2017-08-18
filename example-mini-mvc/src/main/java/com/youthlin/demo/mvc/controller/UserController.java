@@ -1,5 +1,6 @@
 package com.youthlin.demo.mvc.controller;
 
+import com.youthlin.demo.mvc.model.User;
 import com.youthlin.demo.mvc.service.IUserService;
 import com.youthlin.ioc.annotaion.Controller;
 import com.youthlin.mvc.annotation.HttpMethod;
@@ -71,5 +72,12 @@ public class UserController {
     @JsonBody
     public String getDo() {
         return "get.do";
+    }
+
+    @URL("th")
+    public String th(Map<String, Object> map) {
+        map.put("user", new User()
+                .setName((String) map.get("name")));
+        return "th";
     }
 }
