@@ -104,11 +104,6 @@
                 <artifactId>mini-mvc</artifactId>
                 <version>${mini-framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.youthlin</groupId>
-                <artifactId>mini-mvc-jackson</artifactId>
-                <version>${mini-framework.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>javax.servlet</groupId>

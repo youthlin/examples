@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!-- Stop output INFO at start -->
+    <!-- https://www.mkyong.com/logging/how-to-stop-logback-status-info-at-the-start-of-every-log/ -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!-- https://logback.qos.ch/manual/layouts.html#coloring -->
@@ -9,7 +12,8 @@
         </encoder>
     </appender>
 
-    <logger name="com.youthlin" level="debug"/>
+    <logger name="com.youthlin.ioc" level="info"/>
+    <logger name="com.youthlin.mvc" level="info"/>
 
     <root level="${log.level:-debug}">
         <appender-ref ref="STDOUT"/>

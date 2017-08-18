@@ -6,10 +6,12 @@ import com.youthlin.mvc.annotation.HttpMethod;
 import com.youthlin.mvc.annotation.Param;
 import com.youthlin.mvc.annotation.ResponseBody;
 import com.youthlin.mvc.annotation.URL;
-import com.youthlin.mvc.json.JsonBody;
+import com.youthlin.mvc.support.jackson.JsonBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.Map;
 
@@ -23,6 +25,16 @@ public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     @Resource
     private IUserService userService;
+
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println("PostConstruct {}");
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        System.out.println("PreDestroy {}");
+    }
 
     @URL(value = "hello")
     public String hello(Map<String, Object> map) {
@@ -53,5 +65,11 @@ public class UserController {
     @ResponseBody
     public void post() {
 
+    }
+
+    @URL(value = "get.do", method = HttpMethod.GET)
+    @JsonBody
+    public String getDo() {
+        return "get.do";
     }
 }
