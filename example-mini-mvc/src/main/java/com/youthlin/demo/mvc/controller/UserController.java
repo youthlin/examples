@@ -39,8 +39,19 @@ public class UserController {
 
     @URL(value = "hello")
     public String hello(Map<String, Object> map) {
-        map.put("name", "Lin");
-        return "hello";
+        map.put("name", "FORWARD");
+        return "forward:/test/th";
+    }
+
+    @URL("th")
+    public String th(Map<String, Object> map) {
+        map.put("user", new User().setName((String) map.get("name")));
+        return "th";
+    }
+
+    @URL("redirect")
+    public String redirect() {
+        return "redirect:/test/sayHello?id=1";
     }
 
     @URL("/sayHello")
@@ -74,9 +85,4 @@ public class UserController {
         return "get.do";
     }
 
-    @URL("th")
-    public String th(Map<String, Object> map) {
-        map.put("user", new User().setName((String) map.get("name")));
-        return "th";
-    }
 }

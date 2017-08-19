@@ -1,5 +1,6 @@
 -- noinspection SqlNoDataSourceInspectionForFile
-CREATE TABLE IF NOT EXISTS
+DROP TABLE IF EXISTS USERS;
+CREATE TABLE
   USERS (
   id   INT,
   name VARCHAR(50)
