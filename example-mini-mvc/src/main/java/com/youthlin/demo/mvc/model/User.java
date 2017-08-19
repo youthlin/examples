@@ -9,11 +9,12 @@ import java.io.Serializable;
 public class User implements Serializable {
     private Long id;
     private String name;
+    private String email;
+    private String note;
 
-    @Override public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+    @Override
+    public String toString() {
+        return "User{" + "id=" + id + ", name='" + name + '\'' + ", email='" + email + '\'' + ", note='" + note + '\'' +
                 '}';
     }
 
@@ -32,6 +33,24 @@ public class User implements Serializable {
 
     public User setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public User setEmail(String email) {
+        this.email = email;
+        return this;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public User setNote(String note) {
+        this.note = note;
         return this;
     }
 }

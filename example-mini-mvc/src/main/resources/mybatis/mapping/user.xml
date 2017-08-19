@@ -3,11 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.youthlin.demo.mvc.dao.IUserDao">
-
     <insert id="save" useGeneratedKeys="true" parameterType="com.youthlin.demo.mvc.model.User">
-        INSERT INTO users (id, name) VALUES (#{id}, #{name})
+        INSERT INTO users (id, name,email,note) VALUES (#{id}, #{name},#{email},#{note})
     </insert>
-    <sql id="all">id, name</sql>
+    <sql id="all">id, name,email,note</sql>
     <select id="getUserName" resultType="java.lang.String">
         SELECT name
         FROM users
@@ -30,4 +29,11 @@
         <include refid="all"/>
         FROM users;
     </select>
+    <update id="edit" parameterType="com.youthlin.demo.mvc.model.User">
+        UPDATE users SET name=#{name},email=#{email},note=#{note} WHERE id=#{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM users WHERE id=#{id}
+    </delete>
+
 </mapper>

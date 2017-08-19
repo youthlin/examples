@@ -1,18 +1,14 @@
 package com.youthlin.demo.mvc.controller;
 
 import com.youthlin.demo.mvc.model.User;
-import com.youthlin.demo.mvc.service.IUserService;
+import com.youthlin.demo.mvc.service.UserService;
 import com.youthlin.ioc.annotaion.Controller;
 import com.youthlin.mvc.annotation.HttpMethod;
 import com.youthlin.mvc.annotation.Param;
-import com.youthlin.mvc.annotation.ResponseBody;
 import com.youthlin.mvc.annotation.URL;
-import com.youthlin.mvc.support.jackson.JsonBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.Map;
 
@@ -20,69 +16,75 @@ import java.util.Map;
  * 创建： youthlin.chen
  * 时间： 2017-08-13 13:39.
  */
-@Controller("userController")
-@URL("/test")
+@Controller
 public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     @Resource
-    private IUserService userService;
+    private UserService userService;
 
-    @PostConstruct
-    public void postConstruct() {
-        System.out.println("PostConstruct {}");
+    @URL(value = { "/", "/index" }, method = HttpMethod.GET)
+    public String list(Map<String, Object> map) {
+        map.put("userList", userService.listUsers());
+        return "list";
     }
 
-    @PreDestroy
-    public void preDestroy() {
-        System.out.println("PreDestroy {}");
+    @URL(value = "/add", method = HttpMethod.GET)
+    public String addPage() {
+        return "add";
     }
 
-    @URL(value = "hello")
-    public String hello(Map<String, Object> map) {
-        map.put("name", "FORWARD");
-        return "forward:/test/th";
+    @URL(value = "/add", method = HttpMethod.POST)
+    public String addUser(Map<String, String> map) {
+        String name = map.get("name");
+        String email = map.get("email");
+        String note = map.get("note");
+        if (name == null || email == null) {
+            map.put("error", "用户名及电子邮件是必填项");
+            return "add";
+        }
+        User user = new User().setName(name).setEmail(email).setNote(note);
+        userService.saveUser(user);
+        return "redirect:/";
     }
 
-    @URL("th")
-    public String th(Map<String, Object> map) {
-        map.put("user", new User().setName((String) map.get("name")));
-        return "th";
+    @URL(value = "/edit", method = HttpMethod.GET)
+    public String editPage(@Param("id") Long id, Map<String, Object> map) {
+        User user = userService.findById(id);
+        if (user == null) {
+            map.put("error", "用户不存在");
+            return "edit";
+        }
+        map.put("user", user);
+        return "edit";
     }
 
-    @URL("redirect")
-    public String redirect() {
-        return "redirect:/test/sayHello?id=1";
+    @URL(value = "/edit", method = HttpMethod.POST)
+    public String editUser(@Param("id") Long id, Map<String, String> map) {
+        User user = userService.findById(id);
+        if (user == null) {
+            map.put("error", "用户不存在");
+            return "edit";
+        }
+        String name = map.get("name");
+        String email = map.get("email");
+        String note = map.get("note");
+        if (name == null || email == null) {
+            map.put("error", "用户名及电子邮件是必填项");
+            return "add";
+        }
+        user.setName(name).setEmail(email).setNote(note);
+        userService.editUser(user);
+        return "redirect:/";
     }
 
-    @URL("/sayHello")
-    @JsonBody
-    public String sayHello(@Param("id") Long id) {
-        return userService.sayHello(id);
-    }
-
-    @JsonBody
-    @URL(value = "/get", method = HttpMethod.GET)
-    public String get() {
-        return "get";
-    }
-
-    @URL("/void")
-    @JsonBody
-    public void aVoid() {
-        LOGGER.debug("aVoid");
-    }
-
-    // curl -i -X TRACE http://127.0.0.1:8080/test/post
-    @URL(value = "/post", method = HttpMethod.POST)
-    @ResponseBody
-    public void post() {
-
-    }
-
-    @URL(value = "get.do", method = HttpMethod.GET)
-    @JsonBody
-    public String getDo() {
-        return "get.do";
+    @URL("delete")
+    public String delete(@Param("id") Long id) {
+        if (userService.deleteById(id)) {
+            LOGGER.debug("删除成功 用户ID: {}", id);
+        } else {
+            LOGGER.debug("删除失败 用户ID:{}", id);
+        }
+        return "redirect:/";
     }
 
 }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>列表页</title>
+    <!-- Bootstrap -->
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="jumbotron">
+    <div class="container">
+        <h1>Mini MVC</h1>
+        <h2>—— Mini Framework</h2>
+        <p>Welcome to this sample web application of Mini MVC</p>
+        <p><a class="btn btn-primary btn-lg" href="https://github.com/YouthLin/mini-framework" target="_blank">
+            Learn more</a></p>
+    </div>
+</div>
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="#" th:href="@{/}">Home</a></li>
+        <li class="active">List</li>
+    </ol>
+    <div class="table-responsive">
+        <div class="pull-right"><a class="btn btn-sm btn-primary" href="add.html" th:href="@{/add}">添加</a></div>
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th></th>
+                <th>姓名</th>
+                <th>邮件</th>
+                <th>备注</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--/*@thymesVar id="userList" type="java.util.List<com.youthlin.demo.mvc.model.User>"*/-->
+            <tr th:each="user : ${userList}">
+                <td th:title="${'ID: '+user.id}" title="ID: 1">
+                    <img th:src="${@com.youthlin.demo.mvc.util.MD5Util@getImgUrl(user.email)}"
+                         src="https://cn.gravatar.com/avatar/7158b0cc5dae9d7527b171166a9b7d74?s=24" alt="头像"></td>
+                <td th:text="${user.name}">Tom</td>
+                <td th:text="${user.email}">tom@tom.com</td>
+                <td th:text="${user.note}">Tom is a handsome boy</td>
+                <td><a class="btn btn-xs btn-primary" href="edit.html" th:href="@{/edit(id=${user.id})}">修改</a>
+                    <a class="btn btn-xs btn-danger" href="#" th:href="@{/delete(id=${user.id})}">删除</a></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="pull-right"><a class="btn btn-sm btn-primary" href="add.html" th:href="@{/add}">添加</a></div>
+    </div>
+</div>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,8 +1,9 @@
 -- noinspection SqlNoDataSourceInspectionForFile
-DROP TABLE IF EXISTS USERS;
-CREATE TABLE
+-- DROP TABLE IF EXISTS USERS;
+CREATE TABLE IF NOT EXISTS
   USERS (
-  id   INT,
-  name VARCHAR(50)
+  id    BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name  VARCHAR(50),
+  email VARCHAR(50),
+  note  VARCHAR(255)
 );
-INSERT INTO USERS (id, name) VALUES (1, 'LIN'), (2, 'Chen');

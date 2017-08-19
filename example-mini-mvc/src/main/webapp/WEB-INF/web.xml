@@ -43,10 +43,6 @@
         <param-value>.html</param-value>
     </context-param>
     <context-param>
-        <param-name>mybatis-scan-annotation</param-name>
-        <param-value>com.youthlin.demo.mvc.dao.Mapper</param-value>
-    </context-param>
-    <context-param>
         <param-name>mybatis-scan-packages</param-name>
         <param-value>com.youthlin.demo.mvc.dao</param-value>
     </context-param>
@@ -69,9 +65,5 @@
         <servlet-name>hello</servlet-name>
         <url-pattern>/hello</url-pattern>
     </servlet-mapping>
-
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
 
 </web-app>
