@@ -22,10 +22,15 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @URL(value = {"/", "/index"}, method = HttpMethod.GET)
+    @URL(value = {"/", "/index"}, method = {HttpMethod.GET, HttpMethod.POST})
     public String list(Map<String, Object> map) {
         map.put("userList", userService.listUsers());
         return "list";
+    }
+
+    @URL("home")
+    public String home() {
+        return "forward:/";
     }
 
     @URL(value = "/add", method = HttpMethod.GET)
