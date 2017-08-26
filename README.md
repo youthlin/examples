@@ -1,4 +1,6 @@
 # Examples
+[![Build Status](https://travis-ci.org/YouthLin/examples.svg?branch=master)](https://travis-ci.org/YouthLin/examples)
+
 示例代码
 
 ## example-aop
