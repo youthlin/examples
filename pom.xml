@@ -12,9 +12,7 @@
         <module>example-aop</module>
         <module>example-my-ioc</module>
         <module>example-mini-mvc</module>
-        <module>example-spring-mvc</module>
     </modules>
-
 
     <properties>
         <logback.version>1.2.1</logback.version>
