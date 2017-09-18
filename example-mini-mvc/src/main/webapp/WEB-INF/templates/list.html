@@ -53,7 +53,7 @@
                 <td th:text="${user.email}">tom@tom.com</td>
                 <td th:text="${user.note}">Tom is a handsome boy</td>
                 <td><a class="btn btn-xs btn-primary" href="edit.html" th:href="@{/edit(id=${user.id})}">修改</a>
-                    <a class="btn btn-xs btn-danger" href="#" th:href="@{/delete(id=${user.id})}">删除</a></td>
+                    <a class="btn btn-xs btn-danger" href="#" th:href="@{/delete(id=${user.id})}" rel="nofollow">删除</a></td>
             </tr>
             </tbody>
         </table>
