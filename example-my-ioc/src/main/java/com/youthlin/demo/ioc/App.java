@@ -15,7 +15,7 @@ public class App {
     private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
-        Context context = new ClasspathContext();
+        Context context = new ClasspathContext("com.youthlin");
         LOGGER.debug("ioc container bean count: {}", context.getBeanCount());
         UserService userService = context.getBean(UserService.class);
         LOGGER.debug("user list: {}", userService.listUser());
