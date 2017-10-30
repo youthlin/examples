@@ -5,8 +5,17 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
     <dubbo:application name="hello-provider"/>
-    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181" />
+    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181"/>
     <dubbo:protocol name="dubbo" host="192.168.1.105" port="20880"/>
-    <dubbo:service interface="com.youthlin.example.rpc.api.service.HelloService" ref="helloService"/>
+
     <bean id="helloService" class="com.youthlin.example.rpc.impl.service.HelloServiceImpl"/>
+    <dubbo:service interface="com.youthlin.example.rpc.api.service.HelloService" ref="helloService"/>
+
+    <bean id="callBackService" class="com.youthlin.example.rpc.impl.service.CallBackServiceImpl"/>
+    <dubbo:service interface="com.youthlin.example.rpc.api.service.CallBackService" ref="callBackService">
+        <dubbo:method name="process" timeout="5000" async="true">
+            <dubbo:argument type="com.youthlin.example.rpc.api.service.CallBackListener" callback="true"/>
+        </dubbo:method>
+    </dubbo:service>
+
 </beans>
