@@ -25,11 +25,16 @@ public class LogAop {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogAop.class);
 
     @SuppressWarnings("unused")
-    @Pointcut(value = "execution(* com.youthlin.demo.service.*.*(..))")//定义连接点
+    @Pointcut("execution(* com.youthlin.demo.service.*.*(..))")//定义连接点
     private void pointcut() {
     }
 
-    @Around("pointcut()")//环绕通知
+    @SuppressWarnings("unused")
+    @Pointcut("execution(* com.youthlin.demo.service.*.*(..)) || execution(* com.youthlin.demo.service1.*.*(..))")//定义连接点
+    private void pointcut1() {
+    }
+
+    @Around("pointcut1()")//环绕通知
     public Object processTx(ProceedingJoinPoint pjp) throws Throwable {
         LOGGER.debug("环绕通知 之前");
         StopWatch stopWatch = new StopWatch();
