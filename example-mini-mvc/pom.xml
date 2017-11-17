@@ -16,6 +16,7 @@
         <dependency>
             <groupId>com.youthlin</groupId>
             <artifactId>mini-mvc</artifactId>
+            <version>${mini-framework.version}</version>
         </dependency>
 
         <dependency>
@@ -54,7 +55,7 @@
                 <version>2.2</version>
                 <configuration>
                     <path>/</path>
-                    <port>8080</port>
+                    <port>8888</port>
                     <server>tomcat7</server>
                 </configuration>
             </plugin>

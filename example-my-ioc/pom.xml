@@ -16,6 +16,21 @@
             <groupId>com.youthlin</groupId>
             <artifactId>mini-ioc</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.youthlin</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aeonbits.owner</groupId>
+            <artifactId>owner</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

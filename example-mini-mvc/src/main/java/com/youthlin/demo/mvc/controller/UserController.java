@@ -5,6 +5,7 @@ import com.youthlin.demo.mvc.service.UserService;
 import com.youthlin.ioc.annotaion.Controller;
 import com.youthlin.mvc.annotation.HttpMethod;
 import com.youthlin.mvc.annotation.Param;
+import com.youthlin.mvc.annotation.ResponseBody;
 import com.youthlin.mvc.annotation.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @URL(value = {"/", "/index"}, method = {HttpMethod.GET, HttpMethod.POST})
+    @URL(value = { "/", "/index" }, method = { HttpMethod.GET, HttpMethod.POST })
     public String list(Map<String, Object> map) {
         map.put("userList", userService.listUsers());
         return "list";
@@ -90,6 +91,12 @@ public class UserController {
             LOGGER.debug("删除失败 用户ID:{}", id);
         }
         return "redirect:/";
+    }
+
+    @URL("user")
+    @ResponseBody
+    public Object test(@Param("user") User user) {
+        return user;
     }
 
 }
