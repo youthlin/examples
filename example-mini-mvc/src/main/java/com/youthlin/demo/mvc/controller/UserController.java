@@ -3,13 +3,13 @@ package com.youthlin.demo.mvc.controller;
 import com.youthlin.demo.mvc.model.User;
 import com.youthlin.demo.mvc.service.UserService;
 import com.youthlin.ioc.annotaion.Controller;
-import com.youthlin.mvc.annotation.HttpMethod;
-import com.youthlin.mvc.annotation.Param;
-import com.youthlin.mvc.annotation.ResponseBody;
-import com.youthlin.mvc.annotation.URL;
+import com.youthlin.mvc.annotation.*;
+import com.youthlin.mvc.converter.Converter;
+import com.youthlin.mvc.servlet.DispatcherServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Map;
 
@@ -95,8 +95,18 @@ public class UserController {
 
     @URL("user")
     @ResponseBody
-    public Object test(@Param("user") User user) {
+    public Object test(@Param("user") @ConvertWith(UserConverter.class) User user) {
         return user;
     }
 
+    @PostConstruct
+    public void init() {
+        DispatcherServlet.getContext().registerBean(new UserConverter());
+    }
+
+    public static class UserConverter implements Converter<User> {
+        @Override public User convert(String from) {
+            return new User().setEmail("xxx");
+        }
+    }
 }

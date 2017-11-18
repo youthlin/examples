@@ -11,10 +11,18 @@ public class User implements Serializable {
     private String name;
     private String email;
     private String note;
+    private int age;
+    private Cat cat;
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", name='" + name + '\'' + ", email='" + email + '\'' + ", note='" + note + '\'' +
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", note='" + note + '\'' +
+                ", age=" + age +
+                ", cat=" + cat +
                 '}';
     }
 
