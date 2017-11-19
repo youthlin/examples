@@ -2,14 +2,15 @@ package com.youthlin.demo.mvc.controller;
 
 import com.youthlin.demo.mvc.model.User;
 import com.youthlin.demo.mvc.service.UserService;
-import com.youthlin.ioc.annotaion.Controller;
-import com.youthlin.mvc.annotation.*;
-import com.youthlin.mvc.converter.Converter;
-import com.youthlin.mvc.servlet.DispatcherServlet;
+import com.youthlin.ioc.annotation.Controller;
+import com.youthlin.mvc.annotation.HttpMethod;
+import com.youthlin.mvc.annotation.RequestBody;
+import com.youthlin.mvc.annotation.URL;
+import com.youthlin.mvc.support.converter.Converter;
+import com.youthlin.mvc.view.jackson.JsonBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Map;
 
@@ -54,7 +55,7 @@ public class UserController {
     }
 
     @URL(value = "/edit", method = HttpMethod.GET)
-    public String editPage(@Param("id") Long id, Map<String, Object> map) {
+    public String editPage(Long id, Map<String, Object> map) {
         User user = userService.findById(id);
         if (user == null) {
             map.put("error", "用户不存在");
@@ -65,7 +66,7 @@ public class UserController {
     }
 
     @URL(value = "/edit", method = HttpMethod.POST)
-    public String editUser(@Param("id") Long id, Map<String, String> map) {
+    public String editUser(Long id, Map<String, String> map) {
         User user = userService.findById(id);
         if (user == null) {
             map.put("error", "用户不存在");
@@ -84,7 +85,7 @@ public class UserController {
     }
 
     @URL("delete")
-    public String delete(@Param("id") Long id) {
+    public String delete(Long id) {
         if (userService.deleteById(id)) {
             LOGGER.debug("删除成功 用户ID: {}", id);
         } else {
@@ -94,8 +95,8 @@ public class UserController {
     }
 
     @URL("user")
-    @ResponseBody
-    public Object test(@Param("user") @ConvertWith(UserConverter.class) User user) {
+    @JsonBody
+    public Object test(@RequestBody User user, User user1) {
         return user;
     }
 

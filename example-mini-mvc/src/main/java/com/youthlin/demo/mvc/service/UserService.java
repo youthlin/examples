@@ -2,7 +2,7 @@ package com.youthlin.demo.mvc.service;
 
 import com.youthlin.demo.mvc.dao.IUserDao;
 import com.youthlin.demo.mvc.model.User;
-import com.youthlin.ioc.annotaion.Service;
+import com.youthlin.ioc.annotation.Service;
 
 import javax.annotation.Resource;
 import java.util.List;

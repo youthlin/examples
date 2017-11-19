@@ -6,7 +6,7 @@
     <!--region mini-mvc start-->
     <filter>
         <filter-name>encodingFilter</filter-name>
-        <filter-class>com.youthlin.mvc.support.CharacterEncodingFilter</filter-class>
+        <filter-class>com.youthlin.mvc.servlet.filter.CharacterEncodingFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>encodingFilter</filter-name>

@@ -1,6 +1,6 @@
 package com.youthlin.demo.mvc.interceptors;
 
-import com.youthlin.mvc.support.Interceptor;
+import com.youthlin.mvc.servlet.filter.Interceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

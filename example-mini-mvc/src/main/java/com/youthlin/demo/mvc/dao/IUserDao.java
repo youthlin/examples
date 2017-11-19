@@ -1,7 +1,7 @@
 package com.youthlin.demo.mvc.dao;
 
 import com.youthlin.demo.mvc.model.User;
-import com.youthlin.ioc.annotaion.Dao;
+import com.youthlin.ioc.annotation.Dao;
 
 import java.util.List;
 

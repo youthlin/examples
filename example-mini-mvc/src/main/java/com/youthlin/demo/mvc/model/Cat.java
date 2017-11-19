@@ -12,4 +12,13 @@ public class Cat {
                 "weight=" + weight +
                 '}';
     }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public Cat setWeight(double weight) {
+        this.weight = weight;
+        return this;
+    }
 }

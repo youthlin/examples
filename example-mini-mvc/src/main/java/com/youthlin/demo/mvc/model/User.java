@@ -1,6 +1,7 @@
 package com.youthlin.demo.mvc.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * 创建： youthlin.chen
@@ -12,7 +13,10 @@ public class User implements Serializable {
     private String email;
     private String note;
     private int age;
-    private Cat cat;
+    private Cat[] cat;
+
+    public User() {
+    }
 
     @Override
     public String toString() {
@@ -22,7 +26,7 @@ public class User implements Serializable {
                 ", email='" + email + '\'' +
                 ", note='" + note + '\'' +
                 ", age=" + age +
-                ", cat=" + cat +
+                ", cat=" + Arrays.toString(cat) +
                 '}';
     }
 
@@ -59,6 +63,24 @@ public class User implements Serializable {
 
     public User setNote(String note) {
         this.note = note;
+        return this;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public User setAge(int age) {
+        this.age = age;
+        return this;
+    }
+
+    public Cat[] getCat() {
+        return cat;
+    }
+
+    public User setCat(Cat[] cat) {
+        this.cat = cat;
         return this;
     }
 }
