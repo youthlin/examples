@@ -99,11 +99,6 @@ public class UserController {
         return user;
     }
 
-    @PostConstruct
-    public void init() {
-        DispatcherServlet.getContext().registerBean(new UserConverter());
-    }
-
     public static class UserConverter implements Converter<User> {
         @Override public User convert(String from) {
             return new User().setEmail("xxx");
