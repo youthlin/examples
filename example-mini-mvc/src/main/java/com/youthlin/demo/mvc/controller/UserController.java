@@ -3,6 +3,7 @@ package com.youthlin.demo.mvc.controller;
 import com.youthlin.demo.mvc.model.User;
 import com.youthlin.demo.mvc.service.UserService;
 import com.youthlin.ioc.annotation.Controller;
+import com.youthlin.mvc.annotation.ConvertWith;
 import com.youthlin.mvc.annotation.HttpMethod;
 import com.youthlin.mvc.annotation.RequestBody;
 import com.youthlin.mvc.annotation.URL;
@@ -96,7 +97,7 @@ public class UserController {
 
     @URL("user")
     @JsonBody
-    public Object test(@RequestBody User user, User user1) {
+    public Object test(@RequestBody User user, @ConvertWith(UserConverter.class) User user1) {
         return user;
     }
 
