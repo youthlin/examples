@@ -25,7 +25,7 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @URL(value = { "/", "/index" }, method = { HttpMethod.GET, HttpMethod.POST })
+    @URL(value = {"/", "/index"}, method = {HttpMethod.GET, HttpMethod.POST})
     public String list(Map<String, Object> map) {
         map.put("userList", userService.listUsers());
         return "list";
@@ -98,11 +98,12 @@ public class UserController {
     @URL("user")
     @JsonBody
     public Object test(@RequestBody User user, @ConvertWith(UserConverter.class) User user1) {
-        return user;
+        return new Object[]{user, user1};
     }
 
     public static class UserConverter implements Converter<User> {
-        @Override public User convert(String from) {
+        @Override
+        public User convert(String from) {
             return new User().setEmail("xxx");
         }
     }
