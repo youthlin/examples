@@ -6,11 +6,17 @@ import com.youthlin.ioc.context.ClasspathContext;
 import com.youthlin.ioc.context.Context;
 import com.youthlin.ioc.spi.IPreScanner;
 import com.youthlin.rpc.annotation.Rpc;
+import com.youthlin.rpc.core.RpcFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.ServiceLoader;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * 创建: youthlin.chen
@@ -27,22 +33,56 @@ public class Consumer {
         Context context = new ClasspathContext(preScanners.iterator(), null, "com.youthlin.example");
         final Consumer consumer = context.getBean(Consumer.class);
         LOGGER.info("sayHello: {}", consumer.sayHello("World"));
+        LOGGER.info("sayHello: {}", consumer.sayHello("你好"));
+        consumer.helloService.clear();
         LOGGER.info("findAll: {}", consumer.helloService.findAll());
-        consumer.helloService.save(new User().setId(1L).setName("YouthLin"));
-        LOGGER.info("findAll: {}", consumer.helloService.findAll());
+        Future<List<User>> future = RpcFuture.get();
+        try {
+            LOGGER.info("{}", future.get());
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.warn("", e);
+        }
+        for (int i = 0; i < 5; i++) {
+            consumer.helloService.findAll();
+            future = RpcFuture.get();
+            LOGGER.info("{}", future);
+        }
+
+    }
+
+    private String sayHello(String name) {
+        return helloService.sayHello(name);
+    }
+
+    private void test() {
         for (int i = 0; i < 100; i++) {
             final int count = i;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println(consumer.helloService.sayHello("Name" + count));
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ignore) {
+                    }
+
+                    long start = System.currentTimeMillis();
+                    helloService.save(new User().setId((long) count).setName("Name" + count));
+                    helloService.findAll();
+                    Future<List<User>> future = RpcFuture.get();
+                    try {
+                        List<User> users = future.get(30 * count, TimeUnit.MILLISECONDS);
+                        LOGGER.info("No.{} size:{} cost:{} {}", count, users.size(), System.currentTimeMillis() - start, users);
+                    } catch (InterruptedException e) {
+                        LOGGER.warn("中断异常", e);
+                    } catch (ExecutionException e) {
+                        LOGGER.warn("调用异常", e);
+                    } catch (TimeoutException e) {
+                        LOGGER.warn("超时异常", e);
+
+                    }
+
                 }
             }).start();
         }
-        System.out.println(consumer.sayHello(null));
-    }
-
-    private String sayHello(String name) {
-        return helloService.sayHello(name);
     }
 }

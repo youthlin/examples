@@ -31,6 +31,16 @@ public class HelloService implements IHelloService {
 
     @Override
     public List<User> findAll() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignore) {
+        }
         return Collections.unmodifiableList(USERS);
     }
+
+    @Override
+    public void clear() {
+        USERS.clear();
+    }
+
 }

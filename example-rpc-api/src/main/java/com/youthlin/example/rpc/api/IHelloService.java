@@ -15,4 +15,5 @@ public interface IHelloService {
 
     List<User> findAll();
 
+    void clear();
 }
