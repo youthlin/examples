@@ -19,17 +19,27 @@ import java.util.ServiceLoader;
 @Resource
 public class Consumer {
     private static final Logger LOGGER = LoggerFactory.getLogger(Consumer.class);
-    @Rpc
+    @Rpc(config = Config.class)
     private IHelloService helloService;
 
     public static void main(String[] args) {
         ServiceLoader<IPreScanner> preScanners = ServiceLoader.load(IPreScanner.class);
         Context context = new ClasspathContext(preScanners.iterator(), null, "com.youthlin.example");
-        Consumer consumer = context.getBean(Consumer.class);
+        final Consumer consumer = context.getBean(Consumer.class);
         LOGGER.info("sayHello: {}", consumer.sayHello("World"));
         LOGGER.info("findAll: {}", consumer.helloService.findAll());
         consumer.helloService.save(new User().setId(1L).setName("YouthLin"));
         LOGGER.info("findAll: {}", consumer.helloService.findAll());
+        for (int i = 0; i < 100; i++) {
+            final int count = i;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println(consumer.helloService.sayHello("Name" + count));
+                }
+            }).start();
+        }
+        System.out.println(consumer.sayHello(null));
     }
 
     private String sayHello(String name) {
