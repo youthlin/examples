@@ -16,4 +16,6 @@ public interface IHelloService {
     List<User> findAll();
 
     void clear();
+
+    void aLongTimeMethod();
 }

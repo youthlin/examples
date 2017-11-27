@@ -3,6 +3,8 @@ package com.youthlin.example.rpc.provider.service;
 import com.youthlin.example.rpc.api.IHelloService;
 import com.youthlin.example.rpc.bean.User;
 import com.youthlin.rpc.annotation.Rpc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +16,7 @@ import java.util.List;
  */
 @Rpc
 public class HelloService implements IHelloService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HelloService.class);
     private static final List<User> USERS = new ArrayList<>();
 
     @Override
@@ -26,6 +29,7 @@ public class HelloService implements IHelloService {
         if (user == null) {
             throw new IllegalArgumentException("user == null");
         }
+        LOGGER.info("SAVE");
         USERS.add(user);
     }
 
@@ -43,4 +47,10 @@ public class HelloService implements IHelloService {
         USERS.clear();
     }
 
+    public void aLongTimeMethod() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ignore) {
+        }
+    }
 }

@@ -28,10 +28,18 @@ public class Config extends AbstractConsumerConfig {
     }
 
     @Override
-    public boolean async(Method method) {
+    public Boolean async(Method method) {
         if (method.getName().equals("findAll")) {
             return true;
         }
         return super.async(method);
+    }
+
+    @Override
+    public Boolean getConfig(Method method, String key, boolean dft) {
+        if (method.getName().equals("aLongTimeMethod") && key.equals(Config.RETURN)) {
+            return false;
+        }
+        return super.getConfig(method, key, dft);
     }
 }

@@ -28,26 +28,28 @@ public class Consumer {
     @Rpc(config = Config.class)
     private IHelloService helloService;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         ServiceLoader<IPreScanner> preScanners = ServiceLoader.load(IPreScanner.class);
         Context context = new ClasspathContext(preScanners.iterator(), null, "com.youthlin.example");
         final Consumer consumer = context.getBean(Consumer.class);
         LOGGER.info("sayHello: {}", consumer.sayHello("World"));
         LOGGER.info("sayHello: {}", consumer.sayHello("你好"));
         consumer.helloService.clear();
-        LOGGER.info("findAll: {}", consumer.helloService.findAll());
+        List<User> userList = consumer.helloService.findAll();
+        LOGGER.info("findAll: {}", userList);
         Future<List<User>> future = RpcFuture.get();
         try {
             LOGGER.info("{}", future.get());
         } catch (InterruptedException | ExecutionException e) {
             LOGGER.warn("", e);
         }
-        for (int i = 0; i < 5; i++) {
-            consumer.helloService.findAll();
-            future = RpcFuture.get();
-            LOGGER.info("{}", future);
-        }
-
+        long start = System.nanoTime();
+        LOGGER.info("start {}", start);
+        consumer.helloService.aLongTimeMethod();
+        System.out.println(System.nanoTime() - start);
+        System.out.println(consumer.helloService.toString());
+        System.out.println(consumer.helloService.getClass());
+        System.out.println(consumer.helloService.equals(consumer.helloService));
     }
 
     private String sayHello(String name) {
@@ -85,4 +87,5 @@ public class Consumer {
             }).start();
         }
     }
+
 }
