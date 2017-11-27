@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 public class Config extends AbstractConsumerConfig {
     @Override
     public String host() {
-        return "100.81.140.61";
+        return NetUtil.LOCALHOST;
     }
 
     @Override
