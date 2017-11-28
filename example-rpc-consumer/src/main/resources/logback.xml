@@ -11,7 +11,7 @@
 
     <logger name="com.youthlin.ico" level="warn"/>
 
-    <root level="${log.level:-info}">
+    <root level="${log.level:-debug}">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
