@@ -7,10 +7,14 @@ import com.youthlin.ioc.context.Context;
 import com.youthlin.ioc.spi.IPreScanner;
 import com.youthlin.rpc.annotation.Rpc;
 import com.youthlin.rpc.core.RpcFuture;
+import com.youthlin.rpc.util.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.misc.ProxyGenerator;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutionException;
@@ -46,10 +50,12 @@ public class Consumer {
         long start = System.nanoTime();
         LOGGER.info("start {}", start);
         consumer.helloService.aLongTimeMethod();
-        System.out.println(System.nanoTime() - start);
-        System.out.println(consumer.helloService.toString());
-        System.out.println(consumer.helloService.getClass());
-        System.out.println(consumer.helloService.equals(consumer.helloService));
+        LOGGER.info("{}", System.nanoTime() - start);
+        LOGGER.info("{}", consumer.helloService.toString());
+        LOGGER.info("{}", consumer.helloService.getClass());
+        LOGGER.info("{}", consumer.helloService.equals(consumer.helloService));
+
+        consumer.printClassFile();
     }
 
     private String sayHello(String name) {
@@ -88,4 +94,25 @@ public class Consumer {
         }
     }
 
+    private void printClassFile() {
+        byte[] classFile = ProxyGenerator.generateProxyClass("$Proxy2", helloService.getClass().getInterfaces());
+        FileOutputStream out = null;
+        try {
+            String path = Consumer.class.getResource("/").getPath();
+            LOGGER.info("path={}", path);
+
+            File file = new File(path, "com/sun/proxy/$Proxy2.class");
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+            LOGGER.info("path: {}", file.getAbsolutePath());
+            out = new FileOutputStream(file);
+            out.write(classFile);
+            out.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            NetUtil.close(out);
+        }
+    }
 }
