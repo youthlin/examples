@@ -20,6 +20,7 @@
         <module>example-rpc-api</module>
         <module>example-rpc-provider</module>
         <module>example-rpc-consumer</module>
+        <module>example-jdk-proxy</module>
     </modules>
 
     <properties>
