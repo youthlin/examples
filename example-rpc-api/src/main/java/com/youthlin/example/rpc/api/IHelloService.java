@@ -8,7 +8,7 @@ import java.util.List;
  * 创建: youthlin.chen
  * 时间: 2017-11-26 22:20
  */
-public interface IHelloService {
+public interface IHelloService extends Comparable<Object> {
     String sayHello(String name);
 
     void save(User user);

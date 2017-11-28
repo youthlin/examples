@@ -37,6 +37,8 @@ public class Consumer {
         Context context = new ClasspathContext(preScanners.iterator(), null, "com.youthlin.example");
         final Consumer consumer = context.getBean(Consumer.class);
         LOGGER.info("sayHello: {}", consumer.sayHello("World"));
+        LOGGER.info("compare: {}", consumer.helloService.compareTo(0));
+
         LOGGER.info("sayHello: {}", consumer.sayHello("你好"));
         consumer.helloService.clear();
         List<User> userList = consumer.helloService.findAll();

@@ -53,4 +53,9 @@ public class HelloService implements IHelloService {
         } catch (InterruptedException ignore) {
         }
     }
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
+    }
 }
