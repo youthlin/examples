@@ -14,7 +14,11 @@ import java.lang.reflect.Method;
 public class Config extends AbstractConsumerConfig {
     @Override
     public String host() {
-        return NetUtil.LOCALHOST;
+        String host = System.getProperty("provider.host");
+        if (host != null && !host.isEmpty()) {
+            return host;
+        }
+        return NetUtil.getLocalAddress().getHostAddress();
     }
 
     @Override

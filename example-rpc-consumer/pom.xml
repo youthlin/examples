@@ -23,4 +23,24 @@
 
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <!--maven中把依赖的JAR包一起打包-->
+                <!--http://lvjun106.iteye.com/blog/1849803-->
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.youthlin.example.rpc.consumer.Consumer</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

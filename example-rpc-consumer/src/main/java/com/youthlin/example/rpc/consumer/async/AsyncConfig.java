@@ -1,12 +1,9 @@
 package com.youthlin.example.rpc.consumer.async;
 
-import com.youthlin.example.rpc.consumer.Consumer;
 import com.youthlin.rpc.core.ProxyFactory;
 import com.youthlin.rpc.core.SimpleProxyFactory;
 import com.youthlin.rpc.core.config.AbstractConsumerConfig;
 import com.youthlin.rpc.core.config.Config;
-import com.youthlin.rpc.core.config.ConsumerConfig;
-import com.youthlin.rpc.core.config.SimpleConsumerConfig;
 import com.youthlin.rpc.util.NetUtil;
 
 import java.lang.reflect.Method;
@@ -18,7 +15,11 @@ import java.lang.reflect.Method;
 public class AsyncConfig extends AbstractConsumerConfig {
     @Override
     public String host() {
-        return NetUtil.LOCALHOST;
+        String host = System.getProperty("provider.host");
+        if (host != null && !host.isEmpty()) {
+            return host;
+        }
+        return NetUtil.getLocalAddress().getHostAddress();
     }
 
     @Override
