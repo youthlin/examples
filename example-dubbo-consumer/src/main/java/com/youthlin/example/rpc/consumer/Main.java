@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.util.concurrent.ExecutionException;
-
 /**
  * 创建: youthlin.chen
  * 时间: 2017-10-28 00:34

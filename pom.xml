@@ -14,7 +14,7 @@
         <module>example-mini-mvc</module>
         <module>example-dubbo-api</module>
         <module>example-dubbo-provider</module>
-        <module>example-dubbo-comsumer</module>
+        <module>example-dubbo-consumer</module>
         <module>example-mail</module>
         <module>example-cglib</module>
         <module>example-rpc-api</module>
