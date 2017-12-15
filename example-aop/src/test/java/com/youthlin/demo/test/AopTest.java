@@ -18,16 +18,16 @@ import javax.annotation.Resource;
 public class AopTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(AopTest.class);
     @Resource
-    private HelloService service;
+    private HelloService helloService;
 
     @Test
     public void logTest() {
-        LOGGER.debug("{}", service.sayHello("Lin"));
+        LOGGER.debug("{}", helloService.sayHello("Lin"));
     }
 
     @Test(expected = RuntimeException.class)
     public void aVoid() {
-        service.voidFun();
+        helloService.voidFun();
     }
 
 }

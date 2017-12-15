@@ -16,7 +16,7 @@ public class App {
 
     public static void main(String[] args) {
         Context context = new ClasspathContext("com.youthlin");
-        LOGGER.debug("ioc container bean count: {}", context.getBeanCount());
+        LOGGER.debug("ioc container bean count: {}\n{}\n{}", context.getBeanCount(), context.getClazzBeanMap(), context.getNameBeanMap());
         UserService userService = context.getBean(UserService.class);
         LOGGER.debug("user list: {}", userService.listUser());
         userService.saveUser(1L, "user 1");
