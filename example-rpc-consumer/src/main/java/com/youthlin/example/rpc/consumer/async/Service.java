@@ -18,18 +18,18 @@ public class Service implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
 
     @Rpc(config = AsyncConfig.class)
-    private IAsyncService<String> asyncService;
+    private IAsyncService<Integer> asyncService;
 
     public void test() {
-        asyncService.async(new CallBack<String>() {
+        asyncService.async(new CallBack<Integer>() {
             @Override
-            public void onDone(String result) {
+            public void onDone(Integer result) {
                 LOGGER.debug("done {}", result);
             }
 
             @Override
             public void onException(Throwable e) {
-                LOGGER.debug("exception {}", e);
+                LOGGER.debug("exception", e);
             }
         });
     }
