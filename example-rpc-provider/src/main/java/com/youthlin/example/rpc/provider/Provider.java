@@ -18,8 +18,8 @@ public class Provider {
     private static final Logger LOGGER = LoggerFactory.getLogger(Provider.class);
 
     public static void main(String[] args) throws IOException {
-        ServiceLoader<IPostScanner> postScanners = ServiceLoader.load(IPostScanner.class);
-        Context context = new ClasspathContext(null, postScanners.iterator(), "com.youthlin.example");
+        //ServiceLoader<IPostScanner> postScanners = ServiceLoader.load(IPostScanner.class);
+        Context context = new ClasspathContext("com.youthlin.example");
         Map<Class, Object> beanMap = context.getClazzBeanMap();
         LOGGER.info("{}", beanMap);
         LOGGER.info("press any key and enter to exit.");

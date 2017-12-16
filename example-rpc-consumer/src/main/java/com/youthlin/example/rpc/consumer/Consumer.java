@@ -33,8 +33,7 @@ public class Consumer {
     private IHelloService helloService;
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        ServiceLoader<IPreScanner> preScanners = ServiceLoader.load(IPreScanner.class);
-        Context context = new ClasspathContext(preScanners.iterator(), null, "com.youthlin.example");
+        Context context = new ClasspathContext( "com.youthlin.example");
         final Consumer consumer = context.getBean(Consumer.class);
         LOGGER.info("started");
         LOGGER.info("sayHello: {}", consumer.sayHello("World"));
