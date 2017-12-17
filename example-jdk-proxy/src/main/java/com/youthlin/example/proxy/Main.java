@@ -1,5 +1,6 @@
 package com.youthlin.example.proxy;
 
+import com.youthlin.example.proxy.service.IUserService;
 import sun.misc.ProxyGenerator;
 
 import java.io.File;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Objects;
 
 /**
  * 创建: youthlin.chen
@@ -31,17 +33,29 @@ public class Main {
                         return null;
                     }
                 });
-        System.out.println(service.sayHello("YouthLin"));
+        IUserService userService = (IUserService) Proxy.newProxyInstance(
+                IUserService.class.getClassLoader(),
+                new Class[]{IUserService.class},
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        return "YouthLin";
+                    }
+                });
+
+        System.out.println("内部类接口 " + service.sayHello("YouthLin"));
+        System.out.println("不同包接口 " + userService.getName());
 
         out(service);
+        out(userService);
     }
 
-    private static void out(IHelloService service) throws IOException {
-        Class<? extends IHelloService> proxyClass = service.getClass();
+    private static void out(Object service) throws IOException {
+        Class<?> proxyClass = service.getClass();
         String proxyClassName = proxyClass.getName();
-        System.out.println(proxyClassName);
+        //System.out.println(proxyClassName);
         proxyClassName = proxyClassName.substring(proxyClassName.lastIndexOf(".") + 1);
-        System.out.println(proxyClassName);
+        //System.out.println(proxyClassName);
         byte[] proxyClassBytes = ProxyGenerator.generateProxyClass(proxyClassName, new Class[]{IHelloService.class});
         String path = Main.class.getResource("/").getPath();
         File file = new File(path, proxyClass.getName().replaceAll("\\.", "/") + ".class");
@@ -49,7 +63,7 @@ public class Main {
             //noinspection ResultOfMethodCallIgnored
             file.getParentFile().mkdirs();
         }
-        System.out.println(file.getAbsolutePath());
+        System.out.println(service.getClass().getName() + " " + file.getAbsolutePath());
         FileOutputStream out = new FileOutputStream(file);
         out.write(proxyClassBytes);
         out.flush();
