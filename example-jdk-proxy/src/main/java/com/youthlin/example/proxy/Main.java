@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Objects;
 
 /**
  * 创建: youthlin.chen
@@ -46,27 +45,27 @@ public class Main {
         System.out.println("内部类接口 " + service.sayHello("YouthLin"));
         System.out.println("不同包接口 " + userService.getName());
 
-        out(service);
-        out(userService);
+        writeProxyClass(service.getClass());
+        writeProxyClass(userService.getClass());
     }
 
-    private static void out(Object service) throws IOException {
-        Class<?> proxyClass = service.getClass();
+    private static void writeProxyClass(Class<?> proxyClass) throws IOException {
         String proxyClassName = proxyClass.getName();
-        //System.out.println(proxyClassName);
+        //System.writeProxyClass.println(proxyClassName);
         proxyClassName = proxyClassName.substring(proxyClassName.lastIndexOf(".") + 1);
-        //System.out.println(proxyClassName);
+        //System.writeProxyClass.println(proxyClassName);
         byte[] proxyClassBytes = ProxyGenerator.generateProxyClass(proxyClassName, new Class[]{IHelloService.class});
-        String path = Main.class.getResource("/").getPath();
+        String path = Main.class.getResource("/").getPath() + "/generate/";
         File file = new File(path, proxyClass.getName().replaceAll("\\.", "/") + ".class");
         if (!file.getParentFile().exists()) {
             //noinspection ResultOfMethodCallIgnored
             file.getParentFile().mkdirs();
         }
-        System.out.println(service.getClass().getName() + " " + file.getAbsolutePath());
+        System.out.println(proxyClass.getName() + " " + file.getAbsolutePath());
         FileOutputStream out = new FileOutputStream(file);
         out.write(proxyClassBytes);
         out.flush();
         out.close();
     }
+
 }
