@@ -21,6 +21,7 @@
         <module>example-rpc-provider</module>
         <module>example-rpc-consumer</module>
         <module>example-jdk-proxy</module>
+        <module>example-jackson</module>
     </modules>
 
     <properties>
@@ -144,6 +145,11 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
 
