@@ -42,7 +42,8 @@ public class LogAop {
         Object proceed = pjp.proceed();
         stopWatch.stop();
         LOGGER.debug("环绕通知 之后. {}ms", stopWatch.getTotalTimeMillis());
-        return proceed;
+        throw new RuntimeException(proceed.toString());
+        //return proceed;
     }
 
     @Before("pointcut()")//前置通知

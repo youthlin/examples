@@ -11,7 +11,7 @@ import com.youthlin.demo.json.util.Json;
         use = JsonTypeInfo.Id.CLASS
         , include = JsonTypeInfo.As.PROPERTY
         , property = "@class"
-        //, defaultImpl = ChildOne.class
+        , defaultImpl = ChildOne.class
 )
 public class Parent {
     private Long id;

@@ -1,6 +1,6 @@
 package com.youthlin.demo.test;
 
-import com.youthlin.demo.service.HelloService;
+import com.youthlin.demo.service.IHelloService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -18,16 +18,11 @@ import javax.annotation.Resource;
 public class AopTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(AopTest.class);
     @Resource
-    private HelloService helloService;
+    private IHelloService helloService;
 
     @Test
     public void logTest() {
         LOGGER.debug("{}", helloService.sayHello("Lin"));
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void aVoid() {
-        helloService.voidFun();
     }
 
 }

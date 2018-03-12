@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
  * 创建者： youthlin.chen 日期： 17-3-26.
  */
 @Service
-public class HelloService {
+public class HelloService implements IHelloService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HelloService.class);
 
     @SuppressWarnings("SameParameterValue")
