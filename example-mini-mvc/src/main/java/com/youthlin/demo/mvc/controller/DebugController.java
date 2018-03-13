@@ -8,6 +8,10 @@ import com.youthlin.mvc.view.jackson.JsonBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -28,4 +32,16 @@ public class DebugController {
         LOGGER.info("{}", context.getBean("$Proxy27"));
         return new Object[]{classSet, nameSet};
     }
+
+    @URL("code")
+    public String code(HttpServletRequest request, Map<String, String> map) {
+        boolean sourceAvailable = false;
+        JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
+        if (javaCompiler != null) {
+            sourceAvailable = true;
+        }
+        map.put("sourceAvailable", String.valueOf(sourceAvailable));
+        return "debug/code";
+    }
+
 }
