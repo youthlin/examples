@@ -19,7 +19,7 @@
 <body>
 <div class="container">
 
-    <form class="form-horizontal" action="#" th:action="@{/upload}" method="post" enctype="multipart/form-data">
+    <form class="form-horizontal" action="#" th:action="@{/debug/code}" method="post" enctype="multipart/form-data">
         <!--/*@thymesVar id="error" type="java.lang.String"*/-->
         <div class="col-sm-offset-2 col-sm-10 text-danger" th:if="${error}" th:text="${error}">
             错误信息
