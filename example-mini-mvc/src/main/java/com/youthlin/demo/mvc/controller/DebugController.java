@@ -37,10 +37,12 @@ public class DebugController {
     }
 
     @URL("code")
-    public String code(Part bytes, String code, String fileName, String cp,
+    public String code(Part bytes, String code, String fileName, String importClass,
             Map<String, String> map) throws IOException {
         map.put("sourceAvailable", String.valueOf(JavaCompilerForString.supportCompiler()));
-
+        map.put("code", code);
+        map.put("fileName", fileName);
+        map.put("importClass", importClass);
         StringBuilder sb = new StringBuilder();
         String result = "";
         if (bytes != null) {
@@ -57,13 +59,12 @@ public class DebugController {
 
         if (code != null && !code.isEmpty()) {
             if (JavaCompilerForString.supportCompiler()) {
-                String classpath = "";
-                if (cp != null && !cp.isEmpty()) {
-                    classpath = cp + JavaClassExecutor.getPathSeparator();
+                Set<String> classpath = JavaClassExecutor.getClasspathSet();
+                if (importClass != null && !importClass.isEmpty()) {
+                    classpath.addAll(JavaClassExecutor.getClasspathSet(importClass.split("[,\\s]")));
                 }
-                classpath += JavaClassExecutor.getClasspath();
                 StringWriter out = new StringWriter();
-                byte[] classBytes = JavaCompilerForString.compile(fileName, code, classpath, out);
+                byte[] classBytes = JavaCompilerForString.compile(fileName, code, JavaClassExecutor.getClasspath(classpath), out);
                 if (classBytes.length > 0) {
                     result = JavaClassExecutor.execute(classBytes);
                 } else {
@@ -71,7 +72,7 @@ public class DebugController {
                 }
             } else {
                 LOGGER.warn("服务器不支持即时编译");
-                result = "服务器不支持即时编译";
+                result = "服务器不支持即时编译 请直接上传编译后的 class 文件";
             }
         }
 

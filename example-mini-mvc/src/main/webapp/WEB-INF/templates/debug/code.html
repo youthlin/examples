@@ -34,20 +34,20 @@
         <div class="form-group">
             <label for="fileName" class="col-sm-2 control-label">Java 类名</label>
             <div class="col-sm-10">
-                <input class="form-control" id="fileName" type="text" name="fileName">
+                <input class="form-control" id="fileName" type="text" name="fileName" th:value="${fileName}">
             </div>
         </div>
         <div class="form-group">
-            <label for="cp" class="col-sm-2 control-label">Classpath</label>
+            <label for="importClass" class="col-sm-2 control-label">依赖的类</label>
             <div class="col-sm-10">
-                <input class="form-control" id="cp" type="text" name="cp">
+                <input class="form-control" id="importClass" type="text" name="importClass" th:value="${importClass}">
             </div>
         </div>
         <!--/*@thymesVar id="sourceAvailable" type="java.lang.Boolean"*/-->
         <div class="form-group" th:if="${sourceAvailable}">
             <label for="code" class="col-sm-2 control-label">Java 代码</label>
             <div class="col-sm-10">
-                <textarea name="code" id="code" cols="30" rows="10" class="form-control"></textarea>
+                <textarea name="code" id="code" cols="30" rows="10" class="form-control" th:text="${code}"></textarea>
             </div>
         </div>
         <div class="form-group">
