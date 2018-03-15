@@ -17,7 +17,8 @@ class KotlinController {
     private var userController: UserController? = null
 
     @URL("hello")
-    fun hello(map: MutableMap<String, Any>, request: HttpServletRequest?): String {
+    fun hello(name: String?, map: MutableMap<String, Any>, request: HttpServletRequest): String {
+        LOGGER.info("name {}", name)
         LOGGER.info("map {}", map)
         LOGGER.info("request {}", request)
         return userController?.list(map) ?: "list"
