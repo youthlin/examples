@@ -16,7 +16,6 @@
         <dependency>
             <groupId>com.youthlin</groupId>
             <artifactId>mini-mvc</artifactId>
-            <version>${mini-framework.version}</version>
         </dependency>
 
         <dependency>

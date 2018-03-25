@@ -66,4 +66,13 @@
         <url-pattern>/hello</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>debug</servlet-name>
+        <servlet-class>com.youthlin.debug.web.DebugServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>debug</servlet-name>
+        <url-pattern>/debug.do</url-pattern>
+    </servlet-mapping>
+
 </web-app>

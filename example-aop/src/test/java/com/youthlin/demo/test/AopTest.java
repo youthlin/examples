@@ -14,13 +14,13 @@ import javax.annotation.Resource;
  * 创建者： youthlin.chen 日期： 17-3-26.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/app.xml"})
+@ContextConfiguration(locations = { "classpath:/app.xml" })
 public class AopTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(AopTest.class);
     @Resource
     private IHelloService helloService;
 
-    @Test
+    @Test(expected = RuntimeException.class)
     public void logTest() {
         LOGGER.debug("{}", helloService.sayHello("Lin"));
     }
