@@ -1,6 +1,6 @@
 package com.youthlin.demo.mvc.controller;
 
-import com.youthlin.debug.JavaClassExecutor;
+import com.youthlin.debug.execute.JavaClassExecutor;
 import com.youthlin.debug.compiler.JavaCompilerForString;
 import com.youthlin.ioc.annotation.Controller;
 import com.youthlin.ioc.context.Context;
