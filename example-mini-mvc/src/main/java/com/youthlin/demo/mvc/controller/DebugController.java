@@ -61,7 +61,7 @@ public class DebugController {
             if (JavaCompilerForString.supportCompiler()) {
                 Set<String> classpath = JavaClassExecutor.getClasspathSet();
                 if (importClass != null && !importClass.isEmpty()) {
-                    classpath.addAll(JavaClassExecutor.getClasspathSet(importClass.split("[,\\s]")));
+                    classpath.addAll(JavaClassExecutor.getClasspathSetByClassName(importClass.split("[,\\s]")));
                 }
                 StringWriter out = new StringWriter();
                 byte[] classBytes = JavaCompilerForString.compile(fileName, code, JavaClassExecutor.getClasspath(classpath), out);
