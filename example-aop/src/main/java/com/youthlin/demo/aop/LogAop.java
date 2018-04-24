@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
@@ -21,6 +22,7 @@ import java.util.Arrays;
  */
 @Aspect//声明切面
 @Component//让 Spring 扫描到
+@Order(2)
 public class LogAop {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogAop.class);
 
