@@ -22,6 +22,7 @@
         <module>example-rpc-consumer</module>
         <module>example-jdk-proxy</module>
         <module>example-jackson</module>
+        <module>example-opencv</module>
     </modules>
 
     <properties>
