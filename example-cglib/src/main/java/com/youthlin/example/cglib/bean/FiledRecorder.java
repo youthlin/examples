@@ -15,8 +15,8 @@ import java.util.Objects;
  */
 public class FiledRecorder<T> implements MethodInterceptor {
     private static final String SET = "set";
-    private static final String INIT = "fs";
-    private static final String CHANGED = "fc";
+    private static final String INIT = "init";
+    private static final String CHANGED = "changed";
     private Map<String, String> fieldStatusMap = new HashMap<>();
     private Map<String, Object> fieldValueMap = new HashMap<>();
 
@@ -47,4 +47,7 @@ public class FiledRecorder<T> implements MethodInterceptor {
         return fieldStatusMap;
     }
 
+    public Map<String, Object> getFieldValueMap() {
+        return fieldValueMap;
+    }
 }

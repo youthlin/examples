@@ -20,11 +20,16 @@ public class Main {
         System.out.println(expression);
         System.out.println(expression.couldMatchJoinPointsInType(HelloService.class));
         System.out.println(expression.couldMatchJoinPointsInType(Main.class));
-        for (Method method : HelloService.class.getDeclaredMethods()) {
+        for (Method method : Main.class.getDeclaredMethods()) {
             ShadowMatch shadowMatch = expression.matchesMethodExecution(method);
             if (shadowMatch.matchesJoinPoint(null, null, null).matches()) {
                 System.out.println("matches " + method);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

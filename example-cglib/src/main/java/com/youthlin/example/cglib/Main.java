@@ -14,9 +14,11 @@ public class Main {
         FiledRecorder<User> userFiledRecorder = new FiledRecorder<>(User.class);
         User user = User.newUser(userFiledRecorder);
         System.out.println(userFiledRecorder.getFieldStatusMap());
+        System.out.println(userFiledRecorder.getFieldValueMap());
         System.out.println(user);
         user.setAmount(BigDecimal.ONE);
         System.out.println(userFiledRecorder.getFieldStatusMap());
+        System.out.println(userFiledRecorder.getFieldValueMap());
         System.out.println(user);
     }
 }
