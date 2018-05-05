@@ -31,9 +31,11 @@ public class Test {
 
     private static CascadeClassifier faceDetector = new CascadeClassifier();
     private static CascadeClassifier eyeDetector = new CascadeClassifier();
-    private static final String xmlPath = "/Users/youthlin.chen/IdeaProjects/opencv-3.4.1/data/haarcascades/";
+    private static final String xmlPath;
 
     static {
+        String lib = new File(Core.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
+        xmlPath = lib + "/data/haarcascades/";
         faceDetector.load(xmlPath + "haarcascade_frontalface_alt.xml");
         eyeDetector.load(xmlPath + "haarcascade_eye.xml");
     }
@@ -52,7 +54,8 @@ public class Test {
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         JButton capBtn = new JButton("拍照");
         capBtn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 stop = true;
                 super.mouseClicked(e);
             }
