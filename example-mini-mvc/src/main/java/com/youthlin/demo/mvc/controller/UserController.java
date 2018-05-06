@@ -25,7 +25,7 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @URL(value = {"/", "/index"}, method = {HttpMethod.GET, HttpMethod.POST})
+    @URL(value = { "/", "/index" }, method = { HttpMethod.GET, HttpMethod.POST })
     public String list(Map<String, Object> map) {
         map.put("userList", userService.listUsers());
         return "list";
@@ -42,19 +42,20 @@ public class UserController {
     }
 
     @URL(value = "/add", method = HttpMethod.POST)
-    public String addUser(Map<String, String> map) {
-        String name = map.get("name");
-        String email = map.get("email");
-        String note = map.get("note");
-        if (name == null || email == null) {
+    public String addUser(User user, Map<String, Object> map) {
+        if (user == null) {
+            map.put("error", "参数错误");
+            return "add";
+        }
+        if (user.getName() == null || user.getEmail() == null) {
             map.put("error", "用户名及电子邮件是必填项");
             return "add";
         }
-        User user = new User().setName(name).setEmail(email).setNote(note);
         userService.saveUser(user);
         return "redirect:/";
     }
 
+    //region  折叠
     @URL(value = "/edit", method = HttpMethod.GET)
     public String editPage(Long id, Map<String, Object> map) {
         User user = userService.findById(id);
@@ -94,11 +95,12 @@ public class UserController {
         }
         return "redirect:/";
     }
+    //endregion
 
     @URL("user")
     @JsonBody
     public Object test(@RequestBody User user, @ConvertWith(UserConverter.class) User user1) {
-        return new Object[]{user, user1};
+        return new Object[] { user, user1 };
     }
 
     public static class UserConverter implements Converter<User> {
