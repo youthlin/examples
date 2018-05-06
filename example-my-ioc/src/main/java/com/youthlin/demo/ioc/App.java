@@ -23,7 +23,7 @@ public class App {
         LOGGER.debug("user list: {}", userService.listUser());
         userService.saveUser(2L, "user 2");
         LOGGER.debug("user list: {}", userService.listUser());
-        IUserDao userDao = context.getBean("UserDao", IUserDao.class);
+        IUserDao userDao = context.getBean("userDao", IUserDao.class);
         LOGGER.debug("userDao: {}", userDao);
         LOGGER.debug("{}", context.getBean(""));
     }
