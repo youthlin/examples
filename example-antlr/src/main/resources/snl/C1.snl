@@ -1,0 +1,23 @@
+{SNL注释}
+program sd  //单行注释
+type  i=integer;
+      sarray=array [0..5] of integer;
+var  i x;
+     sarray y;
+     integer ss;
+/*
+ *块注释
+ */
+procedure sd(integer a);
+begin
+   write(a)
+end
+begin
+  ss:=0;
+  while ss<6 do
+    y[ss]:=ss;
+    x:=y[ss];
+    sd(x);
+    ss:=ss+1
+  endwh
+end.

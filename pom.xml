@@ -23,6 +23,7 @@
         <module>example-jdk-proxy</module>
         <module>example-jackson</module>
         <module>example-opencv</module>
+        <module>example-antlr</module>
     </modules>
 
     <properties>
@@ -209,6 +210,19 @@
                 <groupId>org.aeonbits.owner</groupId>
                 <artifactId>owner</artifactId>
                 <version>1.0.9</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.bytedeco</groupId>
+                <artifactId>javacv-platform</artifactId>
+                <version>1.4.1</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4</artifactId>
+                <version>4.7.1</version>
             </dependency>
 
         </dependencies>
