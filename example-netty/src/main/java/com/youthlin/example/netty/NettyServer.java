@@ -50,7 +50,7 @@ public class NettyServer {
                 .childOption(ChannelOption.TCP_NODELAY, true)//高实时性有数据就马上发送
                 .option(ChannelOption.SO_BACKLOG, 1024)//临时存放已完成三次握手的请求的队列的最大长度 连接建立频繁处理新连接较慢则增大
         ;
-        bind(serverBootstrap, 1000);
+        bind(serverBootstrap, 1884);
 
     }
 
