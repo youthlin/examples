@@ -52,6 +52,9 @@
             background: #ccc;
         }
 
+        .yd, .db {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -140,6 +143,10 @@
                     <a class="btn btn-default" data-toggle="collapse" href="#collapseExample"
                        aria-expanded="false" aria-controls="collapseExample">查看邮费 </a>
                     <a href="#buy" type="button" class="btn btn-primary nav-to" data-href="#buy">立即购买</a>
+                    <div class="wx-notice">
+                        ↑↑↑微信内置浏览器显示页面不完整，请点击<strong>原网页</strong>后在下一页底部点击<strong>访问原网页</strong>；
+                        或点击右上角菜单选择<strong>在浏览器中打开</strong>。
+                    </div>
                 </div>
             </div>
 
@@ -147,19 +154,19 @@
                 <ul class="nav nav-tabs" role="tablist">
                     <li role="presentation" class="active">
                         <a href="#tab1" aria-controls="tab1" role="tab" data-toggle="tab">邮费(按省份)</a></li>
-                    <li role="presentation">
+                    <li role="presentation" class="yz">
                         <a href="#tab2" aria-controls="tab2" role="tab" data-toggle="tab">邮费(邮政)</a>
                     </li>
-                    <li role="presentation">
+                    <li role="presentation" class="yt">
                         <a href="#tab3" aria-controls="tab3" role="tab" data-toggle="tab">邮费(圆通)</a>
                     </li>
-                    <li role="presentation">
+                    <li role="presentation" class="yd">
                         <a href="#tab4" aria-controls="tab4" role="tab" data-toggle="tab">邮费(韵达)</a>
                     </li>
-                    <li role="presentation">
+                    <li role="presentation" class="sf">
                         <a href="#tab5" aria-controls="tab5" role="tab" data-toggle="tab">邮费(顺丰)</a>
                     </li>
-                    <li role="presentation">
+                    <li role="presentation" class="db">
                         <a href="#tab6" aria-controls="tab6" role="tab" data-toggle="tab">邮费(德邦)</a>
                     </li>
                 </ul>
