@@ -1,5 +1,7 @@
-package com.youthlin.example.chat.protocol;
+package com.youthlin.example.chat.protocol.request;
 
+import com.youthlin.example.chat.protocol.Command;
+import com.youthlin.example.chat.protocol.Packet;
 import lombok.Data;
 
 /**

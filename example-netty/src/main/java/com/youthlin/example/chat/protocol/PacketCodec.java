@@ -1,5 +1,7 @@
 package com.youthlin.example.chat.protocol;
 
+import com.youthlin.example.chat.protocol.request.LoginRequestPacket;
+import com.youthlin.example.chat.protocol.response.LoginResponsePacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
@@ -20,16 +22,22 @@ public class PacketCodec {
     private static final byte VERSION = 1;
     private static final Map<Byte, Class<? extends Packet>> packetTypeMap;
     private static final Map<Byte, Serializer> serializerMap;
+    public static final PacketCodec INSTANCE = new PacketCodec();
 
     static {
         packetTypeMap = new HashMap<>();
         serializerMap = new HashMap<>();
         packetTypeMap.put(Command.LOGIN_REQUEST, LoginRequestPacket.class);
+        packetTypeMap.put(Command.LOGIN_RESPONSE, LoginResponsePacket.class);
         serializerMap.put(Serializer.JSON_SERIALIZER, Serializer.DEFAULT);
     }
 
     public ByteBuf encode(Packet packet) {
-        ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer();
+        return encode(ByteBufAllocator.DEFAULT, packet);
+    }
+
+    public ByteBuf encode(ByteBufAllocator allocator, Packet packet) {
+        ByteBuf buf = allocator.ioBuffer();
         byte[] bytes = Serializer.DEFAULT.serialize(packet);
 
         buf.writeInt(MAGIC_NUMBER);                         // 4
