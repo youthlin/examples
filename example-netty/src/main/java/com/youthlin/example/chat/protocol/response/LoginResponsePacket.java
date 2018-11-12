@@ -14,7 +14,7 @@ public class LoginResponsePacket extends Packet {
     private String failReason;
 
     @Override
-    public Byte getCommand() {
+    public byte command() {
         return Command.LOGIN_RESPONSE;
     }
 }

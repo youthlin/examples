@@ -24,7 +24,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         loginRequestPacket.setUsername("lin");
         loginRequestPacket.setPassword("lin");
 
-        ByteBuf buf = PacketCodec.INSTANCE.encode(loginRequestPacket);
+        ByteBuf buf = PacketCodec.INSTANCE.encode(ctx.alloc(), loginRequestPacket);
 
         ctx.channel().writeAndFlush(buf);
     }

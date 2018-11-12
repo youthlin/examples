@@ -43,7 +43,7 @@ public class PacketCodec {
         buf.writeInt(MAGIC_NUMBER);                         // 4
         buf.writeByte(VERSION);                             // 1
         buf.writeByte(Serializer.DEFAULT.getAlgorithm());   // 1
-        buf.writeByte(packet.getCommand());                 // 1
+        buf.writeByte(packet.command());                    // 1
         buf.writeInt(bytes.length);                         // 4
         buf.writeBytes(bytes);                              // n
         return buf;

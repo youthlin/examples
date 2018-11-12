@@ -5,6 +5,6 @@ package com.youthlin.example.chat.protocol;
  * 时间: 2018-11-12 15:12
  */
 public abstract class Packet {
-    public abstract Byte getCommand();
+    public abstract byte command();
 
 }
