@@ -1,6 +1,10 @@
 package com.youthlin.example.chat.server.handler;
 
+import com.youthlin.example.chat.model.User;
 import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
+import com.youthlin.example.chat.util.LoginUtil;
+import com.youthlin.example.chat.util.SessionUtil;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -16,8 +20,17 @@ public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRe
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MessageRequestPacket msg) throws Exception {
         LOGGER.info("收到消息 {}", msg);
-        msg.setText("[echo]" + msg.getText());
-        ctx.channel().writeAndFlush(msg);
+        long toUser = msg.getToUser();
+        User fromUser = SessionUtil.getUser(ctx.channel());
+        long fromUserId = fromUser.getId();
+        Channel to = SessionUtil.getChannel(toUser);
+        if (to != null && LoginUtil.hasLogin(to)) {
+            msg.setFromUser(fromUserId);
+            to.writeAndFlush(msg);
+        } else {
+            msg.setText("[" + msg.getToUser() + "不在线,发送失败]");
+            ctx.channel().writeAndFlush(msg);
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package com.youthlin.example.chat.protocol.response;
 
+import com.youthlin.example.chat.model.User;
 import com.youthlin.example.chat.protocol.Command;
 import com.youthlin.example.chat.protocol.Packet;
 import lombok.Data;
@@ -11,6 +12,7 @@ import lombok.Data;
 @Data
 public class LoginResponsePacket extends Packet {
     private boolean success;
+    private User user;
     private String failReason;
 
     @Override

@@ -1,5 +1,6 @@
 package com.youthlin.example.chat.attr;
 
+import com.youthlin.example.chat.model.User;
 import io.netty.util.AttributeKey;
 
 /**
@@ -8,5 +9,6 @@ import io.netty.util.AttributeKey;
  */
 public interface Attributes {
     AttributeKey<Boolean> LOGIN = AttributeKey.newInstance("login");
+    AttributeKey<User> SESSION = AttributeKey.newInstance("session");
 
 }

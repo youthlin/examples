@@ -5,6 +5,7 @@ import com.youthlin.example.chat.client.handler.MessageResponseHandler;
 import com.youthlin.example.chat.codec.PacketDecoder;
 import com.youthlin.example.chat.codec.PacketEncoder;
 import com.youthlin.example.chat.codec.Splitter;
+import com.youthlin.example.chat.protocol.request.LoginRequestPacket;
 import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
 import com.youthlin.example.chat.util.LoginUtil;
 import io.netty.bootstrap.Bootstrap;
@@ -30,7 +31,7 @@ public class Client {
     private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
     private static final int MAX_RETRY = 3;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         Bootstrap bootstrap = new Bootstrap();
         NioEventLoopGroup group = new NioEventLoopGroup();
         bootstrap.group(group)                          //1. 线程模型
@@ -74,18 +75,28 @@ public class Client {
         });
     }
 
+
     private static void startConsoleThread(Channel channel) {
         new Thread(() -> {
+            Scanner in = new Scanner(System.in);
+            boolean loginNotSend = true;
             while (!Thread.interrupted()) {
+                if (!LoginUtil.hasLogin(channel) && loginNotSend) {
+                    System.out.println("输入用户名登录:>");
+                    String username = in.nextLine();
+                    LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
+                    loginRequestPacket.setUsername(username);
+                    loginRequestPacket.setPassword(username);
+                    channel.writeAndFlush(loginRequestPacket);
+                    loginNotSend = false;
+                }
                 if (LoginUtil.hasLogin(channel)) {
-                    System.out.println("输入要发送的消息> ");
-                    Scanner in = new Scanner(System.in);
-                    String line = in.nextLine();
-//                    for (int i = 0; i < 100; i++) {
-//                        MessageRequestPacket msg = new MessageRequestPacket(line + i);
-//                        channel.writeAndFlush(msg);
-//                    }
-                    MessageRequestPacket msg = new MessageRequestPacket(line);
+                    System.out.println("input: toUserId Text> ");
+                    long toUser = in.nextLong();
+                    String text = in.next();
+                    MessageRequestPacket msg = new MessageRequestPacket();
+                    msg.setToUser(toUser);
+                    msg.setText(text);
                     channel.writeAndFlush(msg);
                 }
             }

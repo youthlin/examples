@@ -13,13 +13,8 @@ public class MessageRequestPacket extends Packet {
     public static final byte TYPE_PLAIN_TEXT = 0;
     private byte msgType;
     private String text;
-
-    public MessageRequestPacket() {
-    }
-
-    public MessageRequestPacket(String text) {
-        this.text = text;
-    }
+    private long fromUser;
+    private long toUser;
 
     @Override
     public byte command() {

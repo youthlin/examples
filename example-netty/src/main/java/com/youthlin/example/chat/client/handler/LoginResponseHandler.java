@@ -1,6 +1,5 @@
 package com.youthlin.example.chat.client.handler;
 
-import com.youthlin.example.chat.protocol.request.LoginRequestPacket;
 import com.youthlin.example.chat.protocol.response.LoginResponsePacket;
 import com.youthlin.example.chat.util.LoginUtil;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,18 +15,9 @@ public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginRespo
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginResponseHandler.class);
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        LOGGER.info("连接建立 开始登录...");
-        LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
-        loginRequestPacket.setUsername("lin");
-        loginRequestPacket.setPassword("lin");
-        ctx.channel().writeAndFlush(loginRequestPacket);
-    }
-
-    @Override
     protected void channelRead0(ChannelHandlerContext ctx, LoginResponsePacket msg) throws Exception {
         if (msg.isSuccess()) {
-            LOGGER.info("客户端登录成功");
+            LOGGER.info("客户端登录成功 {}", msg);
             //登录成功后标记 控制台线程就可以输入消息了 标记只在客户端可见 服务端标记要在服务端打
             LoginUtil.markAsLogin(ctx.channel());
         } else {
