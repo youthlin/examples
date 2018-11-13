@@ -1,8 +1,10 @@
 package com.youthlin.example.chat.client;
 
+import com.youthlin.example.chat.LoginUtil;
 import com.youthlin.example.chat.protocol.Packet;
 import com.youthlin.example.chat.protocol.PacketCodec;
 import com.youthlin.example.chat.protocol.request.LoginRequestPacket;
+import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
 import com.youthlin.example.chat.protocol.response.LoginResponsePacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -37,9 +39,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             LoginResponsePacket packet = (LoginResponsePacket) decode;
             if (packet.isSuccess()) {
                 LOGGER.info("客户端登录成功");
+                //登录成功后标记 控制台线程就可以输入消息了 标记只在客户端可见 服务端标记要在服务端打
+                LoginUtil.markAsLogin(ctx.channel());
             } else {
                 LOGGER.warn("客户端登录失败:{}", packet.getFailReason());
             }
+        } else if (decode instanceof MessageRequestPacket) {
+            MessageRequestPacket packet = (MessageRequestPacket) decode;
+            LOGGER.info("收到消息 {}", packet);
         }
     }
 }

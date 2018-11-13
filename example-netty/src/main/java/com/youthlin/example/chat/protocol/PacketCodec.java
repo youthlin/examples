@@ -1,6 +1,7 @@
 package com.youthlin.example.chat.protocol;
 
 import com.youthlin.example.chat.protocol.request.LoginRequestPacket;
+import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
 import com.youthlin.example.chat.protocol.response.LoginResponsePacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -20,16 +21,17 @@ import java.util.Map;
 public class PacketCodec {
     private static final int MAGIC_NUMBER = 0xcee2018a;
     private static final byte VERSION = 1;
-    private static final Map<Byte, Class<? extends Packet>> packetTypeMap;
-    private static final Map<Byte, Serializer> serializerMap;
+    private static final Map<Byte, Class<? extends Packet>> PACKET_TYPE_MAP;
+    private static final Map<Byte, Serializer> SERIALIZER_MAP;
     public static final PacketCodec INSTANCE = new PacketCodec();
 
     static {
-        packetTypeMap = new HashMap<>();
-        serializerMap = new HashMap<>();
-        packetTypeMap.put(Command.LOGIN_REQUEST, LoginRequestPacket.class);
-        packetTypeMap.put(Command.LOGIN_RESPONSE, LoginResponsePacket.class);
-        serializerMap.put(Serializer.JSON_SERIALIZER, Serializer.DEFAULT);
+        PACKET_TYPE_MAP = new HashMap<>();
+        SERIALIZER_MAP = new HashMap<>();
+        PACKET_TYPE_MAP.put(Command.LOGIN_REQUEST, LoginRequestPacket.class);
+        PACKET_TYPE_MAP.put(Command.LOGIN_RESPONSE, LoginResponsePacket.class);
+        PACKET_TYPE_MAP.put(Command.MESSAGE_REQUEST, MessageRequestPacket.class);
+        SERIALIZER_MAP.put(Serializer.JSON_SERIALIZER, Serializer.DEFAULT);
     }
 
     public ByteBuf encode(Packet packet) {
@@ -66,10 +68,10 @@ public class PacketCodec {
     }
 
     private Serializer getSerializer(byte algorithm) {
-        return serializerMap.get(algorithm);
+        return SERIALIZER_MAP.get(algorithm);
     }
 
     private Class<? extends Packet> getDataType(byte command) {
-        return packetTypeMap.get(command);
+        return PACKET_TYPE_MAP.get(command);
     }
 }

@@ -1,6 +1,12 @@
 package com.youthlin.example.chat.client;
 
+import com.youthlin.example.chat.LoginUtil;
+import com.youthlin.example.chat.protocol.PacketCodec;
+import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -10,6 +16,7 @@ import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,6 +52,8 @@ public class Client {
         bootstrap.connect(host, port).addListener(future -> {
             if (future.isSuccess()) {
                 LOGGER.info("connect success: {}:{}", host, port);
+                Channel channel = ((ChannelFuture) future).channel();
+                startConsoleThread(channel);
             } else if (retry <= 0) {
                 LOGGER.warn("give up: max retry limit({})", MAX_RETRY);
             } else {
@@ -56,6 +65,22 @@ public class Client {
                         .schedule(() -> connect(bootstrap, host, port, retry - 1), delay, TimeUnit.SECONDS);
             }
         });
+    }
+
+    private static void startConsoleThread(Channel channel) {
+        new Thread(() -> {
+            while (!Thread.interrupted()) {
+                if (LoginUtil.hasLogin(channel)) {
+                    System.out.println("输入要发送的消息> ");
+                    Scanner in = new Scanner(System.in);
+                    String line = in.nextLine();
+                    MessageRequestPacket msg = new MessageRequestPacket();
+                    msg.setText(line);
+                    ByteBuf buf = PacketCodec.INSTANCE.encode(channel.alloc(), msg);
+                    channel.writeAndFlush(buf);
+                }
+            }
+        }).start();
     }
 
 }
