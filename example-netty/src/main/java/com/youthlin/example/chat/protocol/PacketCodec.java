@@ -1,6 +1,8 @@
 package com.youthlin.example.chat.protocol;
 
+import com.youthlin.example.chat.protocol.request.CreateGroupRequestPacket;
 import com.youthlin.example.chat.protocol.request.LoginRequestPacket;
+import com.youthlin.example.chat.protocol.request.LogoutRequestPacket;
 import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
 import com.youthlin.example.chat.protocol.response.LoginResponsePacket;
 import io.netty.buffer.ByteBuf;
@@ -31,7 +33,9 @@ public class PacketCodec {
         SERIALIZER_MAP = new HashMap<>();
         PACKET_TYPE_MAP.put(Command.LOGIN_REQUEST, LoginRequestPacket.class);
         PACKET_TYPE_MAP.put(Command.LOGIN_RESPONSE, LoginResponsePacket.class);
+        PACKET_TYPE_MAP.put(Command.LOGOUT_REQUEST, LogoutRequestPacket.class);
         PACKET_TYPE_MAP.put(Command.MESSAGE_REQUEST, MessageRequestPacket.class);
+        PACKET_TYPE_MAP.put(Command.CREATE_GROUP_REQUEST, CreateGroupRequestPacket.class);
         SERIALIZER_MAP.put(Serializer.JSON_SERIALIZER, Serializer.DEFAULT);
     }
 

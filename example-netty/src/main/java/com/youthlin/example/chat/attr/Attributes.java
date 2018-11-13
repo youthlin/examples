@@ -9,6 +9,7 @@ import io.netty.util.AttributeKey;
  */
 public interface Attributes {
     AttributeKey<Boolean> LOGIN = AttributeKey.newInstance("login");
+    AttributeKey<Boolean> LOGOUT = AttributeKey.newInstance("logout");
     AttributeKey<User> SESSION = AttributeKey.newInstance("session");
 
 }

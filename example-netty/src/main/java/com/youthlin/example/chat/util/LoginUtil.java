@@ -11,6 +11,12 @@ import io.netty.util.Attribute;
 public class LoginUtil {
     public static void markAsLogin(Channel channel) {
         channel.attr(Attributes.LOGIN).set(true);
+        channel.attr(Attributes.LOGOUT).set(null);
+    }
+
+    public static void markAsLogout(Channel channel) {
+        channel.attr(Attributes.LOGIN).set(null);
+        channel.attr(Attributes.LOGOUT).set(true);
     }
 
     public static boolean hasLogin(Channel channel) {

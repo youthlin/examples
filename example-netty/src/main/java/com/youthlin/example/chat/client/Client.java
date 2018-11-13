@@ -1,12 +1,14 @@
 package com.youthlin.example.chat.client;
 
+import com.youthlin.example.chat.attr.Attributes;
+import com.youthlin.example.chat.client.console.ConsoleCommandManager;
+import com.youthlin.example.chat.client.console.LoginConsoleCommand;
+import com.youthlin.example.chat.client.handler.CreateGroupResponseHandler;
 import com.youthlin.example.chat.client.handler.LoginResponseHandler;
 import com.youthlin.example.chat.client.handler.MessageResponseHandler;
 import com.youthlin.example.chat.codec.PacketDecoder;
 import com.youthlin.example.chat.codec.PacketEncoder;
 import com.youthlin.example.chat.codec.Splitter;
-import com.youthlin.example.chat.protocol.request.LoginRequestPacket;
-import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
 import com.youthlin.example.chat.util.LoginUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -16,6 +18,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +47,7 @@ public class Client {
                                 channel.pipeline().addLast(new PacketDecoder());
                                 channel.pipeline().addLast(new LoginResponseHandler());
                                 channel.pipeline().addLast(new MessageResponseHandler());
+                                channel.pipeline().addLast(new CreateGroupResponseHandler());
                                 channel.pipeline().addLast(new PacketEncoder());
                             }
                         })
@@ -79,25 +83,20 @@ public class Client {
     private static void startConsoleThread(Channel channel) {
         new Thread(() -> {
             Scanner in = new Scanner(System.in);
-            boolean loginNotSend = true;
+            ConsoleCommandManager manager = new ConsoleCommandManager();
+            LoginConsoleCommand loginCommand = new LoginConsoleCommand();
+            boolean sendLogin = true;
             while (!Thread.interrupted()) {
-                if (!LoginUtil.hasLogin(channel) && loginNotSend) {
-                    System.out.println("输入用户名登录:>");
-                    String username = in.nextLine();
-                    LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
-                    loginRequestPacket.setUsername(username);
-                    loginRequestPacket.setPassword(username);
-                    channel.writeAndFlush(loginRequestPacket);
-                    loginNotSend = false;
+                Attribute<Boolean> logout = channel.attr(Attributes.LOGOUT);
+                if (logout != null && logout.get() != null && logout.get()) {
+                    sendLogin = true;
+                }
+                if (!LoginUtil.hasLogin(channel) && sendLogin) {
+                    loginCommand.exec(in, channel);
+                    sendLogin = false;
                 }
                 if (LoginUtil.hasLogin(channel)) {
-                    System.out.println("input: toUserId Text> ");
-                    long toUser = in.nextLong();
-                    String text = in.next();
-                    MessageRequestPacket msg = new MessageRequestPacket();
-                    msg.setToUser(toUser);
-                    msg.setText(text);
-                    channel.writeAndFlush(msg);
+                    manager.exec(in, channel);
                 }
             }
         }).start();

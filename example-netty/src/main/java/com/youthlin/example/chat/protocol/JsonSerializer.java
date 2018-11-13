@@ -22,6 +22,7 @@ public class JsonSerializer implements Serializer {
 
     static {
         MAPPER.disable(SerializationFeature.INDENT_OUTPUT);
+        MAPPER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         MAPPER.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
         MAPPER.configure(JsonParser.Feature.ALLOW_COMMENTS, true);

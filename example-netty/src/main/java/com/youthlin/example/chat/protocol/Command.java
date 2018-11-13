@@ -7,7 +7,8 @@ package com.youthlin.example.chat.protocol;
 public interface Command {
     byte LOGIN_REQUEST = 1;
     byte LOGIN_RESPONSE = 2;
-    byte MESSAGE_REQUEST = 3;
-    byte MESSAGE_RESPONSE = 4;
+    byte LOGOUT_REQUEST = 3;
+    byte MESSAGE_REQUEST = 4;
+    byte CREATE_GROUP_REQUEST = 5;
 
 }
