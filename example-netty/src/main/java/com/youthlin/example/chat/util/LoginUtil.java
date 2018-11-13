@@ -1,4 +1,4 @@
-package com.youthlin.example.chat;
+package com.youthlin.example.chat.util;
 
 import com.youthlin.example.chat.attr.Attributes;
 import io.netty.channel.Channel;

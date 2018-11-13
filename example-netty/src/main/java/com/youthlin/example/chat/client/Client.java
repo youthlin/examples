@@ -1,8 +1,12 @@
 package com.youthlin.example.chat.client;
 
-import com.youthlin.example.chat.LoginUtil;
+import com.youthlin.example.chat.client.handler.LoginResponseHandler;
+import com.youthlin.example.chat.client.handler.MessageResponseHandler;
+import com.youthlin.example.chat.codec.PacketDecoder;
+import com.youthlin.example.chat.codec.PacketEncoder;
 import com.youthlin.example.chat.protocol.PacketCodec;
 import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
+import com.youthlin.example.chat.util.LoginUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -36,7 +40,10 @@ public class Client {
                         new ChannelInitializer<SocketChannel>() {
                             @Override
                             protected void initChannel(SocketChannel channel) throws Exception {
-                                channel.pipeline().addLast(new ClientHandler());
+                                channel.pipeline().addLast(new PacketDecoder());
+                                channel.pipeline().addLast(new LoginResponseHandler());
+                                channel.pipeline().addLast(new MessageResponseHandler());
+                                channel.pipeline().addLast(new PacketEncoder());
                             }
                         })
                 .attr(AttributeKey.newInstance("clientName"), "MyClient")

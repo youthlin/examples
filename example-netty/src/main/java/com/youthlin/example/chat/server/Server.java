@@ -1,5 +1,9 @@
 package com.youthlin.example.chat.server;
 
+import com.youthlin.example.chat.codec.PacketDecoder;
+import com.youthlin.example.chat.codec.PacketEncoder;
+import com.youthlin.example.chat.server.handler.LoginRequestHandler;
+import com.youthlin.example.chat.server.handler.MessageRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -18,14 +22,17 @@ public class Server {
 
     public static void main(String[] args) {
         NioEventLoopGroup boos = new NioEventLoopGroup();
-        NioEventLoopGroup woker = new NioEventLoopGroup();
+        NioEventLoopGroup worker = new NioEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
-        bootstrap.group(boos, woker)
+        bootstrap.group(boos, worker)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
-                    protected void initChannel(NioSocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new ServerHandler());
+                    protected void initChannel(NioSocketChannel ch) {
+                        ch.pipeline().addLast(new PacketDecoder());
+                        ch.pipeline().addLast(new LoginRequestHandler());
+                        ch.pipeline().addLast(new MessageRequestHandler());
+                        ch.pipeline().addLast(new PacketEncoder());
                     }
                 })
                 .childOption(ChannelOption.SO_KEEPALIVE, true)//开启 TCP 心跳机制
