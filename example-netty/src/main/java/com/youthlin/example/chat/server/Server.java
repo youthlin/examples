@@ -2,6 +2,7 @@ package com.youthlin.example.chat.server;
 
 import com.youthlin.example.chat.codec.PacketDecoder;
 import com.youthlin.example.chat.codec.PacketEncoder;
+import com.youthlin.example.chat.codec.Splitter;
 import com.youthlin.example.chat.server.handler.LoginRequestHandler;
 import com.youthlin.example.chat.server.handler.MessageRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -29,6 +30,7 @@ public class Server {
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
                     protected void initChannel(NioSocketChannel ch) {
+                        ch.pipeline().addLast(new Splitter());
                         ch.pipeline().addLast(new PacketDecoder());
                         ch.pipeline().addLast(new LoginRequestHandler());
                         ch.pipeline().addLast(new MessageRequestHandler());

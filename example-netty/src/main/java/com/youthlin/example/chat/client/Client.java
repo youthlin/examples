@@ -4,11 +4,10 @@ import com.youthlin.example.chat.client.handler.LoginResponseHandler;
 import com.youthlin.example.chat.client.handler.MessageResponseHandler;
 import com.youthlin.example.chat.codec.PacketDecoder;
 import com.youthlin.example.chat.codec.PacketEncoder;
-import com.youthlin.example.chat.protocol.PacketCodec;
+import com.youthlin.example.chat.codec.Splitter;
 import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
 import com.youthlin.example.chat.util.LoginUtil;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -39,7 +38,8 @@ public class Client {
                 .handler(                               //3. 处理逻辑
                         new ChannelInitializer<SocketChannel>() {
                             @Override
-                            protected void initChannel(SocketChannel channel) throws Exception {
+                            protected void initChannel(SocketChannel channel) {
+                                channel.pipeline().addLast(new Splitter());
                                 channel.pipeline().addLast(new PacketDecoder());
                                 channel.pipeline().addLast(new LoginResponseHandler());
                                 channel.pipeline().addLast(new MessageResponseHandler());
@@ -81,10 +81,12 @@ public class Client {
                     System.out.println("输入要发送的消息> ");
                     Scanner in = new Scanner(System.in);
                     String line = in.nextLine();
-                    MessageRequestPacket msg = new MessageRequestPacket();
-                    msg.setText(line);
-                    ByteBuf buf = PacketCodec.INSTANCE.encode(channel.alloc(), msg);
-                    channel.writeAndFlush(buf);
+//                    for (int i = 0; i < 100; i++) {
+//                        MessageRequestPacket msg = new MessageRequestPacket(line + i);
+//                        channel.writeAndFlush(msg);
+//                    }
+                    MessageRequestPacket msg = new MessageRequestPacket(line);
+                    channel.writeAndFlush(msg);
                 }
             }
         }).start();

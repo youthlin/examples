@@ -14,6 +14,13 @@ public class MessageRequestPacket extends Packet {
     private byte msgType;
     private String text;
 
+    public MessageRequestPacket() {
+    }
+
+    public MessageRequestPacket(String text) {
+        this.text = text;
+    }
+
     @Override
     public byte command() {
         return Command.MESSAGE_REQUEST;

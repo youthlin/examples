@@ -4,7 +4,6 @@ import com.youthlin.example.chat.protocol.request.LoginRequestPacket;
 import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
 import com.youthlin.example.chat.protocol.response.LoginResponsePacket;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +18,9 @@ import java.util.Map;
  * 时间: 2018-11-12 15:41
  */
 public class PacketCodec {
-    private static final int MAGIC_NUMBER = 0xcee2018a;
+    public static final int LENGTH_FIELD_OFFSET = 7;
+    public static final int LENGTH_FIELD_LENGTH = 4;
+    public static final int MAGIC_NUMBER = 0xcee2018a;
     private static final byte VERSION = 1;
     private static final Map<Byte, Class<? extends Packet>> PACKET_TYPE_MAP;
     private static final Map<Byte, Serializer> SERIALIZER_MAP;
@@ -35,26 +36,13 @@ public class PacketCodec {
     }
 
     public void encode(ByteBuf buf, Packet packet) {
-        byte[] bytes = Serializer.DEFAULT.serialize(packet);
-        buf.writeInt(MAGIC_NUMBER);                         // 4
-        buf.writeByte(VERSION);                             // 1
-        buf.writeByte(Serializer.DEFAULT.getAlgorithm());   // 1
-        buf.writeByte(packet.command());                    // 1
-        buf.writeInt(bytes.length);                         // 4
-        buf.writeBytes(bytes);                              // n
-    }
-
-    public ByteBuf encode(ByteBufAllocator allocator, Packet packet) {
-        ByteBuf buf = allocator.ioBuffer();
-        byte[] bytes = Serializer.DEFAULT.serialize(packet);
-
-        buf.writeInt(MAGIC_NUMBER);                         // 4
-        buf.writeByte(VERSION);                             // 1
-        buf.writeByte(Serializer.DEFAULT.getAlgorithm());   // 1
-        buf.writeByte(packet.command());                    // 1
-        buf.writeInt(bytes.length);                         // 4
-        buf.writeBytes(bytes);                              // n
-        return buf;
+        byte[] bytes = Serializer.DEFAULT.serialize(packet);//off len
+        buf.writeInt(MAGIC_NUMBER);                         // 0  4
+        buf.writeByte(VERSION);                             // 4  1
+        buf.writeByte(Serializer.DEFAULT.getAlgorithm());   // 5  1
+        buf.writeByte(packet.command());                    // 6  1
+        buf.writeInt(bytes.length);                         // 7  4
+        buf.writeBytes(bytes);                              // 11 n
     }
 
     public Packet decode(ByteBuf byteBuf) {

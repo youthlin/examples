@@ -1,10 +1,8 @@
 package com.youthlin.example.chat.server.handler;
 
-import com.youthlin.example.chat.protocol.PacketCodec;
 import com.youthlin.example.chat.protocol.request.LoginRequestPacket;
 import com.youthlin.example.chat.protocol.response.LoginResponsePacket;
 import com.youthlin.example.chat.util.LoginUtil;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -34,8 +32,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
             responsePacket.setFailReason("用户名或密码错误");
             LOGGER.info("登录失败");
         }
-        ByteBuf response = PacketCodec.INSTANCE.encode(ctx.alloc(), responsePacket);
-        channel.writeAndFlush(response);
+        channel.writeAndFlush(responsePacket);
     }
 
     private boolean valid(LoginRequestPacket packet) {
