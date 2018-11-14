@@ -18,8 +18,8 @@ import java.util.Map;
 @ChannelHandler.Sharable
 public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerHandler.class);
-    public static final ServerHandler INSTANCE = new ServerHandler();
     private static final Map<Byte, SimpleChannelInboundHandler<? extends Packet>> HANDLER_MAP = new HashMap<>();
+    public static final ServerHandler INSTANCE = new ServerHandler();
 
     private ServerHandler() {
         HANDLER_MAP.put(Command.MESSAGE_REQUEST, MessageRequestHandler.INSTANCE);

@@ -18,15 +18,16 @@ import java.util.Map;
 @ChannelHandler.Sharable
 public class ClientHandler extends SimpleChannelInboundHandler<Packet> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientHandler.class);
-    public static final ClientHandler INSTANCE = new ClientHandler();
     private static final Map<Byte, SimpleChannelInboundHandler<? extends Packet>> MAP = new HashMap<>();
+    public static final ClientHandler INSTANCE = new ClientHandler();
 
     private ClientHandler() {
+        MAP.put(Command.CREATE_GROUP_REQUEST, CreateGroupResponseHandler.INSTANCE);
+        MAP.put(Command.GROUP_MESSAGE_REQUEST, GroupMessageResponseHandler.INSTANCE);
+        MAP.put(Command.JOIN_GROUP_REQUEST, JoinGroupResponseHandler.INSTANCE);
         MAP.put(Command.LOGIN_RESPONSE, LoginResponseHandler.INSTANCE);
         MAP.put(Command.MESSAGE_REQUEST, MessageResponseHandler.INSTANCE);
-        MAP.put(Command.CREATE_GROUP_REQUEST, CreateGroupResponseHandler.INSTANCE);
         MAP.put(Command.QUIT_GROUP_REQUEST, QuitGroupResponseHandler.INSTANCE);
-        MAP.put(Command.GROUP_MESSAGE_REQUEST, GroupMessageResponseHandler.INSTANCE);
     }
 
     @Override
