@@ -1,4 +1,4 @@
-package com.youthlin.example.chat.codec;
+package com.youthlin.example.chat.handler;
 
 import com.youthlin.example.chat.protocol.PacketCodec;
 import io.netty.buffer.ByteBuf;

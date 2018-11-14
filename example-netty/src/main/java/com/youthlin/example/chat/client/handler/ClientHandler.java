@@ -28,15 +28,17 @@ public class ClientHandler extends SimpleChannelInboundHandler<Packet> {
         MAP.put(Command.LOGIN_RESPONSE, LoginResponseHandler.INSTANCE);
         MAP.put(Command.MESSAGE_REQUEST, MessageResponseHandler.INSTANCE);
         MAP.put(Command.QUIT_GROUP_REQUEST, QuitGroupResponseHandler.INSTANCE);
+        MAP.put(Command.HEART_BEAT_REQUEST, HeartBeatResponseHandler.INSTANCE);
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Packet msg) throws Exception {
-        SimpleChannelInboundHandler<? extends Packet> handler = MAP.get(msg.command());
+        byte command = msg.command();
+        SimpleChannelInboundHandler<? extends Packet> handler = MAP.get(command);
         if (handler != null) {
             handler.channelRead(ctx, msg);
         } else {
-            LOGGER.error("找不到处理器 command={}", msg.command());
+            LOGGER.error("找不到处理器 command={}", command);
         }
     }
 }

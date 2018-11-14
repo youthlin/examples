@@ -1,5 +1,6 @@
 package com.youthlin.example.chat.client.console;
 
+import com.youthlin.example.chat.attr.Attributes;
 import com.youthlin.example.chat.protocol.request.LoginRequestPacket;
 import com.youthlin.example.chat.util.LoginUtil;
 import io.netty.channel.Channel;
@@ -22,6 +23,7 @@ public class LoginConsoleCommand implements ConsoleCommand {
         LoginRequestPacket packet = new LoginRequestPacket();
         packet.setUsername(username);
         packet.setPassword(username);
+        channel.attr(Attributes.LOGOUT).set(null);
         channel.writeAndFlush(packet);
     }
 }

@@ -4,14 +4,10 @@ import com.youthlin.example.chat.attr.Attributes;
 import com.youthlin.example.chat.client.console.ConsoleCommandManager;
 import com.youthlin.example.chat.client.console.LoginConsoleCommand;
 import com.youthlin.example.chat.client.handler.ClientHandler;
-import com.youthlin.example.chat.client.handler.CreateGroupResponseHandler;
-import com.youthlin.example.chat.client.handler.GroupMessageResponseHandler;
-import com.youthlin.example.chat.client.handler.JoinGroupResponseHandler;
 import com.youthlin.example.chat.client.handler.LoginResponseHandler;
-import com.youthlin.example.chat.client.handler.MessageResponseHandler;
-import com.youthlin.example.chat.client.handler.QuitGroupResponseHandler;
-import com.youthlin.example.chat.codec.PacketCodecHandler;
-import com.youthlin.example.chat.codec.Splitter;
+import com.youthlin.example.chat.handler.ImIdleHandler;
+import com.youthlin.example.chat.handler.PacketCodecHandler;
+import com.youthlin.example.chat.handler.Splitter;
 import com.youthlin.example.chat.util.LoginUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -46,6 +42,7 @@ public class Client {
                         new ChannelInitializer<SocketChannel>() {
                             @Override
                             protected void initChannel(SocketChannel channel) {
+                                channel.pipeline().addLast(new ImIdleHandler());
                                 channel.pipeline().addLast(new Splitter());
                                 channel.pipeline().addLast(PacketCodecHandler.INSTANCE);
                                 channel.pipeline().addLast(LoginResponseHandler.INSTANCE);

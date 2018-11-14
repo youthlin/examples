@@ -13,5 +13,6 @@ public interface Command {
     byte JOIN_GROUP_REQUEST = 6;
     byte QUIT_GROUP_REQUEST = 7;
     byte GROUP_MESSAGE_REQUEST = 8;
+    byte HEART_BEAT_REQUEST = 9;
 
 }

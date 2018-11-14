@@ -1,10 +1,12 @@
 package com.youthlin.example.chat.server;
 
-import com.youthlin.example.chat.codec.PacketCodecHandler;
-import com.youthlin.example.chat.codec.Splitter;
+import com.youthlin.example.chat.handler.ImIdleHandler;
+import com.youthlin.example.chat.handler.PacketCodecHandler;
+import com.youthlin.example.chat.handler.Splitter;
 import com.youthlin.example.chat.server.handler.AuthHandler;
-import com.youthlin.example.chat.server.handler.ServerHandler;
+import com.youthlin.example.chat.server.handler.HeartBeatRequestHandler;
 import com.youthlin.example.chat.server.handler.LoginRequestHandler;
+import com.youthlin.example.chat.server.handler.ServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -30,9 +32,11 @@ public class Server {
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
                     protected void initChannel(NioSocketChannel ch) {
+                        ch.pipeline().addLast(new ImIdleHandler());
                         ch.pipeline().addLast(new Splitter());
                         ch.pipeline().addLast(PacketCodecHandler.INSTANCE);
                         ch.pipeline().addLast(LoginRequestHandler.INSTANCE);
+                        ch.pipeline().addLast(HeartBeatRequestHandler.INSTANCE);
                         ch.pipeline().addLast(AuthHandler.INSTANCE);
                         ch.pipeline().addLast(ServerHandler.INSTANCE);
                     }
