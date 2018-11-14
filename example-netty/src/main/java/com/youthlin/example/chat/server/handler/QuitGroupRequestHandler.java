@@ -31,10 +31,10 @@ public class QuitGroupRequestHandler extends SimpleChannelInboundHandler<QuitGro
             User quitUser = SessionUtil.getUser(channel);
             msg.setWhoQuit(quitUser);
             group.remove(channel);
+            List<User> userList = new ArrayList<>();
+            msg.setUserList(userList);
             if (!group.isEmpty()) {
-                List<User> userList = new ArrayList<>();
                 group.forEach(ch -> userList.add(SessionUtil.getUser(ch)));
-                msg.setUserList(userList);
                 group.writeAndFlush(msg);
             } else {
                 SessionUtil.clearGroup(groupId);

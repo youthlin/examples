@@ -28,7 +28,7 @@ public class JoinGroupRequestHandler extends SimpleChannelInboundHandler<JoinGro
             LOGGER.error("群聊{}不存在", groupId);
         } else {
             Channel channel = ctx.channel();
-            group.add(channel);
+            group.add(channel);//未处理已加入的情况
             User user = SessionUtil.getUser(channel);
             msg.setJoinUserId(user.getId());
             msg.setJoinUserName(user.getName());

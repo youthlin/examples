@@ -12,7 +12,6 @@ import lombok.Data;
 public class MessageRequestPacket extends Packet {
     public static final byte TYPE_PLAIN_TEXT = 0;
     private static final long serialVersionUID = 1698034886900443942L;
-    private byte msgType;
     private String text;
     private long fromUser;
     private long toUser;

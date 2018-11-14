@@ -12,5 +12,6 @@ public interface Command {
     byte CREATE_GROUP_REQUEST = 5;
     byte JOIN_GROUP_REQUEST = 6;
     byte QUIT_GROUP_REQUEST = 7;
+    byte GROUP_MESSAGE_REQUEST = 8;
 
 }

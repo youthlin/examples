@@ -4,6 +4,7 @@ import com.youthlin.example.chat.attr.Attributes;
 import com.youthlin.example.chat.client.console.ConsoleCommandManager;
 import com.youthlin.example.chat.client.console.LoginConsoleCommand;
 import com.youthlin.example.chat.client.handler.CreateGroupResponseHandler;
+import com.youthlin.example.chat.client.handler.GroupMessageResponseHandler;
 import com.youthlin.example.chat.client.handler.JoinGroupResponseHandler;
 import com.youthlin.example.chat.client.handler.LoginResponseHandler;
 import com.youthlin.example.chat.client.handler.MessageResponseHandler;
@@ -52,6 +53,7 @@ public class Client {
                                 channel.pipeline().addLast(new CreateGroupResponseHandler());
                                 channel.pipeline().addLast(new JoinGroupResponseHandler());
                                 channel.pipeline().addLast(new QuitGroupResponseHandler());
+                                channel.pipeline().addLast(new GroupMessageResponseHandler());
                                 channel.pipeline().addLast(new PacketEncoder());
                             }
                         })
