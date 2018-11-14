@@ -45,6 +45,7 @@ public class CreateGroupRequestHandler extends SimpleChannelInboundHandler<Creat
         msg.setUserNameList(userNameList);
         channelGroup.add(channel);
         channelGroup.writeAndFlush(msg);
+        SessionUtil.bindChannelGroup(msg.getRoomId(), channelGroup);
         LOGGER.info("群聊创建成功 {}", msg);
     }
 }

@@ -18,6 +18,8 @@ public class ConsoleCommandManager implements ConsoleCommand {
         MAP.put("logout", new LogoutConsoleCommand());
         MAP.put("sendToUser", new SendToUserConsoleCommand());
         MAP.put("createGroup", new CreateGroupConsoleCommand());
+        MAP.put("joinGroup", new JoinGroupConsoleCommand());
+        MAP.put("quitGroup", new QuitGroupConsoleCommand());
     }
 
     @Override

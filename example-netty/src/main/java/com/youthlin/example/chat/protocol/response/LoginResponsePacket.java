@@ -11,6 +11,7 @@ import lombok.Data;
  */
 @Data
 public class LoginResponsePacket extends Packet {
+    private static final long serialVersionUID = -3052711500867959575L;
     private boolean success;
     private User user;
     private String failReason;

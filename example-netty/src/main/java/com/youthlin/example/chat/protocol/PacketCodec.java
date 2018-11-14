@@ -1,9 +1,11 @@
 package com.youthlin.example.chat.protocol;
 
 import com.youthlin.example.chat.protocol.request.CreateGroupRequestPacket;
+import com.youthlin.example.chat.protocol.request.JoinGroupRequestPacket;
 import com.youthlin.example.chat.protocol.request.LoginRequestPacket;
 import com.youthlin.example.chat.protocol.request.LogoutRequestPacket;
 import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
+import com.youthlin.example.chat.protocol.request.QuitGroupRequestPacket;
 import com.youthlin.example.chat.protocol.response.LoginResponsePacket;
 import io.netty.buffer.ByteBuf;
 
@@ -36,6 +38,8 @@ public class PacketCodec {
         PACKET_TYPE_MAP.put(Command.LOGOUT_REQUEST, LogoutRequestPacket.class);
         PACKET_TYPE_MAP.put(Command.MESSAGE_REQUEST, MessageRequestPacket.class);
         PACKET_TYPE_MAP.put(Command.CREATE_GROUP_REQUEST, CreateGroupRequestPacket.class);
+        PACKET_TYPE_MAP.put(Command.JOIN_GROUP_REQUEST, JoinGroupRequestPacket.class);
+        PACKET_TYPE_MAP.put(Command.QUIT_GROUP_REQUEST, QuitGroupRequestPacket.class);
         SERIALIZER_MAP.put(Serializer.JSON_SERIALIZER, Serializer.DEFAULT);
     }
 

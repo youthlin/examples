@@ -12,6 +12,7 @@ import java.util.Set;
  */
 @Data
 public class CreateGroupRequestPacket extends Packet {
+    private static final long serialVersionUID = 2152600462569295571L;
     private Long roomId;
     private Long creatorUserId;
     private Set<Long> userIdList;

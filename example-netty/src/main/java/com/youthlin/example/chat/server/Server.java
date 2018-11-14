@@ -5,9 +5,11 @@ import com.youthlin.example.chat.codec.PacketEncoder;
 import com.youthlin.example.chat.codec.Splitter;
 import com.youthlin.example.chat.server.handler.AuthHandler;
 import com.youthlin.example.chat.server.handler.CreateGroupRequestHandler;
+import com.youthlin.example.chat.server.handler.JoinGroupRequestHandler;
 import com.youthlin.example.chat.server.handler.LoginRequestHandler;
 import com.youthlin.example.chat.server.handler.LogoutRequestHandler;
 import com.youthlin.example.chat.server.handler.MessageRequestHandler;
+import com.youthlin.example.chat.server.handler.QuitGroupRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -40,6 +42,8 @@ public class Server {
                         ch.pipeline().addLast(new MessageRequestHandler());
                         ch.pipeline().addLast(new CreateGroupRequestHandler());
                         ch.pipeline().addLast(new LogoutRequestHandler());
+                        ch.pipeline().addLast(new JoinGroupRequestHandler());
+                        ch.pipeline().addLast(new QuitGroupRequestHandler());
                         ch.pipeline().addLast(new PacketEncoder());
                     }
                 })

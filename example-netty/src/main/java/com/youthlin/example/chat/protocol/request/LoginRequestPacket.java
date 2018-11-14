@@ -10,6 +10,7 @@ import lombok.Data;
  */
 @Data
 public class LoginRequestPacket extends Packet {
+    private static final long serialVersionUID = 679003113869327766L;
     private String username;
     private String password;
 
