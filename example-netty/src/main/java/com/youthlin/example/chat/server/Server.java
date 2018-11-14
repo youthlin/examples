@@ -1,16 +1,10 @@
 package com.youthlin.example.chat.server;
 
-import com.youthlin.example.chat.codec.PacketDecoder;
-import com.youthlin.example.chat.codec.PacketEncoder;
+import com.youthlin.example.chat.codec.PacketCodecHandler;
 import com.youthlin.example.chat.codec.Splitter;
 import com.youthlin.example.chat.server.handler.AuthHandler;
-import com.youthlin.example.chat.server.handler.CreateGroupRequestHandler;
-import com.youthlin.example.chat.server.handler.GroupMessageRequestHandler;
-import com.youthlin.example.chat.server.handler.JoinGroupRequestHandler;
+import com.youthlin.example.chat.server.handler.ServerHandler;
 import com.youthlin.example.chat.server.handler.LoginRequestHandler;
-import com.youthlin.example.chat.server.handler.LogoutRequestHandler;
-import com.youthlin.example.chat.server.handler.MessageRequestHandler;
-import com.youthlin.example.chat.server.handler.QuitGroupRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -37,16 +31,10 @@ public class Server {
                     @Override
                     protected void initChannel(NioSocketChannel ch) {
                         ch.pipeline().addLast(new Splitter());
-                        ch.pipeline().addLast(new PacketDecoder());
-                        ch.pipeline().addLast(new LoginRequestHandler());
-                        ch.pipeline().addLast(new AuthHandler());
-                        ch.pipeline().addLast(new MessageRequestHandler());
-                        ch.pipeline().addLast(new CreateGroupRequestHandler());
-                        ch.pipeline().addLast(new LogoutRequestHandler());
-                        ch.pipeline().addLast(new JoinGroupRequestHandler());
-                        ch.pipeline().addLast(new QuitGroupRequestHandler());
-                        ch.pipeline().addLast(new GroupMessageRequestHandler());
-                        ch.pipeline().addLast(new PacketEncoder());
+                        ch.pipeline().addLast(PacketCodecHandler.INSTANCE);
+                        ch.pipeline().addLast(LoginRequestHandler.INSTANCE);
+                        ch.pipeline().addLast(AuthHandler.INSTANCE);
+                        ch.pipeline().addLast(ServerHandler.INSTANCE);
                     }
                 })
                 .childOption(ChannelOption.SO_KEEPALIVE, true)//开启 TCP 心跳机制

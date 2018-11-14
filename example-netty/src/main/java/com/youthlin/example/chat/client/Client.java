@@ -3,14 +3,14 @@ package com.youthlin.example.chat.client;
 import com.youthlin.example.chat.attr.Attributes;
 import com.youthlin.example.chat.client.console.ConsoleCommandManager;
 import com.youthlin.example.chat.client.console.LoginConsoleCommand;
+import com.youthlin.example.chat.client.handler.ClientHandler;
 import com.youthlin.example.chat.client.handler.CreateGroupResponseHandler;
 import com.youthlin.example.chat.client.handler.GroupMessageResponseHandler;
 import com.youthlin.example.chat.client.handler.JoinGroupResponseHandler;
 import com.youthlin.example.chat.client.handler.LoginResponseHandler;
 import com.youthlin.example.chat.client.handler.MessageResponseHandler;
 import com.youthlin.example.chat.client.handler.QuitGroupResponseHandler;
-import com.youthlin.example.chat.codec.PacketDecoder;
-import com.youthlin.example.chat.codec.PacketEncoder;
+import com.youthlin.example.chat.codec.PacketCodecHandler;
 import com.youthlin.example.chat.codec.Splitter;
 import com.youthlin.example.chat.util.LoginUtil;
 import io.netty.bootstrap.Bootstrap;
@@ -47,14 +47,9 @@ public class Client {
                             @Override
                             protected void initChannel(SocketChannel channel) {
                                 channel.pipeline().addLast(new Splitter());
-                                channel.pipeline().addLast(new PacketDecoder());
-                                channel.pipeline().addLast(new LoginResponseHandler());
-                                channel.pipeline().addLast(new MessageResponseHandler());
-                                channel.pipeline().addLast(new CreateGroupResponseHandler());
-                                channel.pipeline().addLast(new JoinGroupResponseHandler());
-                                channel.pipeline().addLast(new QuitGroupResponseHandler());
-                                channel.pipeline().addLast(new GroupMessageResponseHandler());
-                                channel.pipeline().addLast(new PacketEncoder());
+                                channel.pipeline().addLast(PacketCodecHandler.INSTANCE);
+                                channel.pipeline().addLast(LoginResponseHandler.INSTANCE);
+                                channel.pipeline().addLast(ClientHandler.INSTANCE);
                             }
                         })
                 .attr(AttributeKey.newInstance("clientName"), "MyClient")

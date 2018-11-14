@@ -5,6 +5,7 @@ import com.youthlin.example.chat.protocol.request.CreateGroupRequestPacket;
 import com.youthlin.example.chat.util.Randoms;
 import com.youthlin.example.chat.util.SessionUtil;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -18,8 +19,10 @@ import java.util.Set;
  * 创建: youthlin.chen
  * 时间: 2018-11-13 19:56
  */
+@ChannelHandler.Sharable
 public class CreateGroupRequestHandler extends SimpleChannelInboundHandler<CreateGroupRequestPacket> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateGroupRequestHandler.class);
+    public static final CreateGroupRequestHandler INSTANCE = new CreateGroupRequestHandler();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, CreateGroupRequestPacket msg) throws Exception {

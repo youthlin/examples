@@ -4,6 +4,7 @@ import com.youthlin.example.chat.model.User;
 import com.youthlin.example.chat.protocol.request.JoinGroupRequestPacket;
 import com.youthlin.example.chat.util.SessionUtil;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
@@ -17,8 +18,10 @@ import java.util.List;
  * 创建: youthlin.chen
  * 时间: 2018-11-14 09:29
  */
+@ChannelHandler.Sharable
 public class JoinGroupRequestHandler extends SimpleChannelInboundHandler<JoinGroupRequestPacket> {
     private static final Logger LOGGER = LoggerFactory.getLogger(JoinGroupRequestHandler.class);
+    public static final JoinGroupRequestHandler INSTANCE = new JoinGroupRequestHandler();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, JoinGroupRequestPacket msg) throws Exception {

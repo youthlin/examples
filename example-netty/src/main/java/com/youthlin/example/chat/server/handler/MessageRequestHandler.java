@@ -5,6 +5,7 @@ import com.youthlin.example.chat.protocol.request.MessageRequestPacket;
 import com.youthlin.example.chat.util.LoginUtil;
 import com.youthlin.example.chat.util.SessionUtil;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -14,8 +15,10 @@ import org.slf4j.LoggerFactory;
  * 创建: youthlin.chen
  * 时间: 2018-11-13 14:49
  */
+@ChannelHandler.Sharable
 public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRequestPacket> {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageRequestHandler.class);
+    public static final MessageRequestHandler INSTANCE = new MessageRequestHandler();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MessageRequestPacket msg) throws Exception {
