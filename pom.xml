@@ -25,6 +25,7 @@
         <module>example-opencv</module>
         <module>example-antlr</module>
         <module>example-netty</module>
+        <module>example-future</module>
     </modules>
 
     <properties>
