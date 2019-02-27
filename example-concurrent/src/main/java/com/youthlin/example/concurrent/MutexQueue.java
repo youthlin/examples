@@ -18,7 +18,6 @@ public class MutexQueue<T> extends AbstractQueue<T> implements Queue<T> {
             AtomicReferenceFieldUpdater.newUpdater(Node.class, Node.class, "next");
     private static final AtomicReferenceFieldUpdater<Node, Node> QUEUE_HEAD_UPDATER =
             AtomicReferenceFieldUpdater.newUpdater(Node.class, Node.class, "prev");
-
     private static final AtomicIntegerFieldUpdater<MutexQueue> COUNT_UPDATER =
             AtomicIntegerFieldUpdater.newUpdater(MutexQueue.class, "count");
 
@@ -32,21 +31,18 @@ public class MutexQueue<T> extends AbstractQueue<T> implements Queue<T> {
         }
     }
 
-    private Node<T> head = new Node<>(null);
+    private volatile Node<T> head = new Node<>(null);
     private volatile Node<T> tail = head;
     private volatile int count = 0;
-    private int modCount = 0;
-
 
     @Override
     public boolean offer(T data) {
         Node<T> current = new Node<>(data);
         for (; ; ) {
             if (QUEUE_TAIL_UPDATER.weakCompareAndSet(tail, null, current)) {
+                COUNT_UPDATER.incrementAndGet(this);
                 current.prev = tail;
                 tail = current;
-                COUNT_UPDATER.incrementAndGet(this);
-                modCount++;
                 return true;
             }
         }
@@ -60,11 +56,10 @@ public class MutexQueue<T> extends AbstractQueue<T> implements Queue<T> {
                 return null;
             }
             if (QUEUE_HEAD_UPDATER.weakCompareAndSet(next, head, null)) {
-                T data = next.data;
-                head = next;
-                head.data = null;
                 COUNT_UPDATER.decrementAndGet(MutexQueue.this);
-                modCount++;
+                T data = next.data;
+                next.data = null;
+                head = next;
                 return data;
             }
         }
@@ -88,7 +83,7 @@ public class MutexQueue<T> extends AbstractQueue<T> implements Queue<T> {
     public Iterator<T> iterator() {
         return new Iterator<T>() {
             Node<T> current = head;
-            int expectModCount = modCount;
+            int expectModCount = count;
 
             @Override
             public boolean hasNext() {
@@ -104,7 +99,6 @@ public class MutexQueue<T> extends AbstractQueue<T> implements Queue<T> {
 
             @Override
             public void remove() {
-                expectModCount = ++modCount;
                 Node<T> prev = current.prev;
                 Node<T> next = current.next;
                 prev.next = next;
@@ -112,11 +106,11 @@ public class MutexQueue<T> extends AbstractQueue<T> implements Queue<T> {
                     next.prev = prev;
                 }
                 current.data = null;
-                COUNT_UPDATER.decrementAndGet(MutexQueue.this);
+                expectModCount = COUNT_UPDATER.decrementAndGet(MutexQueue.this);
             }
 
             private void checkModCount() {
-                if (expectModCount != modCount) {
+                if (expectModCount != count) {
                     throw new ConcurrentModificationException();
                 }
             }
@@ -124,3 +118,5 @@ public class MutexQueue<T> extends AbstractQueue<T> implements Queue<T> {
     }
 
 }
+
+
