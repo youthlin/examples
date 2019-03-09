@@ -1,0 +1,8 @@
+server:
+  port: 7776
+  eureka:
+    client:
+      fetch-registry: false
+      register-with-euraka: false
+      service-url:
+        defaultZone: http://localhost:7776/euraka/
