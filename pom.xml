@@ -26,6 +26,7 @@
         <module>example-antlr</module>
         <module>example-netty</module>
         <module>example-spring-cloud/eureka-server</module>
+        <module>example-concurrent</module>
     </modules>
 
     <properties>
@@ -202,6 +203,11 @@
                 <artifactId>guava</artifactId>
                 <version>23.0</version>
             </dependency>
+            <dependency>
+                <groupId>com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>3.4.2</version>
+            </dependency>
 
             <dependency>
                 <groupId>cglib</groupId>
@@ -225,6 +231,12 @@
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4</artifactId>
                 <version>4.7.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.16.14</version>
             </dependency>
 
             <dependency>

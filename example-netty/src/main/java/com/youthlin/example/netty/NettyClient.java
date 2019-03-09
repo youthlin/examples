@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class NettyClient {
     private static final int MAX_RETRY = 3;
+    private static int count;
 
     public static void main(String[] args) throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap();
@@ -71,22 +72,31 @@ public class NettyClient {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
             ByteBuf buf = (ByteBuf) msg;
-            log("client read:" + buf.toString(Charset.forName("UTF-8")));
+            String echo = buf.toString(Charset.forName("UTF-8"));
+            log("client read:" + echo);
+            buf = getByteBuf(ctx);
+            if (echo.startsWith("9")) {
+//                ctx.disconnect().addListener(future -> {
+//                    log("disConnected");
+//                });
+            } else {
+                ctx.channel().writeAndFlush(buf);
+            }
         }
 
         private ByteBuf getByteBuf(ChannelHandlerContext context) {
             ByteBuf buffer = context.alloc().buffer();
-            buffer.writeBytes("Hello, 世界".getBytes(Charset.forName("UTF-8")));
+            buffer.writeBytes(((count++) + "Hello, 世界").getBytes(Charset.forName("UTF-8")));
             return buffer;
         }
     }
 
     private static void log(String msg) {
-        System.out.println(String.format("[%1$tT] %2$s", new Date(), msg));
+        System.out.println(String.format("[%1$tT][%3$-10s] %2$s", new Date(), msg, Thread.currentThread().getName()));
     }
 
     private static void err(String msg) {
-        System.err.println(String.format("[%1$tT] %2$s", new Date(), msg));
+        System.err.println(String.format("[%1$tT][%3$-10s] %2$s", new Date(), msg, Thread.currentThread().getName()));
     }
 
 }

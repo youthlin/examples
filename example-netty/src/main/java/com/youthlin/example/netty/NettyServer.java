@@ -13,12 +13,16 @@ import io.netty.util.AttributeKey;
 
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 创建: youthlin.chen
  * 时间: 2018-10-30 19:40
  */
 public class NettyServer {
+    private static volatile AtomicInteger count = new AtomicInteger();
 
     public static void main(String[] args) {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
@@ -48,6 +52,14 @@ public class NettyServer {
         ;
         bind(serverBootstrap, 1884);
 
+        Timer timer = new Timer("counter", true);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                log("[当前连接数]" + count);
+            }
+        }, 0, 1000);
+
     }
 
     private static void bind(ServerBootstrap serverBootstrap, int port) {
@@ -67,7 +79,19 @@ public class NettyServer {
             log("read data: " + buf.toString(Charset.forName("UTF-8")));
             log("server write data...");
             ByteBuf out = getByteBuf(ctx);
-            ctx.channel().writeAndFlush(out);
+            ctx.channel().writeAndFlush(buf);
+        }
+
+        @Override
+        public void channelActive(ChannelHandlerContext ctx) throws Exception {
+            super.channelActive(ctx);
+            count.incrementAndGet();
+        }
+
+        @Override
+        public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+            super.channelInactive(ctx);
+            count.decrementAndGet();
         }
 
         private ByteBuf getByteBuf(ChannelHandlerContext context) {
@@ -76,6 +100,6 @@ public class NettyServer {
     }
 
     private static void log(String msg) {
-        System.out.println(String.format("[%1$tT] %2$s", new Date(), msg));
+        System.out.println(String.format("[%1$tT][%3$-10s] %2$s", new Date(), msg, Thread.currentThread().getName()));
     }
 }
