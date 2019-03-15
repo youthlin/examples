@@ -27,6 +27,7 @@
         <module>example-netty</module>
         <module>example-spring-cloud/eureka-server</module>
         <module>example-concurrent</module>
+        <module>example-misc</module>
     </modules>
 
     <properties>
