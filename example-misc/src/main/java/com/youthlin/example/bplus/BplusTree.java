@@ -201,6 +201,9 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         } catch (CloneNotSupportedException e) {
             throw new InternalError();
         }
+        clone.root = clone.min = null;
+        clone.size = clone.modCount = 0;
+        clone.entrySet = null;
         clone.putAll(this);
         return clone;
     }
