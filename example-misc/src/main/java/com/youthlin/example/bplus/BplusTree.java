@@ -13,6 +13,7 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -125,14 +126,14 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
 
     @Override
     public boolean containsKey(Object key) {
-        @SuppressWarnings("unchecked") K k = (K) key;
+        @SuppressWarnings("unchecked") K k = (K) Objects.requireNonNull(key);
         Node<K, V> leaf = findLeafNode(k);
         return getIndex(k, leaf) != -1;
     }
 
     @Override
     public V get(Object key) {
-        @SuppressWarnings("unchecked") K k = (K) key;
+        @SuppressWarnings("unchecked") K k = (K) Objects.requireNonNull(key);
         Node<K, V> leaf = findLeafNode(k);
         return get(k, leaf);
     }
@@ -156,7 +157,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
      */
     @Override
     public V put(K key, V value) {
-        Node<K, V> leaf = findLeafNode(key);
+        Node<K, V> leaf = findLeafNode(Objects.requireNonNull(key));
         insertToLeafNode(leaf, key, value);
         size++;
         modCount++;
@@ -172,7 +173,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
 
     @Override
     public V remove(Object key) {
-        @SuppressWarnings("unchecked") K k = (K) key;
+        @SuppressWarnings("unchecked") K k = (K) Objects.requireNonNull(key);
         Node<K, V> leaf = findLeafNode(k);
         int index = getIndex(k, leaf);
         if (index == -1) {
@@ -597,27 +598,6 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         }
         sb.append('}');
         return sb.toString();
-    }
-
-    public static void main(String[] args) {
-        BplusTree<Integer, Integer> tree = new BplusTree<>();
-        int n = 50;
-        for (int i = 0; i < n; i++) {
-            tree.put(i, i);
-            System.out.println("put:" + i + " " + tree);
-        }
-        for (int i = 0; i < n; i++) {
-            Integer remove = tree.remove(i);
-            System.out.println("remove:" + remove + " " + tree);
-        }
-        for (int i = 0; i < n; i++) {
-            tree.put(i, i);
-            System.out.println("put:" + i + " " + tree);
-        }
-        for (int i = n; i >= 0; i--) {
-            Integer remove = tree.remove(i);
-            System.out.println("remove:" + remove + " " + tree);
-        }
     }
 
 }
