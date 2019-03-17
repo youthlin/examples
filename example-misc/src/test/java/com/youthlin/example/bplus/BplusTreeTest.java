@@ -1,5 +1,6 @@
 package com.youthlin.example.bplus;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,7 +9,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Comparator;
 
 /**
  * @author youthlin.chen
@@ -19,8 +19,8 @@ public class BplusTreeTest {
 
     @Before
     public void before() {
-        tree = new BplusTree<>(Comparator.reverseOrder());
-        int n = 20;
+        tree = new BplusTree<>(4);
+        int n = 10;
         for (int i = 0; i < n; i++) {
             tree.put(i, String.valueOf(i));
         }
@@ -53,4 +53,11 @@ public class BplusTreeTest {
         }
     }
 
+    @After
+    public void after() {
+        for (int i = 0; i < 11; i++) {
+            System.out.println("remove: " + tree.remove(i) + " size=" + tree.size() + " " + tree);
+        }
+        System.out.println("after: " + " size=" + tree.size() + " " + tree);
+    }
 }

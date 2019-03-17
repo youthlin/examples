@@ -65,8 +65,8 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         }
     }
 
-    private static final int DEFAULT_M = 5;
-    private static final float DEFAULT_FILL_FACTOR = 0.5f;
+    private static final int DEFAULT_MAX_ELEMENT_PER_NODE = 5;
+    private static final int DEFAULT_MIN_ELEMENT_PER_NODE = 1;
     /**
      * 根节点
      */
@@ -79,8 +79,8 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
      * 阶数
      * m阶B+树内个节点最多存放m-1项数据
      */
-    private final int m;
-    private final int factor;
+    private final int maxElementPerNode;
+    private final int minElementPerNode;
     private final Comparator<? super K> comparator;
     private transient int size;
     private transient int modCount;
@@ -89,29 +89,31 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     //region 构造方法
 
     public BplusTree() {
-        this(DEFAULT_M, DEFAULT_FILL_FACTOR, null);
+        this(DEFAULT_MAX_ELEMENT_PER_NODE, DEFAULT_MIN_ELEMENT_PER_NODE, null);
     }
 
     public BplusTree(int maxElementPerNode) {
-        this(maxElementPerNode, DEFAULT_FILL_FACTOR, null);
+        this(maxElementPerNode, DEFAULT_MIN_ELEMENT_PER_NODE, null);
     }
 
     public BplusTree(Comparator<? super K> comparator) {
-        this(DEFAULT_M, DEFAULT_FILL_FACTOR, comparator);
+        this(DEFAULT_MAX_ELEMENT_PER_NODE, DEFAULT_MIN_ELEMENT_PER_NODE, comparator);
     }
 
     public BplusTree(int maxElementPerNode, Comparator<? super K> comparator) {
-        this(maxElementPerNode, DEFAULT_FILL_FACTOR, comparator);
+        this(maxElementPerNode, DEFAULT_MIN_ELEMENT_PER_NODE, comparator);
 
     }
 
-    public BplusTree(int maxElementPerNode, float fillFactor) {
-        this(maxElementPerNode, fillFactor, null);
+    public BplusTree(int maxElementPerNode, int minElementPerNode) {
+        this(maxElementPerNode, minElementPerNode, null);
     }
 
-    public BplusTree(int maxElementPerNode, float fillFactor, Comparator<? super K> comparator) {
-        this.m = maxElementPerNode;
-        this.factor = (int) (Math.ceil(m * fillFactor) - 1);
+    public BplusTree(int maxElementPerNode, int minElementPerNode, Comparator<? super K> comparator) {
+        Preconditions.checkArgument(maxElementPerNode > 1, "maxElementPerNode should greater than 1");
+        Preconditions.checkArgument(minElementPerNode > 0, "minElementPerNode should greater than 0");
+        this.maxElementPerNode = maxElementPerNode;
+        this.minElementPerNode = minElementPerNode;
         this.comparator = comparator;
     }
 
@@ -143,13 +145,13 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
      * 1. 若为空树 创建一个叶子结点 插入 此时root,min也是该叶子结点 结束
      * 2. 定位到要插入的叶子结点
      * 3. 针对叶子结点
-     * 3.1 插入记录，若当前叶子结点记录数小于等于 m-1 结束
-     * 3.2 否则将该叶子结点分裂为左右两个叶子结点，左边包含前 m/2 个，右边包含剩下的
+     * 3.1 插入记录，若当前叶子结点记录数小于等于 maxElementPerNode-1 结束
+     * 3.2 否则将该叶子结点分裂为左右两个叶子结点，左边包含前 maxElementPerNode/2 个，右边包含剩下的
      * 3.3 将分裂后右边的第一个记录进位到父结点中 该关键字的左右子孩子分别是刚分裂的左右叶子结点
      * 3.4 将当前结点指向父结点
      * 4. 针对内结点
-     * 4.1 若当前结点记录数小于等于 m-1 结束
-     * 4.2 否则 将该内结点分裂为两个内结点 左结点包含前 (m-1)/2 个记录 右结点包含 m/2 个记录
+     * 4.1 若当前结点记录数小于等于 maxElementPerNode-1 结束
+     * 4.2 否则 将该内结点分裂为两个内结点 左结点包含前 (maxElementPerNode-1)/2 个记录 右结点包含 maxElementPerNode/2 个记录
      * 中间的记录进位到父结点中 进位的该关键字左右子孩子分别是刚分裂的左右内结点
      * 4.3 将当前结点指向父结点 重复第 4 步
      *
@@ -161,11 +163,11 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         insertToLeafNode(leaf, key, value);
         size++;
         modCount++;
-        if (leaf.data.size() <= m - 1) {
+        if (leaf.data.size() <= maxElementPerNode - 1) {
             return value;
         }
         Node<K, V> current = splitLeaf(leaf);
-        while (current.data.size() > m - 1) {
+        while (current.data.size() > maxElementPerNode - 1) {
             current = splitInnerNode(current);
         }
         return value;
@@ -317,7 +319,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     private Node<K, V> splitLeaf(Node<K, V> leaf) {
         //分裂
         Node<K, V> right = new Node<>();
-        for (int i = m >> 1; i < leaf.data.size(); ) {
+        for (int i = maxElementPerNode >> 1; i < leaf.data.size(); ) {
             right.data.add(leaf.data.remove(i));
         }
         link(leaf, right);
@@ -358,7 +360,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         //分裂
         Node<K, V> right = new Node<>();
         right.children = Lists.newLinkedList();
-        int center = m >> 1;
+        int center = maxElementPerNode >> 1;
         for (int i = center + 1; i < node.data.size(); ) {
             right.data.add(node.data.remove(i));
             right.addChild(node.children.remove(i));
@@ -375,7 +377,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         Entry<K, V> remove = leaf.data.remove(index);
         int currentLeafSize = leaf.data.size();
         // 删除后叶子结点key个数符合填充因子则结束 否则:
-        if (currentLeafSize < factor) {
+        if (currentLeafSize < minElementPerNode) {
             Node<K, V> richNeighborNode = findRichNeighborNode(leaf);
             //2 如果兄弟有富余
             if (richNeighborNode != null) {
@@ -415,9 +417,11 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
                     leaf = leaf.prev;
                 }
                 if (leaf.next != null) {
+                    Entry<K, V> removeInUp = leaf.next.data.get(0);
                     leaf.data.addAll(leaf.next.data);
                     unLinkNext(leaf);
-                    int indexInParent = index(leaf.parent, leaf.data.get(0));
+                    int indexInParent = getIndex(removeInUp.getKey(), leaf.parent);
+                    Preconditions.checkArgument(indexInParent > -1);
                     leaf.parent.data.remove(indexInParent);
                     leaf.parent.children.remove(indexInParent + 1);
                     Node<K, V> currentInnerNode = leaf.parent;
@@ -434,13 +438,13 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     private Node<K, V> findRichNeighborNode(Node<K, V> current) {
         Node<K, V> prev = current.prev;
         if (prev != null && prev.parent == current.parent) {
-            if (prev.data.size() > factor) {
+            if (prev.data.size() > minElementPerNode) {
                 return prev;
             }
         }
         Node<K, V> next = current.next;
         if (next != null && next.parent == current.parent) {
-            if (next.data.size() > factor) {
+            if (next.data.size() > minElementPerNode) {
                 return next;
             }
         }
@@ -465,7 +469,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
             return;
         }
         //4 若内结点的key个数符合填充因子则结束 否则:
-        if (currentInnerNode.data.size() < factor) {
+        if (currentInnerNode.data.size() < minElementPerNode) {
             //5 若兄弟结点有富余 父结点key下移 兄弟结点key上移 结束
             Node<K, V> richNeighborNode = findRichNeighborNode(currentInnerNode);
             if (richNeighborNode != null) {
@@ -479,7 +483,8 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
                     Entry<K, V> down = currentInnerNode.parent.data.remove(indexInParent);
                     currentInnerNode.parent.data.add(indexInParent, up);
                     currentInnerNode.data.add(0, down);
-                    Node<K, V> lastChildToRight = currentInnerNode.prev.children.remove(currentInnerNode.prev.children.size() - 1);
+                    Node<K, V> lastChildToRight =
+                            currentInnerNode.prev.children.remove(currentInnerNode.prev.children.size() - 1);
                     currentInnerNode.addChild(0, lastChildToRight);
                 } else if (richNeighborNode == currentInnerNode.next) {
                     //      16
@@ -511,7 +516,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
                     // <9> 18,20
                     //
                     // 9,16,18,20
-                    int indexInParent = index(currentInnerNode.parent, currentInnerNode.data.get(0));
+                    int indexInParent = index(currentInnerNode.parent, currentInnerNode.next.data.get(0)) - 1;
                     Entry<K, V> down = currentInnerNode.parent.data.remove(indexInParent);
                     currentInnerNode.parent.children.remove(indexInParent + 1);
                     currentInnerNode.data.add(down);
