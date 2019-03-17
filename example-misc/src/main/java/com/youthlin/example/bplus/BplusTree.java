@@ -408,6 +408,16 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
                     Preconditions.checkArgument(parentIndex > -1);
                     richNeighborNode.parent.data.remove(parentIndex);
                     richNeighborNode.parent.data.add(parentIndex, richNeighborNode.data.get(0));
+                    if (parentIndex > 0 && index == 0) {
+                        //删除的是中间叶子结点的最小值
+                        //    8     10
+                        // 67  <8>,9  10,11,12
+                        //
+                        //    9    11
+                        // 67  9,10   11,12
+                        richNeighborNode.parent.data.remove(parentIndex - 1);
+                        richNeighborNode.parent.data.add(parentIndex - 1, leaf.data.get(0));
+                    }
                 } else {
                     throw new IllegalStateException();
                 }

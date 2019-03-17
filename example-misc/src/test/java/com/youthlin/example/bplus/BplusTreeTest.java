@@ -19,8 +19,8 @@ public class BplusTreeTest {
 
     @Before
     public void before() {
-        tree = new BplusTree<>(3);
-        int n = 10;
+        tree = new BplusTree<>(5);
+        int n = 13;
         for (int i = 0; i < n; i++) {
             tree.put(i, String.valueOf(i));
             System.out.println("put " + i + " " + tree);
@@ -56,9 +56,9 @@ public class BplusTreeTest {
 
     @After
     public void after() {
-        for (int i = 0; i < 11; i++) {
-            System.out.println("remove: " + tree.remove(i) + " size=" + tree.size() + " " + tree);
-        }
+        System.out.println("remove: " + tree.remove(0) + " size=" + tree.size() + " " + tree);
+        System.out.println("remove: " + tree.remove(1) + " size=" + tree.size() + " " + tree);
+        System.out.println("remove: " + tree.remove(8) + " size=" + tree.size() + " " + tree);
         System.out.println("after: " + " size=" + tree.size() + " " + tree);
     }
 }
