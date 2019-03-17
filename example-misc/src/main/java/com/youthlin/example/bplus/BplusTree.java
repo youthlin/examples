@@ -66,7 +66,6 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     }
 
     private static final int DEFAULT_MAX_ELEMENT_PER_NODE = 5;
-    private static final int DEFAULT_MIN_ELEMENT_PER_NODE = 1;
     /**
      * 根节点
      */
@@ -79,7 +78,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
      * 阶数
      * m阶B+树内个节点最多存放m-1项数据
      */
-    private final int maxElementPerNode;
+    private final int maxChildren;
     private final int minElementPerNode;
     private final Comparator<? super K> comparator;
     private transient int size;
@@ -89,30 +88,32 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     //region 构造方法
 
     public BplusTree() {
-        this(DEFAULT_MAX_ELEMENT_PER_NODE, DEFAULT_MIN_ELEMENT_PER_NODE, null);
+        this(DEFAULT_MAX_ELEMENT_PER_NODE, null, null);
     }
 
-    public BplusTree(int maxElementPerNode) {
-        this(maxElementPerNode, DEFAULT_MIN_ELEMENT_PER_NODE, null);
+    public BplusTree(int maxChildren) {
+        this(maxChildren, null, null);
     }
 
     public BplusTree(Comparator<? super K> comparator) {
-        this(DEFAULT_MAX_ELEMENT_PER_NODE, DEFAULT_MIN_ELEMENT_PER_NODE, comparator);
+        this(DEFAULT_MAX_ELEMENT_PER_NODE, null, comparator);
     }
 
-    public BplusTree(int maxElementPerNode, Comparator<? super K> comparator) {
-        this(maxElementPerNode, DEFAULT_MIN_ELEMENT_PER_NODE, comparator);
-
+    public BplusTree(int maxChildren, Comparator<? super K> comparator) {
+        this(maxChildren, null, comparator);
     }
 
-    public BplusTree(int maxElementPerNode, int minElementPerNode) {
-        this(maxElementPerNode, minElementPerNode, null);
+    public BplusTree(int maxChildren, int minElementPerNode) {
+        this(maxChildren, minElementPerNode, null);
     }
 
-    public BplusTree(int maxElementPerNode, int minElementPerNode, Comparator<? super K> comparator) {
-        Preconditions.checkArgument(maxElementPerNode > 1, "maxElementPerNode should greater than 1");
+    public BplusTree(int maxChildren, Integer minElementPerNode, Comparator<? super K> comparator) {
+        if (minElementPerNode == null) {
+            minElementPerNode = maxChildren >> 1;
+        }
+        Preconditions.checkArgument(maxChildren > 2, "maxChildren should greater than 2");
         Preconditions.checkArgument(minElementPerNode > 0, "minElementPerNode should greater than 0");
-        this.maxElementPerNode = maxElementPerNode;
+        this.maxChildren = maxChildren;
         this.minElementPerNode = minElementPerNode;
         this.comparator = comparator;
     }
@@ -145,13 +146,13 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
      * 1. 若为空树 创建一个叶子结点 插入 此时root,min也是该叶子结点 结束
      * 2. 定位到要插入的叶子结点
      * 3. 针对叶子结点
-     * 3.1 插入记录，若当前叶子结点记录数小于等于 maxElementPerNode-1 结束
-     * 3.2 否则将该叶子结点分裂为左右两个叶子结点，左边包含前 maxElementPerNode/2 个，右边包含剩下的
+     * 3.1 插入记录，若当前叶子结点记录数小于等于 maxChildren-1 结束
+     * 3.2 否则将该叶子结点分裂为左右两个叶子结点，左边包含前 maxChildren/2 个，右边包含剩下的
      * 3.3 将分裂后右边的第一个记录进位到父结点中 该关键字的左右子孩子分别是刚分裂的左右叶子结点
      * 3.4 将当前结点指向父结点
      * 4. 针对内结点
-     * 4.1 若当前结点记录数小于等于 maxElementPerNode-1 结束
-     * 4.2 否则 将该内结点分裂为两个内结点 左结点包含前 (maxElementPerNode-1)/2 个记录 右结点包含 maxElementPerNode/2 个记录
+     * 4.1 若当前结点记录数小于等于 maxChildren-1 结束
+     * 4.2 否则 将该内结点分裂为两个内结点 左结点包含前 (maxChildren-1)/2 个记录 右结点包含 maxChildren/2 个记录
      * 中间的记录进位到父结点中 进位的该关键字左右子孩子分别是刚分裂的左右内结点
      * 4.3 将当前结点指向父结点 重复第 4 步
      *
@@ -163,11 +164,11 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         insertToLeafNode(leaf, key, value);
         size++;
         modCount++;
-        if (leaf.data.size() <= maxElementPerNode - 1) {
+        if (leaf.data.size() <= maxChildren - 1) {
             return value;
         }
         Node<K, V> current = splitLeaf(leaf);
-        while (current.data.size() > maxElementPerNode - 1) {
+        while (current.data.size() > maxChildren - 1) {
             current = splitInnerNode(current);
         }
         return value;
@@ -319,7 +320,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     private Node<K, V> splitLeaf(Node<K, V> leaf) {
         //分裂
         Node<K, V> right = new Node<>();
-        for (int i = maxElementPerNode >> 1; i < leaf.data.size(); ) {
+        for (int i = maxChildren >> 1; i < leaf.data.size(); ) {
             right.data.add(leaf.data.remove(i));
         }
         link(leaf, right);
@@ -360,7 +361,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         //分裂
         Node<K, V> right = new Node<>();
         right.children = Lists.newLinkedList();
-        int center = maxElementPerNode >> 1;
+        int center = maxChildren >> 1;
         for (int i = center + 1; i < node.data.size(); ) {
             right.data.add(node.data.remove(i));
             right.addChild(node.children.remove(i));
@@ -606,6 +607,14 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         }
         sb.append('}');
         return sb.toString();
+    }
+
+    public int getMaxChildren() {
+        return maxChildren;
+    }
+
+    public int getMinElementPerNode() {
+        return minElementPerNode;
     }
 
 }

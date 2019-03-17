@@ -19,12 +19,13 @@ public class BplusTreeTest {
 
     @Before
     public void before() {
-        tree = new BplusTree<>(4);
+        tree = new BplusTree<>(3);
         int n = 10;
         for (int i = 0; i < n; i++) {
             tree.put(i, String.valueOf(i));
+            System.out.println("put " + i + " " + tree);
         }
-        System.out.println("before: " + tree);
+        System.out.println("before: " + tree.getMaxChildren() + " " + tree.getMinElementPerNode() + " " + tree);
     }
 
     @Test
