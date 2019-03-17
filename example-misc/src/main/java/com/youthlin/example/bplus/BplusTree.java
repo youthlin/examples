@@ -1,46 +1,22 @@
 package com.youthlin.example.bplus;
 
 import com.google.common.collect.Lists;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.AbstractMap;
+import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author youthlin.chen
  * @date 2019-03-15 20:33
  * @link https://www.cnblogs.com/nullzx/p/8729425.html
  */
-public class BplusTree<K, V> implements IBplusTree<K, V> {
-    private class Entry implements Map.Entry<K, V> {
-        private K key;
-        private V value;
-
-        private Entry(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        @Override public K getKey() {
-            return key;
-        }
-
-        @Override public V getValue() {
-            return value;
-        }
-
-        @Override public V setValue(V value) {
-            V oldValue = this.value;
-            this.value = value;
-            return oldValue;
-        }
-
-        @Override public String toString() {
-            return key + "=" + value;
-        }
-    }
-
+public class BplusTree<K, V> extends AbstractMap<K, V> {
     /**
      * 结点
      */
@@ -52,7 +28,7 @@ public class BplusTree<K, V> implements IBplusTree<K, V> {
         /**
          * 结点的关键字
          */
-        private List<Entry> data = Lists.newLinkedList();
+        private List<Entry<K, V>> data = Lists.newLinkedList();
         /**
          * n个关键字则有n+1个子孩子
          * 为 null 说明是叶结点
@@ -79,6 +55,7 @@ public class BplusTree<K, V> implements IBplusTree<K, V> {
     private final int m;
     private Comparator<K> comparator;
     private int size;
+    private Set<Map.Entry<K, V>> entrySet;
 
     public BplusTree() {
         this.m = 5;
@@ -98,27 +75,12 @@ public class BplusTree<K, V> implements IBplusTree<K, V> {
         this.comparator = comparator;
     }
 
-    public int size() {
-        return size;
-    }
-
-    public boolean isEmpty() {
-        return root != null;
-    }
-
-    public boolean containsKey(Object key) {
-        return get((K) key) != null;
-    }
-
-    public boolean containsValue(Object value) {
-        throw new UnsupportedOperationException();
-    }
-
     @Override
-    public V get(K key) {
-        Node leaf = findLeafNode(key);
-        for (Entry entry : leaf.data) {
-            int compare = compare(entry.getKey(), key);
+    public V get(Object key) {
+        @SuppressWarnings("unchecked") K k = (K) key;
+        Node leaf = findLeafNode(k);
+        for (Entry<K, V> entry : leaf.data) {
+            int compare = compare(entry.getKey(), k);
             if (compare == 0) {
                 return entry.getValue();
             }
@@ -143,51 +105,80 @@ public class BplusTree<K, V> implements IBplusTree<K, V> {
      * 4.2 否则 将该内结点分裂为两个内结点 左结点包含前 (m-1)/2 个记录 右结点包含 m/2 个记录
      * 中间的记录进位到父结点中 进位的该关键字左右子孩子分别是刚分裂的左右内结点
      * 4.3 将当前结点指向父结点 重复第 4 步
+     *
+     * @return the put value always
      */
     @Override
-    public void put(K key, V value) {
+    public V put(K key, V value) {
         Node leaf = findLeafNode(key);
         insertToLeafNode(leaf, key, value);
+        size++;
         if (leaf.data.size() <= m - 1) {
-            return;
+            return value;
         }
         Node current = splitLeaf(leaf);
         while (current.data.size() > m - 1) {
             current = splitInnerNode(current);
         }
-        size++;
+        return value;
     }
 
     @Override
-    public V remove(K key) {
+    @NotNull
+    public Set<Map.Entry<K, V>> entrySet() {
+        if (entrySet == null) {
+            entrySet = new EntrySet();
+        }
+        return entrySet;
+    }
+
+    final class EntrySet extends AbstractSet<Entry<K, V>> {
+        @Override
+        public Iterator<Entry<K, V>> iterator() {
+            return new Iterator<Map.Entry<K, V>>() {
+                Node currentNode = min;
+                int index = 0;
+
+                @Override
+                public void remove() {
+                    BplusTree.this.remove(currentNode, index);
+                }
+
+                @Override
+                public boolean hasNext() {
+                    return currentNode != null && (index < currentNode.data.size() || currentNode.next != null);
+                }
+
+                @Override
+                public Map.Entry<K, V> next() {
+                    Entry<K, V> entry = currentNode.data.get(index++);
+                    if (index >= currentNode.data.size()) {
+                        index = 0;
+                        currentNode = currentNode.next;
+                    }
+                    return entry;
+                }
+            };
+        }
+
+        @Override
+        public int size() {
+            return size;
+        }
+    }
+
+    @Override
+    public V remove(Object key) {
+        throw new UnsupportedOperationException();
+    }
+
+    private V remove(Node node, int index) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public String toString() {
         return innerToString();
-    }
-
-    public Iterator<Map.Entry<K, V>> iterator() {
-        return new Iterator<Map.Entry<K, V>>() {
-            Node current = min;
-            int index = 0;
-
-            @Override
-            public boolean hasNext() {
-                return current != null && (index < current.data.size() || current.next != null);
-            }
-
-            @Override
-            public Map.Entry<K, V> next() {
-                Entry entry = current.data.get(index++);
-                if (index >= current.data.size()) {
-                    index = 0;
-                    current = current.next;
-                }
-                return entry;
-            }
-        };
     }
 
     private Node findLeafNode(K key) {
@@ -207,13 +198,13 @@ public class BplusTree<K, V> implements IBplusTree<K, V> {
     /**
      * 在一个结点中定位要插入的元素应该插在哪个下标
      */
-    private int index(Node node, Entry entry) {
+    private int index(Node node, Entry<K, V> entry) {
         return index(node, entry.getKey());
     }
 
     private int index(Node node, K key) {
         int index = 0;
-        for (Entry inNode : node.data) {
+        for (Entry<K, V> inNode : node.data) {
             if (compare(inNode.getKey(), key) <= 0) {
                 index++;
             } else {
@@ -231,12 +222,12 @@ public class BplusTree<K, V> implements IBplusTree<K, V> {
         if (left instanceof Comparable && right instanceof Comparable) {
             return ((Comparable) left).compareTo(right);
         }
-        throw new ClassCastException();
+        throw new ClassCastException("key should be Comparable when comparator not specified.");
     }
 
     private void insertToLeafNode(Node leaf, K key, V value) {
         int index = index(leaf, key);
-        leaf.data.add(index, new Entry(key, value));
+        leaf.data.add(index, new SimpleEntry<>(key, value));
     }
 
     private Node splitLeaf(Node leaf) {
@@ -249,11 +240,11 @@ public class BplusTree<K, V> implements IBplusTree<K, V> {
         leaf.next = right;
 
         //进位
-        Entry up = right.data.get(0);
+        Entry<K, V> up = right.data.get(0);
         return insertToUp(leaf, right, up);
     }
 
-    private Node insertToUp(Node left, Node right, Entry up) {
+    private Node insertToUp(Node left, Node right, Entry<K, V> up) {
         Node parent = left.parent;
         if (parent == null) {
             parent = new Node();
@@ -262,6 +253,7 @@ public class BplusTree<K, V> implements IBplusTree<K, V> {
         }
         int index = index(parent, up);
         parent.data.add(index, up);
+        //noinspection StatementWithEmptyBody
         if (index < parent.children.size() && parent.children.get(index) == left) {
             //已经在不用再添加
         } else {
@@ -287,7 +279,7 @@ public class BplusTree<K, V> implements IBplusTree<K, V> {
         right.next = node.next;
         node.next = right;
         //进位
-        Entry up = node.data.remove(center);
+        Entry<K, V> up = node.data.remove(center);
         return insertToUp(node, right, up);
     }
 
@@ -344,10 +336,8 @@ public class BplusTree<K, V> implements IBplusTree<K, V> {
         System.out.println("插入9后 " + tree);
         tree.put(7, 7);
         System.out.println("插入7后 " + tree);
-        Iterator<Map.Entry<Integer, Integer>> iterator = tree.iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Integer, Integer> next = iterator.next();
-            System.out.println(next);
+        for (Entry<Integer, Integer> entry : tree.entrySet()) {
+            System.out.println(entry);
         }
         System.out.println("get------");
         System.out.println(tree.get(5));
@@ -358,6 +348,8 @@ public class BplusTree<K, V> implements IBplusTree<K, V> {
         System.out.println(tree.get(4));
         System.out.println(tree.get(11));
         System.out.println(tree.get(99));
+        System.out.println("-----size empty");
+        System.out.println(tree.size() + " " + tree.isEmpty() + " " + tree.keySet() + " " + tree.values());
     }
 
 }
