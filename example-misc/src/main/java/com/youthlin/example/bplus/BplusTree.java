@@ -67,7 +67,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
 
     private static final int DEFAULT_MAX_ELEMENT_PER_NODE = 5;
     /**
-     * 根节点
+     * 根结点
      */
     private transient Node<K, V> root;
     /**
@@ -76,10 +76,16 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     private transient Node<K, V> min;
     /**
      * 阶数
-     * m阶B+树内个节点最多存放m-1项数据
+     * m 阶 B+ 树内个节点最多存放 m-1 项数据, 最多 m 个子孩子
      */
     private final int maxChildren;
+    /**
+     * 每个节点最少需要的记录数
+     */
     private final int minElementPerNode;
+    /**
+     * 比较器 如果为 null 则使用 {@link K} 的自然顺序, 此时要求 {@link K}  实现了 {@link Comparable}  接口
+     */
     private final Comparator<? super K> comparator;
     private transient int size;
     private transient int modCount;
@@ -128,17 +134,17 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     }
 
     @Override
-    public boolean containsKey(Object key) {
+    public boolean containsKey(@NotNull Object key) {
         @SuppressWarnings("unchecked") K k = (K) Objects.requireNonNull(key);
         Node<K, V> leaf = findLeafNode(k);
-        return getIndex(k, leaf) != -1;
+        return getExactIndex(k, leaf) != -1;
     }
 
     @Override
-    public V get(Object key) {
+    public V get(@NotNull Object key) {
         @SuppressWarnings("unchecked") K k = (K) Objects.requireNonNull(key);
         Node<K, V> leaf = findLeafNode(k);
-        return get(k, leaf);
+        return getOnLeafOrNull(k, leaf);
     }
 
     /**
@@ -159,18 +165,17 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
      * @return the put value always
      */
     @Override
-    public V put(K key, V value) {
+    public V put(@NotNull K key, V value) {
         Node<K, V> leaf = findLeafNode(Objects.requireNonNull(key));
         insertToLeafNode(leaf, key, value);
+        if (shouldSplit(leaf)) {
+            Node<K, V> current = splitLeaf(leaf);
+            while (shouldSplit(current)) {
+                current = splitInnerNode(current);
+            }
+        }
         size++;
         modCount++;
-        if (leaf.data.size() <= maxChildren - 1) {
-            return value;
-        }
-        Node<K, V> current = splitLeaf(leaf);
-        while (current.data.size() > maxChildren - 1) {
-            current = splitInnerNode(current);
-        }
         return value;
     }
 
@@ -178,12 +183,12 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     public V remove(Object key) {
         @SuppressWarnings("unchecked") K k = (K) Objects.requireNonNull(key);
         Node<K, V> leaf = findLeafNode(k);
-        int index = getIndex(k, leaf);
+        int index = getExactIndex(k, leaf);
         if (index == -1) {
             //叶子结点没有相应的 key 删除失败
             return null;
         }
-        return removeOnNode(leaf, index);
+        return removeOnLeafNode(leaf, index);
     }
 
     @Override
@@ -202,7 +207,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         try {
             clone = (BplusTree<K, V>) super.clone();
         } catch (CloneNotSupportedException e) {
-            throw new InternalError();
+            throw new InternalError(e);
         }
         clone.root = clone.min = null;
         clone.size = clone.modCount = 0;
@@ -221,8 +226,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     }
 
     @SuppressWarnings("unchecked")
-    private void readObject(java.io.ObjectInputStream s)
-            throws java.io.IOException, ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream s) throws java.io.IOException, ClassNotFoundException {
         s.defaultReadObject();
         int size = s.readInt();
         for (int i = 0; i < size; i++) {
@@ -244,7 +248,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         } else {
             Node<K, V> current = root;
             while (current.children != null) {
-                int index = index(current, key);
+                int index = getInsertIndex(current, key);
                 current = current.children.get(index);
             }
             return current;
@@ -254,11 +258,11 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     /**
      * 在一个结点中定位要插入的元素应该插在哪个下标
      */
-    private int index(Node<K, V> node, Entry<K, V> entry) {
-        return index(node, entry.getKey());
+    private int getInsertIndex(Node<K, V> node, Entry<K, V> entry) {
+        return getInsertIndex(node, entry.getKey());
     }
 
-    private int index(Node<K, V> node, K key) {
+    private int getInsertIndex(Node<K, V> node, K key) {
         int index = 0;
         for (Entry<K, V> inNode : node.data) {
             if (compare(inNode.getKey(), key) <= 0) {
@@ -284,7 +288,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     /**
      * 获取结点中指定key的下标
      */
-    private int getIndex(K key, Node<K, V> node) {
+    private int getExactIndex(K key, Node<K, V> node) {
         int index = -1;
         for (Entry<K, V> entry : node.data) {
             index++;
@@ -299,7 +303,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         return -1;
     }
 
-    private V get(K key, Node<K, V> leaf) {
+    private V getOnLeafOrNull(K key, Node<K, V> leaf) {
         for (Entry<K, V> entry : leaf.data) {
             int compare = compare(entry.getKey(), key);
             if (compare == 0) {
@@ -313,8 +317,12 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
     }
 
     private void insertToLeafNode(Node<K, V> leaf, K key, V value) {
-        int index = index(leaf, key);
+        int index = getInsertIndex(leaf, key);
         leaf.data.add(index, new SimpleEntry<>(key, value));
+    }
+
+    private boolean shouldSplit(Node<K, V> node) {
+        return node.data.size() >= maxChildren;
     }
 
     private Node<K, V> splitLeaf(Node<K, V> leaf) {
@@ -345,7 +353,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
             parent.children = Lists.newArrayList();
             root = parent;
         }
-        int index = index(parent, up);
+        int index = getInsertIndex(parent, up);
         parent.data.add(index, up);
         //noinspection StatementWithEmptyBody
         if (index < parent.children.size() && parent.children.get(index) == left) {
@@ -373,72 +381,18 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         return insertToUp(node, right, up);
     }
 
-    private V removeOnNode(Node<K, V> leaf, int index) {
+    private V removeOnLeafNode(Node<K, V> leaf, int index) {
         //1 删除叶子结点
         Entry<K, V> remove = leaf.data.remove(index);
-        int currentLeafSize = leaf.data.size();
         // 删除后叶子结点key个数符合填充因子则结束 否则:
-        if (currentLeafSize < minElementPerNode) {
+        if (tooLess(leaf)) {
             Node<K, V> richNeighborNode = findRichNeighborNode(leaf);
-            //2 如果兄弟有富余
             if (richNeighborNode != null) {
-                if (richNeighborNode == leaf.prev) {
-                    //左边最后一个借过来 同时更新当前叶子的父结点为借过来的值
-                    //    7      11
-                    // 5,6  7,8,9  <11>
-                    //
-                    //    7    9
-                    // 5,6  7,8  9,11
-                    Entry<K, V> borrow = richNeighborNode.data.remove(richNeighborNode.data.size() - 1);
-                    leaf.data.add(0, borrow);
-                    int parentIndex = getIndex(richNeighborNode.data.get(0).getKey(), richNeighborNode.parent);
-                    Preconditions.checkArgument(parentIndex > -1);
-                    richNeighborNode.parent.data.remove(parentIndex + 1);
-                    richNeighborNode.parent.data.add(parentIndex + 1, borrow);
-                } else if (richNeighborNode == leaf.next) {
-                    //右边第一个借过来 同时更新右边结点的父结点为借过来后剩下的那个最小值
-                    //     7   8
-                    // 5,6  <7>  8,9,10
-                    //
-                    //     7    9
-                    // 5,6  7,8  9,10
-                    Entry<K, V> borrow = richNeighborNode.data.remove(0);
-                    leaf.data.add(borrow);
-                    int parentIndex = getIndex(borrow.getKey(), richNeighborNode.parent);
-                    Preconditions.checkArgument(parentIndex > -1);
-                    richNeighborNode.parent.data.remove(parentIndex);
-                    richNeighborNode.parent.data.add(parentIndex, richNeighborNode.data.get(0));
-                    if (parentIndex > 0 && index == 0) {
-                        //删除的是中间叶子结点的最小值
-                        //    8     10
-                        // 67  <8>,9  10,11,12
-                        //
-                        //    9    11
-                        // 67  9,10   11,12
-                        richNeighborNode.parent.data.remove(parentIndex - 1);
-                        richNeighborNode.parent.data.add(parentIndex - 1, leaf.data.get(0));
-                    }
-                } else {
-                    throw new IllegalStateException();
-                }
-            }
-            //3 兄弟结点没有富余 那么与兄弟合并 并删除父节点中的key 将当前结点指向父结点
-            else {
-                if (leaf.prev != null) {
-                    leaf = leaf.prev;
-                }
-                if (leaf.next != null) {
-                    Entry<K, V> removeInUp = leaf.next.data.get(0);
-                    leaf.data.addAll(leaf.next.data);
-                    unLinkNext(leaf);
-                    int indexInParent = getIndex(removeInUp.getKey(), leaf.parent);
-                    Preconditions.checkArgument(indexInParent > -1);
-                    leaf.parent.data.remove(indexInParent);
-                    leaf.parent.children.remove(indexInParent + 1);
-                    Node<K, V> currentInnerNode = leaf.parent;
-                    //4 若内结点的key个数符合填充因子则结束 否则:
-                    removeOnInnerNode(currentInnerNode);
-                }
+                //2 如果兄弟有富余
+                borrowFormLeafNeighbor(leaf, index, richNeighborNode);
+            } else {
+                //3 兄弟结点没有富余 那么与兄弟合并 并删除父节点中的key 将当前结点指向父结点
+                joinWithLeafNeighbor(leaf);
             }
         }
         size--;
@@ -446,20 +400,88 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         return remove.getValue();
     }
 
+    private boolean tooLess(Node<K, V> node) {
+        return node.data.size() < minElementPerNode;
+    }
+
     private Node<K, V> findRichNeighborNode(Node<K, V> current) {
         Node<K, V> prev = current.prev;
         if (prev != null && prev.parent == current.parent) {
-            if (prev.data.size() > minElementPerNode) {
+            if (rich(prev)) {
                 return prev;
             }
         }
         Node<K, V> next = current.next;
         if (next != null && next.parent == current.parent) {
-            if (next.data.size() > minElementPerNode) {
+            if (rich(next)) {
                 return next;
             }
         }
         return null;
+    }
+
+    private boolean rich(Node<K, V> node) {
+        return node.data.size() > minElementPerNode;
+    }
+
+    private void borrowFormLeafNeighbor(Node<K, V> leaf, int removeIndexOnLeaf, Node<K, V> richNeighborNode) {
+        if (richNeighborNode == leaf.prev) {
+            //左边最后一个借过来 同时更新当前叶子的父结点为借过来的值
+            //    7      11
+            // 5,6  7,8,9  <11>
+            //
+            //    7    9
+            // 5,6  7,8  9,11
+            Entry<K, V> borrow = richNeighborNode.data.remove(richNeighborNode.data.size() - 1);
+            leaf.data.add(0, borrow);
+            int parentIndex = getExactIndex(richNeighborNode.data.get(0).getKey(), richNeighborNode.parent);
+            Preconditions.checkArgument(parentIndex > -1);
+            richNeighborNode.parent.data.remove(parentIndex + 1);
+            richNeighborNode.parent.data.add(parentIndex + 1, borrow);
+        } else if (richNeighborNode == leaf.next) {
+            //右边第一个借过来 同时更新右边结点的父结点为借过来后剩下的那个最小值
+            //     7   8
+            // 5,6  <7>  8,9,10
+            //
+            //     7    9
+            // 5,6  7,8  9,10
+            Entry<K, V> borrow = richNeighborNode.data.remove(0);
+            leaf.data.add(borrow);
+            int parentIndex = getExactIndex(borrow.getKey(), richNeighborNode.parent);
+            Preconditions.checkArgument(parentIndex > -1);
+            richNeighborNode.parent.data.remove(parentIndex);
+            richNeighborNode.parent.data.add(parentIndex, richNeighborNode.data.get(0));
+            if (parentIndex > 0 && removeIndexOnLeaf == 0) {
+                //删除的是中间叶子结点的最小值
+                //    8     10
+                // 67  <8>,9  10,11,12
+                //
+                //    9    11
+                // 67  9,10   11,12
+                richNeighborNode.parent.data.remove(parentIndex - 1);
+                richNeighborNode.parent.data.add(parentIndex - 1, leaf.data.get(0));
+            }
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    private void joinWithLeafNeighbor(Node<K, V> leaf) {
+        if (leaf.prev != null) {
+            leaf = leaf.prev;
+        }
+        if (leaf.next != null) {
+            Entry<K, V> removeInUp = leaf.next.data.get(0);
+            leaf.data.addAll(leaf.next.data);
+            unLinkNext(leaf);
+            int indexInParent = getExactIndex(removeInUp.getKey(), leaf.parent);
+            Preconditions.checkArgument(indexInParent > -1);
+            leaf.parent.data.remove(indexInParent);
+            leaf.parent.children.remove(indexInParent + 1);
+            Node<K, V> currentInnerNode = leaf.parent;
+            //4 若内结点的key个数符合填充因子则结束 否则:
+            removeOnInnerNode(currentInnerNode);
+        }
     }
 
     private void unLinkNext(Node<K, V> left) {
@@ -480,66 +502,74 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
             return;
         }
         //4 若内结点的key个数符合填充因子则结束 否则:
-        if (currentInnerNode.data.size() < minElementPerNode) {
-            //5 若兄弟结点有富余 父结点key下移 兄弟结点key上移 结束
+        if (tooLess(currentInnerNode)) {
             Node<K, V> richNeighborNode = findRichNeighborNode(currentInnerNode);
             if (richNeighborNode != null) {
-                if (richNeighborNode == currentInnerNode.prev) {
-                    //        16
-                    // 7,9,10    <20>
-                    //      10
-                    // 7,9     16,20
-                    Entry<K, V> up = currentInnerNode.prev.data.remove(currentInnerNode.parent.data.size() - 1);
-                    int indexInParent = index(currentInnerNode.parent, up);
-                    Entry<K, V> down = currentInnerNode.parent.data.remove(indexInParent);
-                    currentInnerNode.parent.data.add(indexInParent, up);
-                    currentInnerNode.data.add(0, down);
-                    Node<K, V> lastChildToRight =
-                            currentInnerNode.prev.children.remove(currentInnerNode.prev.children.size() - 1);
-                    currentInnerNode.addChild(0, lastChildToRight);
-                } else if (richNeighborNode == currentInnerNode.next) {
-                    //      16
-                    // <7>      18,20,22
-                    //
-                    //        18
-                    // 7,16         20,22
-                    Entry<K, V> up = currentInnerNode.next.data.remove(0);
-                    int indexInParent = index(currentInnerNode.parent, up) - 1;
-                    Entry<K, V> down = currentInnerNode.parent.data.remove(indexInParent);
-                    currentInnerNode.parent.data.add(indexInParent, up);
-                    currentInnerNode.data.add(down);
-                    Node<K, V> firstChildToLeft = currentInnerNode.next.children.remove(0);
-                    currentInnerNode.addChild(firstChildToLeft);
-                } else {
-                    throw new IllegalStateException();
-                }
+                //5 若兄弟结点有富余 父结点key下移 兄弟结点key上移 结束
+                borrowFromInnerNeighbor(currentInnerNode, richNeighborNode);
             } else {
                 //6 否则 当前结点和兄弟结点 及 父结点下移key 合并为新结点 将当前结点指向父结点 重复4
-                if (currentInnerNode.prev != null) {
-                    //    18
-                    // 9,16  <20>
-                    //
-                    // 9,16,18,20
-                    currentInnerNode = currentInnerNode.prev;
-                }
-                if (currentInnerNode.next != null) {
-                    //    16
-                    // <9> 18,20
-                    //
-                    // 9,16,18,20
-                    int indexInParent = index(currentInnerNode.parent, currentInnerNode.next.data.get(0)) - 1;
-                    Entry<K, V> down = currentInnerNode.parent.data.remove(indexInParent);
-                    currentInnerNode.parent.children.remove(indexInParent + 1);
-                    currentInnerNode.data.add(down);
-                    currentInnerNode.data.addAll(currentInnerNode.next.data);
-                    currentInnerNode.addChildren(currentInnerNode.next.children);
-                    currentInnerNode.next.data.clear();
-                    currentInnerNode.next.children.clear();
-                    unLinkNext(currentInnerNode);
-                    currentInnerNode = currentInnerNode.parent;
-                    removeOnInnerNode(currentInnerNode);
-                }
+                joinWithInnerNeighbor(currentInnerNode);
             }
+        }
+    }
+
+    private void borrowFromInnerNeighbor(Node<K, V> currentInnerNode, Node<K, V> richNeighborNode) {
+        if (richNeighborNode == currentInnerNode.prev) {
+            //        16
+            // 7,9,10    <20>
+            //      10
+            // 7,9     16,20
+            Entry<K, V> up = currentInnerNode.prev.data.remove(currentInnerNode.parent.data.size() - 1);
+            int indexInParent = getInsertIndex(currentInnerNode.parent, up);
+            Entry<K, V> down = currentInnerNode.parent.data.remove(indexInParent);
+            currentInnerNode.parent.data.add(indexInParent, up);
+            currentInnerNode.data.add(0, down);
+            Node<K, V> lastChildToRight =
+                    currentInnerNode.prev.children.remove(currentInnerNode.prev.children.size() - 1);
+            currentInnerNode.addChild(0, lastChildToRight);
+        } else if (richNeighborNode == currentInnerNode.next) {
+            //      16
+            // <7>      18,20,22
+            //
+            //        18
+            // 7,16         20,22
+            Entry<K, V> up = currentInnerNode.next.data.remove(0);
+            int indexInParent = getInsertIndex(currentInnerNode.parent, up) - 1;
+            Entry<K, V> down = currentInnerNode.parent.data.remove(indexInParent);
+            currentInnerNode.parent.data.add(indexInParent, up);
+            currentInnerNode.data.add(down);
+            Node<K, V> firstChildToLeft = currentInnerNode.next.children.remove(0);
+            currentInnerNode.addChild(firstChildToLeft);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    private void joinWithInnerNeighbor(Node<K, V> currentInnerNode) {
+        if (currentInnerNode.prev != null) {
+            //    18
+            // 9,16  <20>
+            //
+            // 9,16,18,20
+            currentInnerNode = currentInnerNode.prev;
+        }
+        if (currentInnerNode.next != null) {
+            //    16
+            // <9> 18,20
+            //
+            // 9,16,18,20
+            int indexInParent = getInsertIndex(currentInnerNode.parent, currentInnerNode.next.data.get(0)) - 1;
+            Entry<K, V> down = currentInnerNode.parent.data.remove(indexInParent);
+            currentInnerNode.parent.children.remove(indexInParent + 1);
+            currentInnerNode.data.add(down);
+            currentInnerNode.data.addAll(currentInnerNode.next.data);
+            currentInnerNode.addChildren(currentInnerNode.next.children);
+            currentInnerNode.next.data.clear();
+            currentInnerNode.next.children.clear();
+            unLinkNext(currentInnerNode);
+            currentInnerNode = currentInnerNode.parent;
+            removeOnInnerNode(currentInnerNode);
         }
     }
 
@@ -553,20 +583,20 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
 
                 @Override
                 public void remove() {
-                    checkModCount();
-                    BplusTree.this.removeOnNode(currentNode, index);
+                    checkModCount(expectMod);
+                    BplusTree.this.removeOnLeafNode(currentNode, index);
                     expectMod = modCount;
                 }
 
                 @Override
                 public boolean hasNext() {
-                    checkModCount();
+                    checkModCount(expectMod);
                     return currentNode != null && (index < currentNode.data.size() || currentNode.next != null);
                 }
 
                 @Override
                 public Map.Entry<K, V> next() {
-                    checkModCount();
+                    checkModCount(expectMod);
                     Entry<K, V> entry = currentNode.data.get(index++);
                     if (index >= currentNode.data.size()) {
                         index = 0;
@@ -575,11 +605,6 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
                     return entry;
                 }
 
-                private void checkModCount() {
-                    if (expectMod != modCount) {
-                        throw new ConcurrentModificationException();
-                    }
-                }
             };
         }
 
@@ -589,10 +614,17 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
         }
     }
 
+    private void checkModCount(int expectModCount) {
+        if (expectModCount != modCount) {
+            throw new ConcurrentModificationException();
+        }
+    }
+
     private String innerToString() {
         if (root == null) {
             return "{}";
         }
+        int expectModCount = this.modCount;
         StringBuilder sb = new StringBuilder("{");
         Node<K, V> currentLevel = root;
         Node<K, V> current;
@@ -601,6 +633,7 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
             current = currentLevel;
             sb.append(level++).append("=[");
             while (current != null) {
+                checkModCount(expectModCount);
                 sb.append('(').append(current.data).append(')');
                 current = current.next;
                 if (current != null) {
@@ -611,11 +644,13 @@ public class BplusTree<K, V> extends AbstractMap<K, V> implements Map<K, V>, Clo
             if (currentLevel.children != null) {
                 sb.append(',');
                 currentLevel = currentLevel.children.get(0);
+                checkModCount(expectModCount);
             } else {
                 currentLevel = null;
             }
         }
         sb.append('}');
+        checkModCount(expectModCount);
         return sb.toString();
     }
 

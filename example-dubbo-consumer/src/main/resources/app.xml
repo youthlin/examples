@@ -5,9 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
     <dubbo:application name="hello-consumer"/>
-    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181"/>
-    <dubbo:protocol name="dubbo" host="192.168.1.105" port="20880"/>
-
+    <dubbo:registry address="multicast://224.5.6.7:1234"/>
     <dubbo:reference id="helloService" interface="com.youthlin.example.rpc.api.service.HelloService"/>
     <dubbo:reference id="callBackService" interface="com.youthlin.example.rpc.api.service.CallBackService"/>
 
