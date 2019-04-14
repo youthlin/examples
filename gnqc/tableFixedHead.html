@@ -60,6 +60,86 @@
     <p class="mb-0">世上本没有路，走的人多了便成了路。</p>
     <footer class="blockquote-footer">鲁迅<cite title="Source Title">《鲁迅语录》</cite></footer>
 </blockquote>
+<div class="container-fluid">
+    <button class="ctl row btn btn-secondary" data-larger="#form" data-smaller="#aside">Toggle Help Text</button>
+    <div class="wrapper row">
+        <form class="col-8" id="form">
+            <div class="form-group row">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                    <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+                </div>
+            </div>
+            <fieldset class="form-group">
+                <div class="row">
+                    <legend class="col-form-label col-sm-2 pt-0">Radios</legend>
+                    <div class="col-sm-10">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1"
+                                   value="option1"
+                                   checked>
+                            <label class="form-check-label" for="gridRadios1">
+                                First radio
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2"
+                                   value="option2">
+                            <label class="form-check-label" for="gridRadios2">
+                                Second radio
+                            </label>
+                        </div>
+                        <div class="form-check disabled">
+                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3"
+                                   value="option3"
+                                   disabled>
+                            <label class="form-check-label" for="gridRadios3">
+                                Third disabled radio
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="form-group row">
+                <div class="col-sm-2">Checkbox</div>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="gridCheck1">
+                        <label class="form-check-label" for="gridCheck1">
+                            Example checkbox
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-10">
+                    <button type="submit" class="btn btn-primary">Sign in</button>
+                </div>
+            </div>
+        </form>
+        <aside class="col-4" id="aside">
+            <div class="card">
+                <h5 class="card-header">Featured</h5>
+                <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<blockquote class="blockquote text-center" style="margin-top: 60px;">
+    <p class="mb-0">世上本没有路，走的人多了便成了路。</p>
+    <footer class="blockquote-footer">鲁迅<cite title="Source Title">《鲁迅语录》</cite></footer>
+</blockquote>
 
 
 <table class="table fix-head-control" id="tableCtl">
@@ -426,6 +506,17 @@
 
         $('.table-fixed-head').each(function () {
             headFixed($(this));
+        });
+        $('.ctl').click(function () {
+            var lg = $($(this).data('larger'));
+            var sm = $($(this).data('smaller'));
+            if (lg.hasClass('col-8')) {
+                lg.removeClass('col-8').addClass('col-12');
+                sm.removeClass('col-4').addClass('d-none');
+            } else {
+                lg.removeClass('col-12').addClass('col-8');
+                sm.removeClass('d-none').addClass('col-4');
+            }
         });
     });
 </script>
