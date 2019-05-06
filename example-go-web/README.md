@@ -4,9 +4,15 @@ run this demo:
 go get github.com/youthlin/examples/example-go-web
 cd $GOPATH/src/github.com/youthlin/examples/example-go-web/
 go clean
+```
+you may modify the db info at `service/init.go`  
+and execute the setup sql at `data/setup.sql`  
+then:
+```
 go build
 ./example-go-web
 ```
+
 files:  
 ```
 $GOPATH/src/github.com/youthlin/examples/example-go-web/
