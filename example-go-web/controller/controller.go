@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/youthlin/examples/example-go-web/data"
 	"github.com/youthlin/examples/example-go-web/service"
 	"github.com/youthlin/examples/example-go-web/util"
 	"html/template"
@@ -12,7 +13,7 @@ import (
 )
 
 func Index(writer http.ResponseWriter, request *http.Request) {
-	model := newModel()
+	model := data.Model{}
 	sizeInt := util.ToIntWithCheck(request.FormValue("size"), util.DEFAULT_THREAD_LIST_PAGE_SIZE, util.MAX_THREAD_LIST_PAGE_SIZE, 1)
 	totalPage, err := service.CountThreadPage(sizeInt)
 	if err != nil {
@@ -21,7 +22,7 @@ func Index(writer http.ResponseWriter, request *http.Request) {
 	}
 	pageInt := util.ToIntWithCheck(request.FormValue("page"), util.DEFAULT_PAGE, totalPage, 1)
 	model["Title"] = "所有帖子"
-	threads, err := service.ListThreadWithoutPost(pageInt, sizeInt)
+	threads, err := service.ListThread(pageInt, sizeInt)
 	if err != nil {
 		toError(writer, request, model, "", err)
 		return
@@ -35,34 +36,26 @@ func Index(writer http.ResponseWriter, request *http.Request) {
 	generateHTML(request, writer, model, "layout", "thread-list")
 }
 
+// auth filter
 func RequireLogin(h http.HandlerFunc) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		user := service.FindUserFromCookie(request)
 		if user == nil {
-			toError(writer, request, newModel(), "请先登录", nil)
+			toError(writer, request, data.Model{}, "请先登录", nil)
 			return
 		}
 		h(writer, request)
 	}
 }
 
-func newModel(kv ...interface{}) map[string]interface{} {
-	model := make(map[string]interface{})
-	length := len(kv)
-	for i := 0; i < length; i += 2 {
-		model[kv[i].(string)] = kv[i+1]
-	}
-	return model
-}
-
-func setUserToModel(request *http.Request, model map[string]interface{}) {
+func fillUser(request *http.Request, model map[string]interface{}) {
 	user := service.FindUserFromCookie(request)
 	if user != nil {
 		model["User"] = user
 	}
 }
 
-func fillModel(model map[string]interface{}) {
+func fillTitle(model map[string]interface{}) {
 	title := model["Title"]
 	if title != nil {
 		switch title.(type) {
@@ -78,14 +71,14 @@ func fillModel(model map[string]interface{}) {
 }
 
 func generateHTML(request *http.Request, writer http.ResponseWriter, model map[string]interface{}, filenames ...string) {
-	setUserToModel(request, model)
+	fillUser(request, model)
 	var files []string
 	for _, file := range filenames {
 		files = append(files, fmt.Sprintf("templates/%s.html", file))
 	}
 	t := template.New("layout").Funcs(funcMap())
 	templates := template.Must(t.ParseFiles(files...))
-	fillModel(model)
+	fillTitle(model)
 	err := templates.ExecuteTemplate(writer, "layout", model)
 	if err != nil {
 		log.Println(err)

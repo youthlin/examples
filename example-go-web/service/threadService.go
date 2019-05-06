@@ -5,20 +5,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/youthlin/examples/example-go-web/data"
 	"github.com/youthlin/examples/example-go-web/util"
-	"log"
 	"strings"
 )
-
-var Db *sql.DB
-
-func init() {
-	d, e := sql.Open("mysql", "root:root@tcp(localhost:3306)/go_bbs?charset=utf8mb4&parseTime=True")
-	if e != nil {
-		log.Fatal(e)
-	} else {
-		Db = d
-	}
-}
 
 func SaveThread(thread *data.Thread) error {
 	stmt, e := Db.Prepare("INSERT INTO thread( topic, content, tags, user_id, create_at) VALUE (?,?,?,?,?)")
@@ -37,7 +25,7 @@ func SaveThread(thread *data.Thread) error {
 	return nil
 }
 
-func ListThreadWithoutPost(page int, size int) (threads []data.Thread, err error) {
+func ListThread(page int, size int) (threads []data.Thread, err error) {
 	start := (page - 1) * size
 	rows, err := Db.Query("SELECT t.id,t.topic,t.content,t.tags,t.create_at,"+
 		" u.id user_id,u.name,u.display_name,u.email,u.password,u.create_at"+
@@ -65,6 +53,7 @@ func ListThreadWithoutPost(page int, size int) (threads []data.Thread, err error
 	err = errors.Wrap(rows.Close(), "[close row]数据库错误")
 	return
 }
+
 func QueryReplyCountOfThread(threadId int64) (count int, err error) {
 	row := Db.QueryRow("SELECT COUNT(*)FROM post WHERE thread_id=?", threadId)
 	err = row.Scan(&count)

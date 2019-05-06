@@ -9,14 +9,14 @@ import (
 )
 
 var userColumn = " id,name,display_name,email,password,create_at "
-var sessionMap = make(map[string]*data.Session)
 
-const COOKIE_NAME string = "_go_bbs"
+// 会话保存在内存 应用重启所有用户需要重新登录
+var sessionMap = make(map[string]*data.Session)
 
 func SetSession(writer http.ResponseWriter, request *http.Request, user *data.User) {
 	uuid := util.CreateUUID()
 	cookie := http.Cookie{
-		Name:   COOKIE_NAME,
+		Name:   util.COOKIE_NAME,
 		Value:  uuid,
 		Path:   "/",
 		MaxAge: 3600,
@@ -31,7 +31,7 @@ func SetSession(writer http.ResponseWriter, request *http.Request, user *data.Us
 }
 
 func DeleteSession(writer http.ResponseWriter, request *http.Request) {
-	cookie, e := request.Cookie(COOKIE_NAME)
+	cookie, e := request.Cookie(util.COOKIE_NAME)
 	if e != nil {
 		return
 	}
@@ -42,7 +42,7 @@ func DeleteSession(writer http.ResponseWriter, request *http.Request) {
 }
 
 func GetSession(request *http.Request) *data.Session {
-	cookie, e := request.Cookie(COOKIE_NAME)
+	cookie, e := request.Cookie(util.COOKIE_NAME)
 	if e == nil {
 		uuid := cookie.Value
 		session := sessionMap[uuid]
@@ -60,13 +60,6 @@ func FindUserFromCookie(r *http.Request) *data.User {
 		return session.User
 	}
 	return nil
-}
-
-func FindUserById(id int64) (data.User, error) {
-	user := data.User{}
-	row := Db.QueryRow("SELECT "+userColumn+" FROM user WHERE id=? LIMIT 1", id)
-	e := row.Scan(&user.Id, &user.Name, &user.DisplayName, &user.Email, &user.Password, &user.CreateAt)
-	return user, e
 }
 
 func FindUserByName(name string) (*data.User, error) {

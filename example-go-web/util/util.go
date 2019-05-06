@@ -17,6 +17,7 @@ const (
 	MAX_THREAD_LIST_PAGE_SIZE     = 100
 	DEFAULT_REPLY_LIST_PAGE_SIZE  = 5
 	MAX_REPLY_LIST_PAGE_SIZE      = 100
+	COOKIE_NAME                   = "_go_bbs"
 )
 
 // create a random UUID with from RFC 4122
@@ -42,6 +43,7 @@ func Md5(x string) string {
 	hash := md5.Sum([]byte(x))
 	return fmt.Sprintf("%x", hash)
 }
+
 func ToInt(str string, dft int) int {
 	if str == "" {
 		return dft
@@ -62,6 +64,7 @@ func ToIntWithCheck(str string, dft int, max int, min int) int {
 	}
 	return i
 }
+
 func CountPage(total int, size int) int {
 	return (total-1)/size + 1
 }

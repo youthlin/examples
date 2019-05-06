@@ -50,3 +50,5 @@ new:
 ![new](static/img/screenshot-thread-new.png)  
 view:  
 ![view](static/img/screenshot-thread-view.png)  
+error-page:  
+![error-page](static/img/screenshot-error-page.png)  

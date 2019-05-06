@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+// used in controller and template
+type Model map[string]interface{}
+
 // region user----------------------------------------------------------
 
 type User struct {

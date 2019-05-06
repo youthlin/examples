@@ -11,7 +11,7 @@ import (
 // post
 func ReplyThread(writer http.ResponseWriter, request *http.Request) {
 	user := service.FindUserFromCookie(request)
-	model := make(map[string]interface{})
+	model := data.Model{}
 	if user == nil {
 		toError(writer, request, model, "请先登录", nil)
 	}
@@ -41,5 +41,5 @@ func ReplyThread(writer http.ResponseWriter, request *http.Request) {
 		toError(writer, request, model, "发表回复失败", err)
 		return
 	}
-	http.Redirect(writer, request, "/thread/view?id="+tid+"#p-"+strconv.FormatInt(post.Id, 10), http.StatusTemporaryRedirect)
+	http.Redirect(writer, request, "/thread/view?id="+tid, http.StatusTemporaryRedirect)
 }

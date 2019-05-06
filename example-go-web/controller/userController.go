@@ -19,14 +19,13 @@ func toError(writer http.ResponseWriter, request *http.Request, model map[string
 
 // GET
 func SignUpPage(writer http.ResponseWriter, request *http.Request) {
-	model := newModel()
-	model["Title"] = "注册"
+	model := data.Model{"Title": "注册"}
 	generateHTML(request, writer, model, "layout", "sign-up")
 }
 
 // POST
 func SignUp(writer http.ResponseWriter, request *http.Request) {
-	model := make(map[string]interface{})
+	model := data.Model{}
 	request.ParseForm()
 	username := request.PostFormValue("username")
 	email := request.PostFormValue("email")
@@ -75,8 +74,7 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 		http.Redirect(writer, request, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	model := make(map[string]interface{})
-	toError(writer, request, model, "用户名或密码错误", e)
+	toError(writer, request, data.Model{}, "用户名或密码错误", e)
 }
 
 // POST

@@ -12,7 +12,7 @@ import (
 
 // get
 func CreateThreadPage(writer http.ResponseWriter, request *http.Request) {
-	generateHTML(request, writer, newModel("Title", "发表新话题"), "layout", "thread-new")
+	generateHTML(request, writer, data.Model{"Title": "发表新话题"}, "layout", "thread-new")
 }
 
 // post
@@ -31,14 +31,15 @@ func CreateThread(writer http.ResponseWriter, request *http.Request) {
 	}
 	err := service.SaveThread(&thread)
 	if err != nil {
-		toError(writer, request, newModel(), "保存失败", err)
+		toError(writer, request, data.Model{}, "保存失败", err)
+		return
 	}
 	http.Redirect(writer, request, "/thread/view?id="+strconv.FormatInt(thread.Id, 10), http.StatusTemporaryRedirect)
 }
 
 // get
 func ViewThread(writer http.ResponseWriter, request *http.Request) {
-	model := newModel()
+	model := data.Model{}
 	ids := request.FormValue("id")
 	id, err := strconv.ParseInt(ids, 10, 64)
 	if err != nil {
