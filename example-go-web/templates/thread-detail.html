@@ -1,0 +1,94 @@
+{{ define  "content" }}
+    <div class="container">
+        <h1>{{ .Thread.Topic }}</h1>
+        <div class="meta">
+            <span>{{ .Thread.User.DisplayName }}</span> 发表于
+            <a href="?id={{ .Thread.Id }}"><span class="date">{{ .Thread.CreateAt }}</span></a>
+        </div>
+        <hr>
+        <div class="content">{{ .Thread.Content | unescaped }}</div>
+        <hr>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-between">
+                {{ if .PreThread }}
+                    <li class="page-item">
+                        <a class="page-link" href="?id={{ .PreThread.Id }}">&lt;&lt; {{ .PreThread.Topic }}</a>
+                    </li>
+                {{ else }}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">&lt;&lt; 没有上一篇</a>
+                    </li>
+                {{ end }}
+
+                {{ if .NextThread }}
+                    <li class="page-item">
+                        <a class="page-link" href="?id={{ .NextThread.Id }}">{{ .NextThread.Topic }} &gt;&gt;</a>
+                    </li>
+                {{ else }}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">没有下一篇 &gt;&gt;</a>
+                    </li>
+                {{ end }}
+            </ul>
+        </nav>
+        <div class="reply-list">
+            <ul class="list-unstyled">
+                {{ range .Posts }}
+                    <li class="media" id="p-{{ .Id }}">
+                        <img class="mr-3" src="{{ .User.Email | gravatar }}" alt="Gravatar">
+                        <div class="media-body">
+                            <h5 class="mt-0 mb-1">{{ .User.DisplayName }}
+                                <small>发表于<a href="#p-{{ .Id }}"><span class="date">{{ .CreateAt }}</span></a></small>
+                            </h5>
+                            {{ .Content }}
+                            <!--ul class="list-unstyled">
+                                <li class="media">
+                                    <img class="mr-3" src="..." alt="Gravatar">
+                                    <div class="media-body">
+                                        <h5 class="mt-0 mb-1">List-based media object</h5>
+                                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante
+                                        sollicitudin. Cras
+                                        purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum
+                                        nunc ac nisi
+                                        vulputate fringilla. Donec lacinia congue felis in faucibus.
+                                    </div>
+                                </li>
+                            </ul-->
+                        </div>
+                    </li>
+                {{ end }}
+            </ul>
+        </div>
+        {{ if .PostTotalPage}}
+            <nav aria-label="翻页导航" class="mt-2">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item"><a class="page-link" href="?id={{ .Thread.Id }}&p=1&s={{ .Size }}">1</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="?id={{ .Thread.Id }}&p={{ add .Page -1 }}&s={{ .Size }}" tabindex="-1">上一页</a>
+                    </li>
+                    <li class="page-item disabled"><span class="page-link">{{ .Page }}</span></li>
+                    <li class="page-item">
+                        <a class="page-link" href="?id={{ .Thread.Id }}&p={{ add .Page 1 }}&s={{ .Size }}">下一页</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?id={{ .Thread.Id }}&p={{ .PostTotalPage }}&s={{ .Size }}">{{ .PostTotalPage }}</a>
+                    </li>
+                </ul>
+            </nav>
+        {{ end }}
+        <div class="reply">
+            <form action="/thread/reply" method="post">
+                <label for="reply" class="col-form-label sr-only">回复</label>
+                <textarea name="reply" id="reply" cols="100" rows="5" class="form-control"
+                          placeholder="添加回复" required></textarea>
+                <input type="hidden" name="tid" value="{{ .Thread.Id }}">
+                <input type="hidden" name="pid" value="0">
+                {{ if .User }}
+                    <button type="submit" class="btn btn-primary mt-2">发表回复</button>
+                {{ else }}
+                    <strong>添加回复需要先登录</strong>
+                {{ end }}
+            </form>
+        </div>
+    </div>
+{{ end }}

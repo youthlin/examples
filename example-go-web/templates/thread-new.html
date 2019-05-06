@@ -1,0 +1,22 @@
+{{ define  "content" }}
+    <div class="container">
+        <form action="/thread/save" method="post" id="form">
+            <h1 class="h3 mb-3 font-weight-normal">发表新话题</h1>
+            <input type="text" name="topic" placeholder="标题" aria-label="标题" class="form-control" required>
+            <div id="editor"></div>
+            <input type="text" name="tag" placeholder="选填标签 逗号分隔" aria-label="标签" class="form-control">
+            <textarea aria-label="帖子内容" name="content" id="content" class="d-none"></textarea>
+            <button class="btn btn-primary mt-2">提交</button>
+        </form>
+    </div>
+    <script type="text/javascript">
+        var E = window.wangEditor;
+        var editor = new E('#editor');
+        editor.create()
+        $('#form').submit(function () {
+            var html = editor.txt.html();
+            console.log(html);
+            $('#content').html(html);
+        });
+    </script>
+{{ end }}

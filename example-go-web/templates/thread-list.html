@@ -1,0 +1,44 @@
+{{ define  "content" }}
+    <div class="container">
+        <div class="thread-list">
+            <div class="list-group">
+                {{ range .Threads}}
+                    <a href="/thread/view?id={{ .Id }}"
+                       class="list-group-item list-group-item-action flex-column align-items-start">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ .Topic }}</h5>
+                            <small><span class="badge badge-info badge-pill" title="回复量">{{ .ReplyCount }}</span></small>
+                        </div>
+                        <p class="mb-1">{{ .Content | removeHtmlTag | short | unescaped }}</p>
+                        <small>
+                            <span>{{ .User.DisplayName }}</span> 发表于 <span class="date">{{ .CreateAt }}</span>
+                            {{ range .Tags }}
+                                <span class="badge badge-secondary badge-pill">{{ . }}</span>
+                            {{ end }}
+                        </small>
+                    </a>
+                {{ end }}
+            </div>
+        </div>
+        {{ if  .TotalPage }}
+            <nav aria-label="翻页导航" class="mt-2">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item"><a class="page-link" href="?page=1&size={{ .Size }}">1</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ add .Page -1 }}&size={{ .Size }}" tabindex="-1">上一页</a>
+                    </li>
+                    <li class="page-item disabled"><span class="page-link">{{ .Page }}</span></li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ add .Page 1 }}&size={{ .Size }}">下一页</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ .TotalPage }}&size={{ .Size }}">{{ .TotalPage }}</a>
+                    </li>
+                </ul>
+            </nav>
+        {{ end }}
+    </div>
+    <script>
+        activeNavItem('nav-item-all');
+    </script>
+{{ end }}

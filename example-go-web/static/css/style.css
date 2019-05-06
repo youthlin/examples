@@ -1,0 +1,104 @@
+/*region main layout*/
+html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -70px;
+    padding-top: 60px;
+}
+
+#end {
+    clear: both;
+    height: 70px;
+}
+
+#copyright {
+    height: 70px;
+    overflow: hidden;
+}
+
+#copyright p:first-child {
+    margin-top: 0;
+}
+
+#copyright p:last-child {
+    margin-bottom: 0;
+}
+
+/*endregion main layout*/
+
+.approve {
+    background-color: #dee !important;
+}
+
+
+.publish {
+    background-color: #edd !important;
+}
+
+.seq {
+    width: 5%;
+}
+
+.dropdown-menu.show::-webkit-scrollbar {
+    display: none;
+}
+
+.dropdown-menu.show {
+    max-height: 500px;
+    min-width: 100% !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+
+.dropdown-item:hover {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.pointer:hover {
+    cursor: pointer;
+}
+
+.table {
+    table-layout: fixed;
+    word-break: normal;
+    word-wrap: break-word;
+}
+
+.fix-head-control {
+    position: fixed;
+    width: 100%;
+    background-color: #fff;
+    z-index: 100;
+}
+
+.scrollWrap {
+    max-height: 200px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.scrollWrap::-webkit-scrollbar {
+    display: none;
+}
+
+.error {
+    border: 1px solid #dc3545;
+    border-left: 4px solid #dc3545;
+    margin: 3rem .25rem .25rem .25rem;
+    padding: .25rem;
+}
+
+.media {
+    border: 1px solid #ccc;
+    margin: 1rem 0;
+    padding: 1rem;
+}
