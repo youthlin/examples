@@ -64,15 +64,15 @@ func ViewThread(writer http.ResponseWriter, request *http.Request) {
 	} else {
 		model["NextThread"] = nextThread
 	}
-	page := util.ToIntWithCheck(request.FormValue("p"), util.DEFAULT_PAGE, util.INT_MAX, 1)
 	size := util.ToIntWithCheck(request.FormValue("s"), util.DEFAULT_REPLY_LIST_PAGE_SIZE, util.MAX_REPLY_LIST_PAGE_SIZE, 1)
+	totalPage := util.CountPage(thread.ReplyCount, size)
+	page := util.ToIntWithCheck(request.FormValue("p"), util.DEFAULT_PAGE, totalPage, 1)
 	posts, err := service.FindPostsByThreadId(thread.Id, page, size)
 	if err != nil {
 		toError(writer, request, model, "获取帖子("+string(thread.Id)+":"+thread.Topic+")回复列表失败", err)
 		return
 	}
 	model["Posts"] = posts
-	totalPage := util.CountPage(thread.ReplyCount, size)
 	if totalPage > 1 {
 		model["PostTotalPage"] = totalPage
 		model["Page"] = page

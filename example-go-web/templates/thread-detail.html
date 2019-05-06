@@ -1,5 +1,5 @@
 {{ define  "content" }}
-    <div class="container">
+    <div class="container w-e-text">
         <h1>{{ .Thread.Topic }}</h1>
         <div class="meta">
             <span>{{ .Thread.User.DisplayName }}</span> 发表于
@@ -60,7 +60,7 @@
             </ul>
         </div>
         {{ if .PostTotalPage}}
-            <nav aria-label="翻页导航" class="mt-2">
+            <nav aria-label="翻页导航" class="mt-2 mb-2">
                 <ul class="pagination justify-content-center">
                     <li class="page-item"><a class="page-link" href="?id={{ .Thread.Id }}&p=1&s={{ .Size }}">1</a></li>
                     <li class="page-item">

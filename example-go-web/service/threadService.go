@@ -43,7 +43,7 @@ func ListThreadWithoutPost(page int, size int) (threads []data.Thread, err error
 		" u.id user_id,u.name,u.display_name,u.email,u.password,u.create_at"+
 		"	FROM (SELECT id FROM thread LIMIT ?,?) tmp"+
 		"	      JOIN (thread t LEFT OUTER JOIN user u ON t.user_id = u.id)"+
-		"	      ON tmp.id = t.id", start, size+1)
+		"	      ON tmp.id = t.id", start, size)
 	if err != nil {
 		return threads, errors.Wrap(err, "[query]查询帖子列表出错")
 	}

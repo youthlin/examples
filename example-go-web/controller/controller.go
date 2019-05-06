@@ -13,8 +13,13 @@ import (
 
 func Index(writer http.ResponseWriter, request *http.Request) {
 	model := newModel()
-	pageInt := util.ToIntWithCheck(request.FormValue("page"), util.DEFAULT_PAGE, util.INT_MAX, 1)
 	sizeInt := util.ToIntWithCheck(request.FormValue("size"), util.DEFAULT_THREAD_LIST_PAGE_SIZE, util.MAX_THREAD_LIST_PAGE_SIZE, 1)
+	totalPage, err := service.CountThreadPage(sizeInt)
+	if err != nil {
+		toError(writer, request, model, "", err)
+		return
+	}
+	pageInt := util.ToIntWithCheck(request.FormValue("page"), util.DEFAULT_PAGE, totalPage, 1)
 	model["Title"] = "所有帖子"
 	threads, err := service.ListThreadWithoutPost(pageInt, sizeInt)
 	if err != nil {
@@ -22,11 +27,6 @@ func Index(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	model["Threads"] = threads
-	totalPage, err := service.CountThreadPage(sizeInt)
-	if err != nil {
-		toError(writer, request, model, "", err)
-		return
-	}
 	if totalPage > 1 {
 		model["TotalPage"] = totalPage
 		model["Page"] = pageInt

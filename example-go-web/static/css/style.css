@@ -102,3 +102,12 @@ html, body {
     margin: 1rem 0;
     padding: 1rem;
 }
+
+.w-e-text.container {
+    padding: 0;
+    overflow-y: auto;
+}
+
+.w-e-text.container ul {
+    margin: 0;
+}
