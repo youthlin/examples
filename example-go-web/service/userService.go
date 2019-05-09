@@ -21,10 +21,17 @@ func SetSession(writer http.ResponseWriter, request *http.Request, user *data.Us
 		Path:   "/",
 		MaxAge: 3600,
 	}
+	timezoneMinute := request.PostFormValue("timezoneMinute")
+	timezoneName := request.PostFormValue("timezoneName")
+
 	session := data.Session{
 		Uuid:     uuid,
 		CreateAt: time.Now(),
-		User:     user,
+		Ext: &map[string]interface{}{
+			"timezoneMinute": -util.ToInt(timezoneMinute, 0),
+			"timezoneName":   timezoneName,
+		},
+		User: user,
 	}
 	sessionMap[uuid] = &session
 	http.SetCookie(writer, &cookie)
@@ -79,18 +86,18 @@ func FindUserByName(name string) (*data.User, error) {
 }
 
 func FindUserByEmail(email string) (*data.User, error) {
-	user := &data.User{}
 	rows, e := Db.Query("SELECT "+userColumn+" FROM user WHERE email=? LIMIT 1", email)
 	if e != nil {
-		return user, errors.Wrap(e, "[query]查询用户失败")
+		return nil, errors.Wrap(e, "[query]查询用户失败")
 	}
 	if rows.Next() {
+		user := &data.User{}
 		e = rows.Scan(&user.Id, &user.Name, &user.DisplayName, &user.Email, &user.Password, &user.CreateAt)
 		if e != nil {
 			return user, errors.Wrap(e, "[scan]查询用户失败")
 		}
 	}
-	return user, nil
+	return nil, nil
 }
 
 func FindUserByNameAndPassword(name string, password string) (data.User, error) {

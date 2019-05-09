@@ -78,6 +78,7 @@ type Session struct {
 	Uuid     string
 	CreateAt time.Time
 	User     *User
+	Ext      *map[string]interface{}
 }
 
 // endregion session----------------------------------------------------------

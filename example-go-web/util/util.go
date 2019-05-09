@@ -18,6 +18,7 @@ const (
 	DEFAULT_REPLY_LIST_PAGE_SIZE  = 5
 	MAX_REPLY_LIST_PAGE_SIZE      = 100
 	COOKIE_NAME                   = "_go_bbs"
+	DEFAULT_TIME_FORMAT           = "2006-01-02 15:04:05"
 )
 
 // create a random UUID with from RFC 4122

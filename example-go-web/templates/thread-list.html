@@ -2,6 +2,7 @@
     <div class="container">
         <div class="thread-list">
             <div class="list-group">
+                {{ $s := .Session }}
                 {{ range .Threads}}
                     <a href="/thread/view?id={{ .Id }}"
                        class="list-group-item list-group-item-action flex-column align-items-start">
@@ -11,7 +12,7 @@
                         </div>
                         <p class="mb-1">{{ .Content | removeHtmlTag | short | unescaped }}</p>
                         <small>
-                            <span>{{ .User.DisplayName }}</span> 发表于 <span class="date">{{ .CreateAt }}</span>
+                            <span>{{ .User.DisplayName }}</span> 发表于 <span>{{ d .CreateAt $s }}</span>
                             {{ range .Tags }}
                                 <span class="badge badge-secondary badge-pill">{{ . }}</span>
                             {{ end }}

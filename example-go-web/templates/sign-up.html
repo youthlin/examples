@@ -1,6 +1,6 @@
 {{ define  "content" }}
     <div class="container text-center">
-        <form action="/signUp" method="post">
+        <form action="/signUp" method="post" id="login">
             <h1 class="h3 mb-3 font-weight-normal">注册</h1>
             <div class="form-group row">
                 <label for="inputName" class="col-sm-2 col-form-label">用户名</label>
@@ -22,11 +22,19 @@
                            required>
                 </div>
             </div>
+            <input type="hidden" name="timezoneMinute" id="timezoneMinute">
+            <input type="hidden" name="timezoneName" id="timezoneName">
             <div class="form-group row">
                 <div class="offset-sm-2 col-sm-10 text-left">
                     <button type="submit" class="btn btn-primary">注册</button>
                 </div>
             </div>
         </form>
+        <script>
+            $('#login').submit(function () {
+                $('#timezoneMinute').val(timezoneMinute());
+                $('#timezoneName').val(timezoneName());
+            });
+        </script>
     </div>
 {{ end }}

@@ -48,3 +48,11 @@ function activeNavItem(className) {
         $('.' + className).addClass('active');
     });
 }
+
+function timezoneName() {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
+function timezoneMinute() {
+    return new Date().getTimezoneOffset();
+}

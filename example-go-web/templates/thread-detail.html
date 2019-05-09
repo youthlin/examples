@@ -3,7 +3,7 @@
         <h1>{{ .Thread.Topic }}</h1>
         <div class="meta">
             <span>{{ .Thread.User.DisplayName }}</span> 发表于
-            <a href="?id={{ .Thread.Id }}"><span class="date">{{ .Thread.CreateAt }}</span></a>
+            <a href="?id={{ .Thread.Id }}"><span>{{ d .Thread.CreateAt .Session }}</span></a>
         </div>
         <hr>
         <div class="content">{{ .Thread.Content | unescaped }}</div>
@@ -33,12 +33,13 @@
         </nav>
         <div class="reply-list">
             <ul class="list-unstyled">
+                {{ $s := .Session }}
                 {{ range .Posts }}
                     <li class="media" id="p-{{ .Id }}">
                         <img class="mr-3" src="{{ .User.Email | gravatar }}" alt="Gravatar">
                         <div class="media-body">
                             <h5 class="mt-0 mb-1">{{ .User.DisplayName }}
-                                <small>发表于<a href="#p-{{ .Id }}"><span class="date">{{ .CreateAt }}</span></a></small>
+                                <small>发表于<a href="#p-{{ .Id }}"><span>{{ d .CreateAt $s }}</span></a></small>
                             </h5>
                             {{ .Content }}
                             <!--ul class="list-unstyled">

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 )
 
 func Index(writer http.ResponseWriter, request *http.Request) {
@@ -49,6 +50,10 @@ func RequireLogin(h http.HandlerFunc) http.HandlerFunc {
 }
 
 func fillUser(request *http.Request, model map[string]interface{}) {
+	session := service.GetSession(request)
+	if session != nil {
+		model["Session"] = session
+	}
 	user := service.FindUserFromCookie(request)
 	if user != nil {
 		model["User"] = user
@@ -92,6 +97,7 @@ func funcMap() template.FuncMap {
 		"unescaped":     unescaped,
 		"add":           add,
 		"gravatar":      gravatar,
+		"d":             fixTimeZone,
 	}
 }
 func short(x string) string {
@@ -115,4 +121,15 @@ func unescaped(x string) interface{} { return template.HTML(x) }
 func add(i int, j int) int           { return i + j }
 func gravatar(email string) string {
 	return "https://www.gravatar.com/avatar/" + util.Md5(email) + ".jpg"
+}
+func fixTimeZone(d time.Time, session *data.Session) string {
+	if session != nil {
+		min := (*session.Ext)["timezoneMinute"]
+		name := (*session.Ext)["timezoneName"]
+		if min != nil && name != nil {
+			zone := time.FixedZone(name.(string), 60*min.(int))
+			return d.In(zone).Format(util.DEFAULT_TIME_FORMAT)
+		}
+	}
+	return d.Format(time.RFC3339)
 }
