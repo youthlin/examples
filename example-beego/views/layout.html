@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>灵天气</title>
+    {{.HtmlHead}}
+</head>
+<body>
+<div id="wrap">
+    <nav class="fixed-top navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand m-0 p-0" href="/">
+            <img src="/static/img/logo.jpg" alt="灵天气" width="40" height="40">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item nav-item-all">
+                    <a class="nav-link" href="/">首页</a>
+                </li>
+                <li class="nav-item nav-item-all">
+                    <a class="nav-link" href="/cityList">城市列表</a>
+                </li>
+                <li class="nav-item nav-item-all">
+                    <a class="nav-link" href="/about">关于</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            </form>
+        </div>
+    </nav>
+
+    {{ .LayoutContent }}
+
+    <div id="end"></div>
+</div>
+<footer class="text-center">
+    <div id="copyright">
+        <p> &copy; 灵天气 2019 | <a href="https://youthlin.com/" target="_blank">霖博客</a></p>
+        <p>Powered by GoLang. | 天有不测风云，不灵别怪我哦 </p>
+    </div>
+</footer>
+<script src="/static/js/jquery.slim.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/config.js"></script>
+{{.Scripts}}
+</body>
+</html>
