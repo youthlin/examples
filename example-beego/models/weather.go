@@ -1,8 +1,11 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 // http://t.weather.sojson.com/api/weather/city/101240706
+// http://t.weather.itboy.net/api/weather/city/101240706
 
 type Weather struct {
 	UpdateTime time.Time   `json:"time"`
@@ -37,4 +40,8 @@ type WeatherItem struct {
 	Fl      string `json:"fl"`
 	Type    string `json:"type"`
 	Notice  string `json:"notice"`
+}
+
+func init() {
+	// orm.RegisterModel(new(Weather))
 }
