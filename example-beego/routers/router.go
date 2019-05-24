@@ -6,5 +6,9 @@ import (
 )
 
 func init() {
-	beego.Include(&controllers.MainController{})
+	beego.Router("/", &controllers.MainController{}, "*:Home")
+	beego.Router("/cityList", &controllers.MainController{}, "get,post:CityList")
+	beego.Router("/citySearch", &controllers.MainController{}, "get,post:CitySearch")
+	beego.Router("/weather/*.*", &controllers.MainController{}, "get:Weather")
+	beego.Router("/about", &controllers.MainController{}, "get:About")
 }

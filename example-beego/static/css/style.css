@@ -106,4 +106,10 @@ html, body {
 .hot-city a {
     background: #ccc;
     line-height: 2.5rem;
+    display: inline-block;
+}
+
+.hot-city li {
+    margin: 5px 0;
+    display: inline-block;
 }

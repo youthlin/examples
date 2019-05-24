@@ -35,12 +35,15 @@ $(document).ready(function () {
     $('.aside-ctl').click(function () {
         toggleAside($(this));
     });
+    // 页面就绪滑动到锚点(如果有)
+    scrollToAnchor();
 
     $('.date').each(function () {
         var date = $(this).html();
         $(this).html(new Date(date).toLocaleString());
         $(this).attr("title", date);
-    })
+    });
+
 });
 
 function activeNavItem(className) {
@@ -55,4 +58,20 @@ function timezoneName() {
 
 function timezoneMinute() {
     return new Date().getTimezoneOffset();
+}
+
+function scrollToAnchor(hash) {
+    hash = hash || window.location.hash;
+    if (hash === undefined || hash.length === 0) {
+        return;
+    }
+    var $target = $(hash);
+    var more = $target.data('top') || 60;
+    scroll($target.offset().top - more);
+}
+
+function scroll(top) {
+    $('html, body').animate({
+        scrollTop: top
+    }, 350);
 }

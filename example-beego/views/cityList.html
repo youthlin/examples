@@ -1,4 +1,31 @@
 <div class="container">
-    {{ .CityMap }}
-
+    <h4 id="toc">导航</h4>
+    {{ range  .Provinces }}
+        <a class="toc" href="#p-{{ .Province.Id }}">{{ .Province.Name }}</a>
+    {{ end }}
+    <hr>
+    {{ range  .Provinces }}
+        <div>
+            <h4 class="d-inline" id="p-{{ .Province.Id }}">
+                {{if .Province.Code }}
+                    <a href="/weather/{{ .Province.Code }}.html">{{ .Province.Name }}</a>
+                {{else}}
+                    {{ .Province.Name }}
+                {{end}}
+            </h4>
+            <small><a class="toc" href="#toc">返回导航</a></small>
+        </div>
+        {{ $Country := .Country}}
+        {{ range .Cities}}
+            <strong><a href="/weather/{{ .Code }}.html">{{ .Name }}</a></strong>
+            {{ $City :=index $Country . }}
+            {{ if $City }}
+                {{ range $City }}
+                    <a href="/weather/{{ .Code }}.html">{{ .Name }}</a>
+                {{ end }}
+                <br>
+            {{end}}
+        {{ end }}
+        <hr>
+    {{ end }}
 </div>
