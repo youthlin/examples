@@ -34,7 +34,10 @@ func init() {
 	for k, _ := range DefaultHot {
 		defaultHotCode = append(defaultHotCode, k)
 	}
-	// weatherCron()
+	// 触发 load from json
+	_, _ = ListAllCity()
+
+	weatherCron()
 }
 func weatherCron() {
 	util.StartTimer2(updateAllWeather, func(doneTime time.Time) time.Time {
