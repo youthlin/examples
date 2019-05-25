@@ -32,9 +32,13 @@
                     <a class="nav-link" href="/about">关于</a>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <form class="form-inline my-2 my-lg-0 search-form" data-target="#headerSuggest" action="/citySearch">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="city">
+                <div class="suggest" id="headerSuggest">
+                    <!--ul><li><a class=" w-100" href="/weather/101010100.html">北京</a></li></ul-->
+                </div>
             </form>
+
         </div>
     </nav>
 

@@ -60,7 +60,11 @@ func (this *MainController) CitySearch() {
 		if e != nil {
 			this.Data["json"] = models.MakeFail(2, fmt.Sprintf("query db error.%+v", e))
 		} else {
-			this.Data["json"] = models.MakeSuccess(maps)
+			var result = make(map[string]string)
+			for _, v := range maps {
+				result[v.Code] = v.Name
+			}
+			this.Data["json"] = models.MakeSuccess(result)
 		}
 	}
 	this.ServeJSON()

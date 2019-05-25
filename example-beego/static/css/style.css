@@ -103,6 +103,46 @@ html, body {
     padding: 1rem;
 }
 
+#headerSuggest {
+    position: absolute;
+    top: 50px;
+    right: 25px;
+    width: 190px;
+}
+
+.suggest ul {
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.suggest li {
+    font-size: 16px;
+    line-height: 34px;
+    cursor: pointer;
+    border-bottom: 1px solid #fff;
+    list-style: none;
+}
+
+.suggest li a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: #214f7e;
+    background-color: #f6f6f6;
+    padding-left: 20px;
+    text-decoration: none;
+}
+
+.suggest li a:hover {
+    background: #dddddd;
+}
+
+.suggest li.hover a {
+    background: #dddddd;
+}
+
 .hot-city a {
     background: #ccc;
     line-height: 2.5rem;
