@@ -29,8 +29,21 @@ type MainController struct {
 	beego.Controller
 }
 
+func (this *MainController) setTitle(t string) {
+	this.Data["Title"] = t
+}
 func (this *MainController) Prepare() {
 	this.Layout = "layout.html"
+}
+func (this *MainController) Render() (e error) {
+	title, _ := this.Data["Title"].(string)
+	if title == "" {
+		this.setTitle("灵天气")
+	} else {
+		this.setTitle(title + " - 灵天气")
+	}
+	e = this.Controller.Render()
+	return
 }
 
 // @router /
@@ -41,6 +54,7 @@ func (this *MainController) Home() {
 	}
 	this.Data["defaultHot"] = service.DefaultHot
 	this.TplName = "index.html"
+	this.setTitle("首页")
 }
 
 // @router /cityList
@@ -54,6 +68,7 @@ func (this *MainController) CityList() {
 	this.Data["CityMap"] = cityMap
 	this.Data["Provinces"] = service.GroupCities(&cityMap)
 	this.TplName = "cityList.html"
+	this.setTitle("城市列表")
 }
 
 // @router /citySearch
@@ -89,15 +104,18 @@ func (this *MainController) Weather() {
 	logs.Info("code=%s weather=%v", code, weather)
 	this.Data["weather"] = weather
 	this.TplName = "weather.html"
+	this.setTitle(weather.CityInfo.Parent + "-" + weather.CityInfo.City + "天气预报")
 }
 
 // @router /about
 func (this *MainController) About() {
 	this.TplName = "about.html"
+	this.setTitle("关于")
 }
 
 func (this *MainController) toError(err error) {
 	logs.Error("Error Page: %+v", err)
 	this.Data["e"] = err
 	this.TplName = "error.html"
+	this.setTitle("出错了")
 }
