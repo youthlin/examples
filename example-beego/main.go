@@ -11,7 +11,7 @@ func init() {
 	logs.SetLogger(logs.AdapterConsole, `{"level":1,"color":true}`)
 	config := `{
 		"filename":"logs/weather.log",
-		"perm":"0664",
+		"perm":"0775",
 		"separate":["emergency", "alert", "critical", "error", "warning", "notice", "info", "debug"]
 	}`
 	logs.SetLogger(logs.AdapterMultiFile, config)
