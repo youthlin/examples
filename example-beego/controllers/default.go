@@ -22,6 +22,7 @@ func init() {
 		icon[strings.TrimSuffix(name, ".png")] = "/static/img/" + name
 	}
 	logs.Info("icon: %s", icon)
+
 }
 
 type MainController struct {
@@ -34,6 +35,11 @@ func (this *MainController) Prepare() {
 
 // @router /
 func (this *MainController) Home() {
+	cities, err := service.ListCityByCount()
+	if err == nil {
+		this.Data["hot"] = cities
+	}
+	this.Data["defaultHot"] = service.DefaultHot
 	this.TplName = "index.html"
 }
 
@@ -79,6 +85,7 @@ func (this *MainController) Weather() {
 		this.toError(err)
 		return
 	}
+	service.CityCountIncrement(code)
 	logs.Info("code=%s weather=%v", code, weather)
 	this.Data["weather"] = weather
 	this.TplName = "weather.html"

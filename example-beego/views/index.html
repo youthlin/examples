@@ -17,14 +17,12 @@
         <div class="p-2">
             <h4 class="text-left">热门城市</h4>
             <ul class="m-0 p-0 row hot-city">
-                <li class="col-3 "><a class=" w-100" href="/weather/101010100.html">北京</a></li>
-                <li class="col-3 "><a class=" w-100" href="/weather/101020100.html">上海</a></li>
-                <li class="col-3 "><a class=" w-100" href="/weather/101280101.html">广州</a></li>
-                <li class="col-3 "><a class=" w-100" href="/weather/101280601.html">深圳</a></li>
-                <li class="col-3 "><a class=" w-100" href="/weather/101060101.html">长春</a></li>
-                <li class="col-3 "><a class=" w-100" href="/weather/101230201.html">厦门</a></li>
-                <li class="col-3 "><a class=" w-100" href="/weather/101240706.html">信丰</a></li>
-                <li class="col-3 "><a class=" w-100" href="/weather/101120201.html">青岛</a></li>
+                {{ range $k, $v := .defaultHot }}
+                    <li class="col-3 "><a class=" w-100" href="/weather/{{ $k }}.html">{{ $v }}</a></li>
+                {{ end }}
+                {{ range .hot }}
+                    <li class="col-3 "><a class=" w-100" href="/weather/{{ .Code }}.html">{{ .Name }}</a></li>
+                {{ end }}
             </ul>
         </div>
     </div>

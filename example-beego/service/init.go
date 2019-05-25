@@ -11,6 +11,8 @@ import (
 )
 
 var gDB *gorm.DB
+var DefaultHot = make(map[string]string)
+var defaultHotCode []string
 
 func init() {
 	db, err := gorm.Open("mysql", beego.AppConfig.String("data.source.url"))
@@ -20,6 +22,17 @@ func init() {
 	gDB = db
 	if e := gDB.Set("gorm:table_options", "CHARSET=utf8mb4").AutoMigrate(models.CityInstance, models.WeatherInstance).Error; e != nil {
 		logs.Emergency("建表失败 %+v", e)
+	}
+	DefaultHot["101010100"] = "北京"
+	DefaultHot["101020100"] = "上海"
+	DefaultHot["101280101"] = "广州"
+	DefaultHot["101280601"] = "深圳"
+	DefaultHot["101060101"] = "长春"
+	DefaultHot["101230201"] = "厦门"
+	DefaultHot["101240706"] = "信丰"
+	DefaultHot["101120201"] = "青岛"
+	for k, _ := range DefaultHot {
+		defaultHotCode = append(defaultHotCode, k)
 	}
 	// weatherCron()
 }

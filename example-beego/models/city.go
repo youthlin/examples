@@ -7,13 +7,14 @@ import (
 var CityInstance = new(City)
 
 type City struct {
-	Id        int    `json:"id"`
-	Pid       int    `json:"pid"`
-	Code      string `json:"city_code"`
-	Name      string `json:"city_name"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time `sql:"index"`
+	Id          int    `json:"id"`
+	Pid         int    `json:"pid"`
+	Code        string `json:"city_code" sql:"index"`
+	Name        string `json:"city_name" sql:"index"`
+	SearchCount int    `json:"search_count" sql:"index"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   *time.Time `sql:"index"`
 }
 
 type Cities []City

@@ -57,7 +57,7 @@ type Weather struct {
 	DeletedAt *JsonTime `sql:"index"`
 	UpdatedAt JsonTime
 	Time      JsonTime     `json:"time"`
-	CityCode  string       `json:"city_code"`
+	CityCode  string       `json:"city_code" sql:"index"`
 	CityInfo  *CityInfo    `json:"cityInfo" gorm:"_"`
 	Date      string       `json:"date"`
 	Message   string       `json:"message"`

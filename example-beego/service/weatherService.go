@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/astaxie/beego/logs"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -52,6 +53,9 @@ func updateWeather(code string) error {
 	if e != nil {
 		logs.Error("Update Weather Error: %+v", e)
 		return e
+	}
+	if weather.Status != 200 {
+		return errors.New(fmt.Sprintf("[%d]%s", weather.Status, weather.Message))
 	}
 	weather.CityCode = weather.CityInfo.CityId
 	if e = gDB.Save(&weather).Error; e != nil {

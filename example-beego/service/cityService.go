@@ -82,3 +82,17 @@ func SearchCity(words string) (maps map[int]models.City, e error) {
 	maps = cityListToMap(cities)
 	return
 }
+
+func CityCountIncrement(code string) {
+	var city models.City
+	if e := gDB.Model(&models.CityInstance).Where("code = ?", code).First(&city).Error; e == nil {
+		city.SearchCount++
+		gDB.Model(&models.CityInstance).Update(&city)
+	} else {
+		logs.Error("add count error: %+v", e)
+	}
+}
+func ListCityByCount() (cities []models.City, err error) {
+	err = gDB.Model(&models.CityInstance).Not("code", defaultHotCode).Order("search_count desc").Limit(12).Find(&cities).Error
+	return
+}
