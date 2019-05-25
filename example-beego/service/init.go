@@ -37,7 +37,7 @@ func init() {
 	// 触发 load from json
 	_, _ = ListAllCity()
 
-	weatherCron()
+	//weatherCron()
 }
 func weatherCron() {
 	util.StartTimer2(updateAllWeather, func(doneTime time.Time) time.Time {

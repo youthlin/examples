@@ -37,6 +37,11 @@ $(document).ready(function () {
     });
     // 页面就绪滑动到锚点(如果有)
     scrollToAnchor();
+    // 锚点滑动
+    $('a[href^="#"]').click(function () {
+        scrollToAnchor($(this).attr('href'));
+        return false;
+    });
 
     $('.date').each(function () {
         var date = $(this).html();
@@ -45,6 +50,10 @@ $(document).ready(function () {
     });
 
     suggest();
+
+    if (active) {
+        activeNavItem(active);
+    }
 
 });
 

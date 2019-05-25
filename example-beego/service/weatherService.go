@@ -39,7 +39,9 @@ func updateAllWeather() error {
 		if v.Code != "" {
 			e := updateWeather(v.Code)
 			if e != nil {
-				return e
+				logs.Error("[update all]更新天气出现异常 跳过该城市 并休眠 5s 再继续. %v", v)
+				time.Sleep(time.Second * 5)
+				// return e
 			}
 			time.Sleep(time.Second * 2)
 		}
