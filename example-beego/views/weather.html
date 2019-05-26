@@ -3,10 +3,6 @@
         font-size: small;
         vertical-align: top;
     }
-
-    span.data {
-
-    }
 </style>
 <div class="container">
     {{ $data := .weather.Data }}
@@ -25,7 +21,13 @@
             </tr>
             <tr>
                 <td><span class="title">空气质量</span> <span class="data">{{ $data.Quality }}</span></td>
-                <td><span class="title">更新时间</span> <span class="data">{{.weather.Time }}</span></td>
+                <td><span class="title">
+                        <a target="_blank" class="text-dark"
+                           href="http://t.weather.itboy.net/api/weather/city/{{ .weather.CityCode }}">
+                            更新时间
+                        </a>
+                    </span>
+                    <span class="data">{{ .weather.Time }}</span></td>
             </tr>
             <tr>
                 <td colspan="2"><span class="title">感冒提醒</span> <span class="data">{{ $data.Ganmao }}</span></td>

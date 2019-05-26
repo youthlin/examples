@@ -33,7 +33,7 @@ func SearchWeather(code string, forceUpdate bool) (weather models.Weather, e err
 func searchWeather0(code string, weather *models.Weather) error {
 	now := time.Now()
 	date := now.Format("20060102")
-	return gDB.Where("date = ? AND city_code = ?", date, code).Order("updated_at").Limit(1).Find(weather).Error
+	return gDB.Where("date = ? AND city_code = ?", date, code).Order("time desc").Limit(1).Find(weather).Error
 }
 
 func updateAllWeather() error {
