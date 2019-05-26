@@ -95,7 +95,8 @@ func (this *MainController) CitySearch() {
 // @router /weather/*.*
 func (this *MainController) Weather() {
 	code := this.Ctx.Input.Param(":path")
-	weather, err := service.SearchWeather(code)
+	ext := this.Ctx.Input.Param(":ext")
+	weather, err := service.SearchWeather(code, ext == "update")
 	if err != nil {
 		this.toError(err)
 		return

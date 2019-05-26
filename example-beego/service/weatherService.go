@@ -9,9 +9,15 @@ import (
 	"time"
 )
 
-func SearchWeather(code string) (models.Weather, error) {
-	var weather models.Weather
-	e := searchWeather0(code, &weather)
+func SearchWeather(code string, forceUpdate bool) (weather models.Weather, e error) {
+	if forceUpdate {
+		logs.Info("Force Update. code=%s", code)
+		e = updateWeather(code)
+		if e != nil {
+			return
+		}
+	}
+	e = searchWeather0(code, &weather)
 	if e != nil {
 		if e == gorm.ErrRecordNotFound {
 			e = updateWeather(code)
@@ -21,7 +27,7 @@ func SearchWeather(code string) (models.Weather, error) {
 		}
 		e = errors.Wrap(e, "Search Weather Error")
 	}
-	return weather, e
+	return
 }
 
 func searchWeather0(code string, weather *models.Weather) error {
