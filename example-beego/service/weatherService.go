@@ -19,7 +19,7 @@ func SearchWeather(code string, forceUpdate bool) (weather models.Weather, e err
 	}
 	e = searchWeather0(code, &weather)
 	if e != nil {
-		if e == gorm.ErrRecordNotFound {
+		if e == gorm.ErrRecordNotFound && !forceUpdate {
 			e = updateWeather(code)
 			if e == nil {
 				e = searchWeather0(code, &weather)
