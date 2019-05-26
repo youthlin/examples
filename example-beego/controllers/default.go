@@ -11,6 +11,7 @@ import (
 )
 
 var icon = make(map[string]string)
+var version string
 
 func init() {
 	files, e := ioutil.ReadDir("static/img/icon")
@@ -23,6 +24,7 @@ func init() {
 	}
 	logs.Info("icon: %s", icon)
 
+	version = beego.AppConfig.String("version")
 }
 
 type MainController struct {
@@ -34,7 +36,9 @@ func (this *MainController) setTitle(t string) {
 }
 func (this *MainController) Prepare() {
 	this.Layout = "layout.html"
+	this.Data["v"] = version
 }
+
 func (this *MainController) Render() (e error) {
 	title, _ := this.Data["Title"].(string)
 	if title == "" {

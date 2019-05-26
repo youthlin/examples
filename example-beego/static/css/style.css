@@ -178,3 +178,7 @@ html, body {
 .forecast .table-responsive th {
     width: 90px;
 }
+
+.forecast img {
+    display: block;
+}
