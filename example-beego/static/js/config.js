@@ -51,7 +51,8 @@ $(document).ready(function () {
 
     suggest();
 
-    if (active) {
+    if (active === undefined) {
+    } else {
         activeNavItem(active);
     }
 
@@ -207,5 +208,5 @@ function suggest() {
 }
 
 function debug(msg) {
-    console.log(msg);
+    //console.log(msg);
 }

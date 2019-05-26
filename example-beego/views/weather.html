@@ -12,7 +12,7 @@
     {{ $data := .weather.Data }}
     {{ $city := .weather.CityInfo }}
     <h3><a href="/weather/{{ $city.CityId }}.html">{{ $city.Parent }} - {{ $city.City }} 天气预报</a></h3>
-    <div class="table-responsive">
+    <div class="forecast">
         <table class="table">
             <tbody>
             <tr>
@@ -32,52 +32,54 @@
             </tr>
             </tbody>
         </table>
-        <table class="table table-hover ">
-            <thead>
-            <tr>
-                <th>星期</th>
-                <th>日期</th>
-                <th>天气</th>
-                <th>日出</th>
-                <th>日落</th>
-                <th>最高</th>
-                <th>最低</th>
-                <th>风向</th>
-                <th>风力</th>
-                <th>AQI</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{ with  $data.Yesterday }}
-                <tr title="{{ .Notice }}" class="text-secondary">
-                    <td>{{ .Week }}<br>(昨天)</td>
-                    <td><span title="{{ .Ymd }}">{{ .Date }}</span></td>
-                    <td><img src="/static/img/icon/{{ .Type }}2.png" alt="icon"> {{ .Type }}</td>
-                    <td>{{ .Sunrise }}</td>
-                    <td>{{ .Sunset }}</td>
-                    <td>{{ .High }}</td>
-                    <td>{{ .Low }}</td>
-                    <td>{{ .Fx }}</td>
-                    <td> {{ .Fl }}</td>
-                    <td>{{ .Aqi }}</td>
+        <div class="table-responsive">
+            <table class="table table-hover ">
+                <thead>
+                <tr>
+                    <th>星期</th>
+                    <th>日期</th>
+                    <th>天气</th>
+                    <th>日出</th>
+                    <th>日落</th>
+                    <th>最高</th>
+                    <th>最低</th>
+                    <th>风向</th>
+                    <th>风力</th>
+                    <th>AQI</th>
                 </tr>
-            {{ end }}
-            {{ range $data.Forecast }}
-                <tr title="{{ .Notice }}">
-                    <td>{{ .Week }}</td>
-                    <td><span title="{{ .Ymd }}">{{ .Date }}</span></td>
-                    <td><img src="/static/img/icon/{{ .Type }}.png" alt="icon"> {{ .Type }}</td>
-                    <td>{{ .Sunrise }}</td>
-                    <td>{{ .Sunset }}</td>
-                    <td>{{ .High }}</td>
-                    <td>{{ .Low }}</td>
-                    <td>{{ .Fx }}</td>
-                    <td> {{ .Fl }}</td>
-                    <td>{{ .Aqi }}</td>
-                </tr>
-            {{ end }}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {{ with  $data.Yesterday }}
+                    <tr title="{{ .Notice }}" class="text-secondary">
+                        <td>{{ .Week }}<br>(昨天)</td>
+                        <td><span title="{{ .Ymd }}">{{ .Date }}</span></td>
+                        <td><img src="/static/img/icon/{{ .Type }}2.png" alt="icon"> {{ .Type }}</td>
+                        <td>{{ .Sunrise }}</td>
+                        <td>{{ .Sunset }}</td>
+                        <td>{{ .High }}</td>
+                        <td>{{ .Low }}</td>
+                        <td>{{ .Fx }}</td>
+                        <td> {{ .Fl }}</td>
+                        <td>{{ .Aqi }}</td>
+                    </tr>
+                {{ end }}
+                {{ range $data.Forecast }}
+                    <tr title="{{ .Notice }}">
+                        <td>{{ .Week }}</td>
+                        <td><span title="{{ .Ymd }}">{{ .Date }}</span></td>
+                        <td><img src="/static/img/icon/{{ .Type }}.png" alt="icon"> {{ .Type }}</td>
+                        <td>{{ .Sunrise }}</td>
+                        <td>{{ .Sunset }}</td>
+                        <td>{{ .High }}</td>
+                        <td>{{ .Low }}</td>
+                        <td>{{ .Fx }}</td>
+                        <td> {{ .Fl }}</td>
+                        <td>{{ .Aqi }}</td>
+                    </tr>
+                {{ end }}
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>

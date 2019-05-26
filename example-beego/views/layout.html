@@ -10,29 +10,29 @@
     {{.HtmlHead}}
 </head>
 <body>
+<script>
+    var active = undefined;
+</script>
 <div id="wrap">
     <nav class="fixed-top navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand m-0 p-0" href="/">
             <img src="/static/img/logo.jpg" alt="灵天气" width="40" height="40">
         </a>
+
+        <div class="mr-auto">
+            <a class="p-2 nav-item-a nav-item-home" href="/">首页</a>
+            <a class="p-2 nav-item-a nav-item-all" href="/cityList">城市列表</a>
+            <a class="p-2 nav-item-a nav-item-about" href="/about">关于</a>
+        </div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
+
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item ">
-                    <a class="nav-link nav-item-home" href="/">首页</a>
-                </li>
-                <li class="nav-item ">
-                    <a class="nav-link nav-item-all" href="/cityList">城市列表</a>
-                </li>
-                <li class="nav-item ">
-                    <a class="nav-link nav-item-about" href="/about">关于</a>
-                </li>
-            </ul>
-            <form class="form-inline my-2 my-lg-0 search-form" data-target="#headerSuggest" action="/citySearch">
+            <form class="ml-auto form-inline my-2 my-lg-0 search-form" data-target="#headerSuggest"
+                  action="/citySearch">
                 <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="city">
                 <div class="suggest" id="headerSuggest">
                     <!--ul><li><a class=" w-100" href="/weather/101010100.html">北京</a></li></ul-->

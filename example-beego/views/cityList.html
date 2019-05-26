@@ -1,27 +1,27 @@
 <div class="container">
     <h4 id="toc">导航</h4>
     {{ range  .Provinces }}
-        <a class="toc" href="#p-{{ .Province.Id }}">{{ .Province.Name }}</a>
+        <a class="toc city-item" href="#p-{{ .Province.Id }}">{{ .Province.Name }}</a>
     {{ end }}
     <hr>
     {{ range  .Provinces }}
         <div>
             <h4 class="d-inline" id="p-{{ .Province.Id }}">
                 {{if .Province.Code }}
-                    <a href="/weather/{{ .Province.Code }}.html">{{ .Province.Name }}</a>
+                    <a class="city-item" href="/weather/{{ .Province.Code }}.html">{{ .Province.Name }}</a>
                 {{else}}
-                    {{ .Province.Name }}
+                    <span class="city-item">{{ .Province.Name }}</span>
                 {{end}}
             </h4>
             <small><a class="toc" href="#toc">返回导航</a></small>
         </div>
         {{ $Country := .Country}}
         {{ range .Cities}}
-            <strong><a href="/weather/{{ .Code }}.html">{{ .Name }}</a></strong>
+            <strong><a class="city-item" href="/weather/{{ .Code }}.html">{{ .Name }}</a></strong>
             {{ $City :=index $Country . }}
             {{ if $City }}
                 {{ range $City }}
-                    <a href="/weather/{{ .Code }}.html">{{ .Name }}</a>
+                    <a class="city-item" href="/weather/{{ .Code }}.html">{{ .Name }}</a>
                 {{ end }}
                 <br>
             {{end}}
@@ -30,5 +30,5 @@
     {{ end }}
 </div>
 <script>
-    var active = 'nav-item-all';
+    active = 'nav-item-all';
 </script>

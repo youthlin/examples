@@ -103,6 +103,14 @@ html, body {
     padding: 1rem;
 }
 
+.nav-item-a {
+    color: #ccc;
+}
+
+.nav-item-a.active {
+    color: #000;
+}
+
 #headerSuggest {
     position: absolute;
     top: 50px;
@@ -144,12 +152,29 @@ html, body {
 }
 
 .hot-city a {
+    display: inline-block;
     background: #ccc;
     line-height: 2.5rem;
-    display: inline-block;
+    max-height: 2.5rem;
+    overflow-y: hidden;
 }
 
 .hot-city li {
-    margin: 5px 0;
+    padding: 1%;
     display: inline-block;
+}
+
+.city-item {
+    display: inline-block;
+    padding: 1%;
+    line-height: 35px;
+}
+
+.city-item:hover {
+    background: #07b;
+    color: #fff;
+}
+
+.forecast .table-responsive th {
+    width: 90px;
 }
