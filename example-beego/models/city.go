@@ -49,3 +49,9 @@ func (provinces Provinces) Swap(i int, j int) {
 	provinces[i] = provinces[j]
 	provinces[j] = tmp
 }
+
+type CityView struct {
+	Id   int
+	Code string
+	Name string
+}

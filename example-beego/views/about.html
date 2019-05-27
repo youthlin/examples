@@ -11,6 +11,18 @@
             <p>代码开源：<a href="https://github.com/YouthLin/examples/tree/master/example-beego">@GitHub</a></p>
         </div>
     </div>
+    {{ if ne .UpdatedCity ""}}
+        <div>数据更新情况</div>
+        <div>
+            正在更新 = {{ .UpdateTaskRunning }}<br>
+            更新任务开始时间 = {{ .UpdateTaskStartedAt }}<br>
+            上次更新完成时间 = {{ .UpdateTaskLastDoneAt }}<br>
+        </div>
+        <p>本次更新任务已更新城市：</p>
+        <pre class="json">
+        {{ .UpdatedCity }}
+    </pre>
+    {{ end }}
 </div>
 <script>
     active = 'nav-item-about';

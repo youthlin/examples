@@ -56,6 +56,7 @@ $(document).ready(function () {
         activeNavItem(active);
     }
 
+    showJson();
 });
 
 function activeNavItem(className) {
@@ -209,4 +210,12 @@ function suggest() {
 
 function debug(msg) {
     //console.log(msg);
+}
+
+function showJson() {
+    var j = $('.json');
+    j.css('max-height', "500px");
+    var t = j.text();
+    t = JSON.stringify(JSON.parse(t), null, 4);
+    j.text(t);
 }

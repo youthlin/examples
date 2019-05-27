@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
@@ -108,15 +109,21 @@ func (this *MainController) Weather() {
 	service.CityCountIncrement(code)
 	logs.Info("code=%s weather=%v", code, weather)
 	this.Data["weather"] = weather
-	this.Data["UpdateTaskRunning"] = service.UpdateTaskRunning
-	this.Data["UpdateTaskStartedAt"] = service.UpdateTaskStartedAt
-	this.Data["UpdateTaskLastDoneAt"] = service.UpdateTaskLastDoneAt
 	this.TplName = "weather.html"
 	this.setTitle(weather.CityInfo.Parent + "-" + weather.CityInfo.City + "天气预报")
 }
 
 // @router /about
 func (this *MainController) About() {
+	detail := this.GetString("detail")
+	logs.Info("detail=%s", detail)
+	if detail != "" {
+		this.Data["UpdateTaskRunning"] = service.UpdateTaskRunning
+		this.Data["UpdateTaskStartedAt"] = service.UpdateTaskStartedAt
+		this.Data["UpdateTaskLastDoneAt"] = service.UpdateTaskLastDoneAt
+		bytes, _ := json.Marshal(service.UpdatedCity)
+		this.Data["UpdatedCity"] = string(bytes)
+	}
 	this.TplName = "about.html"
 	this.setTitle("关于")
 }

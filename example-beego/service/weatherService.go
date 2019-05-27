@@ -6,12 +6,14 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	"github.com/youthlin/examples/example-beego/models"
+	"sort"
 	"time"
 )
 
 var UpdateTaskRunning bool
 var UpdateTaskStartedAt time.Time
 var UpdateTaskLastDoneAt time.Time
+var UpdatedCity = []models.CityView{}
 
 func SearchWeather(code string, forceUpdate bool) (weather models.Weather, e error) {
 	if forceUpdate {
@@ -46,18 +48,30 @@ func updateAllWeather() error {
 	defer func() {
 		UpdateTaskRunning = false
 		UpdateTaskLastDoneAt = time.Now()
+		UpdatedCity = nil
 	}()
 	maps, e := ListAllCity()
 	if e != nil {
 		return e
 	}
-	for _, v := range maps {
+	ids := []int{}
+	for k, _ := range maps {
+		ids = append(ids, k)
+	}
+	sort.Ints(ids)
+	for _, id := range ids {
+		v := maps[id]
 		if v.Code != "" {
 			// 300次每分钟 = 5qps
 			e := updateWeather(v.Code)
 			if e != nil {
 				logs.Error("[update one error]更新天气出现异常 跳过该城市 city=%v error=%+v", v, e)
 			}
+			UpdatedCity = append(UpdatedCity, models.CityView{
+				Id:   v.Id,
+				Code: v.Code,
+				Name: v.Name,
+			})
 			// 1s=1000ms 休眠 500ms~2qps 250ms~4qps
 			time.Sleep(time.Millisecond * 300)
 		}
