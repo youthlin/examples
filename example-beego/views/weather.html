@@ -75,7 +75,24 @@
                         <td>{{ .Sunset }}</td>
                         <td>{{ .Fx }}</td>
                         <td> {{ .Fl }}</td>
-                        <td>{{ .Aqi }}</td>
+                        <td>
+                            {{ .Aqi }}<br>
+                            {{ if lt .Aqi  0.1}}
+                                -
+                            {{ else if le .Aqi  50.0}}
+                                优
+                            {{ else if le .Aqi 100.0}}
+                                良好
+                            {{ else if le .Aqi 150.0}}
+                                轻度污染
+                            {{ else if le .Aqi 200.0}}
+                                中度污染
+                            {{ else if le .Aqi 300.0}}
+                                重度污染
+                            {{ else }}
+                                严重污染
+                            {{ end }}
+                        </td>
                     </tr>
                 {{ end }}
                 {{ range $data.Forecast }}
@@ -89,8 +106,24 @@
                         <td>{{ .Sunset }}</td>
                         <td>{{ .Fx }}</td>
                         <td> {{ .Fl }}</td>
-                        <td>{{ .Aqi }}</td>
-                    </tr>
+                        <td>
+                            {{ .Aqi }}<br>
+                            {{ if lt .Aqi  0.1}}
+                                -
+                            {{ else if le .Aqi  50.0}}
+                                优
+                            {{ else if le .Aqi 100.0}}
+                                良好
+                            {{ else if le .Aqi 150.0}}
+                                轻度污染
+                            {{ else if le .Aqi 200.0}}
+                                中度污染
+                            {{ else if le .Aqi 300.0}}
+                                重度污染
+                            {{ else }}
+                                严重污染
+                            {{ end }}
+                        </td>                    </tr>
                 {{ end }}
                 </tbody>
             </table>
