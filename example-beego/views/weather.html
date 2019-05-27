@@ -41,6 +41,11 @@
                         接口系统更新时间             Time       {{ .weather.Time }} <br>
                         实际天气更新时间             UpdateTime {{ .weather.CityInfo.UpdateTime }} <br>
                     </span>
+                    <span class="d-none">
+                        UpdateTaskRunning    = {{ .UpdateTaskRunning }}
+                        UpdateTaskStartedAt  = {{ .UpdateTaskStartedAt }}
+                        UpdateTaskLastDoneAt = {{ .UpdateTaskLastDoneAt }}
+                    </span>
                     {{ str2html "-->" }}
                 </td>
             </tr>

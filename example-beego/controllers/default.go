@@ -108,6 +108,9 @@ func (this *MainController) Weather() {
 	service.CityCountIncrement(code)
 	logs.Info("code=%s weather=%v", code, weather)
 	this.Data["weather"] = weather
+	this.Data["UpdateTaskRunning"] = service.UpdateTaskRunning
+	this.Data["UpdateTaskStartedAt"] = service.UpdateTaskStartedAt
+	this.Data["UpdateTaskLastDoneAt"] = service.UpdateTaskLastDoneAt
 	this.TplName = "weather.html"
 	this.setTitle(weather.CityInfo.Parent + "-" + weather.CityInfo.City + "天气预报")
 }

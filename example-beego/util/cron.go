@@ -22,7 +22,7 @@ func StartTimer2(taskFunc func() error, nextTimeCalculator func(time.Time) time.
 			}
 			now := time.Now()
 			next := nextTimeCalculator(now)
-			log.Printf("Task done at %s, next exe time: %s", now, next)
+			log.Printf("Task done at %s, next execute time: %s", now, next)
 			timer := time.NewTimer(next.Sub(now))
 			<-timer.C
 		}

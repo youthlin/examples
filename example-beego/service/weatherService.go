@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+var UpdateTaskRunning bool
+var UpdateTaskStartedAt time.Time
+var UpdateTaskLastDoneAt time.Time
+
 func SearchWeather(code string, forceUpdate bool) (weather models.Weather, e error) {
 	if forceUpdate {
 		logs.Info("Force Update. code=%s", code)
@@ -37,19 +41,25 @@ func searchWeather0(code string, weather *models.Weather) error {
 }
 
 func updateAllWeather() error {
+	UpdateTaskRunning = true
+	UpdateTaskStartedAt = time.Now()
+	defer func() {
+		UpdateTaskRunning = false
+		UpdateTaskLastDoneAt = time.Now()
+	}()
 	maps, e := ListAllCity()
 	if e != nil {
 		return e
 	}
 	for _, v := range maps {
 		if v.Code != "" {
+			// 300次每分钟 = 5qps
 			e := updateWeather(v.Code)
 			if e != nil {
-				logs.Error("[update all]更新天气出现异常 跳过该城市 并休眠 5s 再继续. %v", v)
-				time.Sleep(time.Second * 5)
-				// return e
+				logs.Error("[update one error]更新天气出现异常 跳过该城市 city=%v error=%+v", v, e)
 			}
-			time.Sleep(time.Second * 2)
+			// 1s=1000ms 休眠 500ms~2qps 250ms~4qps
+			time.Sleep(time.Millisecond * 300)
 		}
 	}
 	return nil
