@@ -117,7 +117,9 @@ func (this *MainController) Weather() {
 func (this *MainController) About() {
 	detail := this.GetString("detail")
 	logs.Info("detail=%s", detail)
+	this.Data["ShowDetail"] = false
 	if detail != "" {
+		this.Data["ShowDetail"] = true
 		this.Data["UpdateTaskRunning"] = service.UpdateTaskRunning
 		this.Data["UpdateTaskStartedAt"] = service.UpdateTaskStartedAt
 		this.Data["UpdateTaskLastDoneAt"] = service.UpdateTaskLastDoneAt

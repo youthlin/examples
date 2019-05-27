@@ -11,7 +11,7 @@
             <p>代码开源：<a href="https://github.com/YouthLin/examples/tree/master/example-beego">@GitHub</a></p>
         </div>
     </div>
-    {{ if ne .UpdatedCity ""}}
+    {{ if .ShowDetail }}
         <div>数据更新情况</div>
         <div>
             正在更新 = {{ .UpdateTaskRunning }}<br>
