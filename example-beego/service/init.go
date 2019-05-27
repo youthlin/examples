@@ -57,7 +57,9 @@ func weatherCron() {
 			dayPlus = 1
 			nextHour = 4
 		}
-		return time.Date(doneTime.Year(), doneTime.Month(), doneTime.Day()+dayPlus, nextHour, 0, 0, 0, doneTime.Location())
+		nextExecuteTime := time.Date(doneTime.Year(), doneTime.Month(), doneTime.Day()+dayPlus, nextHour, 0, 0, 0, doneTime.Location())
+		UpdateTaskNextStartedAt = nextExecuteTime
+		return UpdateTaskNextStartedAt
 	}, func(err error) bool {
 		logs.Error("定时任务出现异常:%+v", err)
 		return false

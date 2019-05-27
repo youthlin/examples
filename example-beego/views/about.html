@@ -18,10 +18,12 @@
             更新任务开始时间 = {{ .UpdateTaskStartedAt }}<br>
             上次更新完成时间 = {{ .UpdateTaskLastDoneAt }}<br>
         </div>
-        <p>本次更新任务已更新城市：</p>
-        <pre class="json">
-        {{ .UpdatedCity }}
-    </pre>
+        {{ if .UpdateTaskRunning }}
+            <p>本次更新任务已更新城市：</p>
+            <pre class="json">{{ .UpdatedCity }}</pre>
+        {{ else }}
+            下次更新时间 = {{ .UpdateTaskNextStartedAt }}<br>
+        {{ end }}
     {{ end }}
 </div>
 <script>

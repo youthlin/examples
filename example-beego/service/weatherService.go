@@ -13,6 +13,7 @@ import (
 var UpdateTaskRunning bool
 var UpdateTaskStartedAt time.Time
 var UpdateTaskLastDoneAt time.Time
+var UpdateTaskNextStartedAt time.Time
 var UpdatedCity = []models.CityView{}
 
 func SearchWeather(code string, forceUpdate bool) (weather models.Weather, e error) {
@@ -64,13 +65,17 @@ func updateAllWeather() error {
 		if v.Code != "" {
 			// 300次每分钟 = 5qps
 			e := updateWeather(v.Code)
+			errMsg := ""
 			if e != nil {
+				errMsg = e.Error()
 				logs.Error("[update one error]更新天气出现异常 跳过该城市 city=%v error=%+v", v, e)
 			}
+
 			UpdatedCity = append(UpdatedCity, models.CityView{
-				Id:   v.Id,
-				Code: v.Code,
-				Name: v.Name,
+				Id:    v.Id,
+				Code:  v.Code,
+				Name:  v.Name,
+				Error: errMsg,
 			})
 			// 1s=1000ms 休眠 500ms~2qps 250ms~4qps
 			time.Sleep(time.Millisecond * 300)
