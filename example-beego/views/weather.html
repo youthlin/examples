@@ -13,11 +13,15 @@
             <tbody>
             <tr>
                 <td><span class="title">温度</span> <span class="data">{{ $data.Wendu }}</span></td>
-                <td><span class="title">PM2.5</span> <span class="data">{{ $data.Pm25 }}</span></td>
+                <td><span class="title" title="直径 2.5 微米以下的细颗粒物">PM2.5</span>
+                    <span class="data">{{ $data.Pm25 }}</span>
+                </td>
             </tr>
             <tr>
                 <td><span class="title">湿度</span> <span class="data">{{ $data.Shidu }}</span></td>
-                <td><span class="title">PM1.0</span> <span class="data">{{ $data.Pm10 }}</span></td>
+                <td><span class="title" title="直径 10 微米以下的可吸入颗粒物">PM10</span>
+                    <span class="data">{{ $data.Pm10 }}</span>
+                </td>
             </tr>
             <tr>
                 <td><span class="title">空气质量</span> <span class="data">{{ $data.Quality }}</span></td>
@@ -27,7 +31,16 @@
                             更新时间
                         </a>
                     </span>
-                    <span class="data">{{ .weather.Time }}</span></td>
+                    <span class="data">{{ .weather.CityInfo.UpdateTime }}</span>
+                    {{ str2html "<!--" }}
+                    <span class="d-none">
+                        本系统请求接口时间          CreatedAt {{ .weather.CreatedAt }} <br>
+                        本系统记录更新时间(基本同上) UpdatedAt {{ .weather.UpdatedAt }} <br>
+                        接口系统更新时间           Time       {{ .weather.Time }} <br>
+                        实际天气更新时间           UpdateTime {{ .weather.CityInfo.UpdateTime }} <br>
+                    </span>
+                    {{ str2html "-->" }}
+                </td>
             </tr>
             <tr>
                 <td colspan="2"><span class="title">感冒提醒</span> <span class="data">{{ $data.Ganmao }}</span></td>
@@ -47,7 +60,7 @@
                     <th>最低</th>
                     <th>风向</th>
                     <th>风力</th>
-                    <th>AQI</th>
+                    <th title="空气质量指数">AQI</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -56,10 +69,10 @@
                         <td>{{ .Week }}<br>(昨天)</td>
                         <td><span title="{{ .Ymd }}">{{ .Date }}</span></td>
                         <td><img src="/static/img/icon/{{ .Type }}2.png" alt="icon"> {{ .Type }}</td>
-                        <td>{{ .Sunrise }}</td>
-                        <td>{{ .Sunset }}</td>
                         <td>{{ .High }}</td>
                         <td>{{ .Low }}</td>
+                        <td>{{ .Sunrise }}</td>
+                        <td>{{ .Sunset }}</td>
                         <td>{{ .Fx }}</td>
                         <td> {{ .Fl }}</td>
                         <td>{{ .Aqi }}</td>
@@ -70,10 +83,10 @@
                         <td>{{ .Week }}</td>
                         <td><span title="{{ .Ymd }}">{{ .Date }}</span></td>
                         <td><img src="/static/img/icon/{{ .Type }}.png" alt="icon"> {{ .Type }}</td>
-                        <td>{{ .Sunrise }}</td>
-                        <td>{{ .Sunset }}</td>
                         <td>{{ .High }}</td>
                         <td>{{ .Low }}</td>
+                        <td>{{ .Sunrise }}</td>
+                        <td>{{ .Sunset }}</td>
                         <td>{{ .Fx }}</td>
                         <td> {{ .Fl }}</td>
                         <td>{{ .Aqi }}</td>
