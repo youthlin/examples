@@ -216,6 +216,9 @@ function showJson() {
     var j = $('.json');
     j.css('max-height', "500px");
     var t = j.text();
-    t = JSON.stringify(JSON.parse(t), null, 4);
-    j.text(t);
+    //debug(t);
+    if (t.length > 0) {
+        t = JSON.stringify(JSON.parse(t), null, 4);
+        j.text(t);
+    }
 }
