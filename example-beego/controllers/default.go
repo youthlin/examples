@@ -123,6 +123,7 @@ func (this *MainController) About() {
 		this.Data["UpdateTaskRunning"] = service.UpdateTaskRunning
 		this.Data["UpdateTaskStartedAt"] = service.UpdateTaskStartedAt
 		this.Data["UpdateTaskLastDoneAt"] = service.UpdateTaskLastDoneAt
+		this.Data["UpdateTaskNextStartedAt"] = service.UpdateTaskNextStartedAt
 		bytes, _ := json.Marshal(service.UpdatedCity)
 		this.Data["UpdatedCity"] = string(bytes)
 	}
