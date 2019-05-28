@@ -1,11 +1,13 @@
 # example-beego 
 ## Weather Forecast
+演示 Demo [https://w.youthlin.com/](https://w.youthlin.com/)  
+
 ```
 go get github.com/youthlin/examples/example-beego
 cd $GOPATH/src/github.com/youthlin/examples/example-beego
-vim conf/app.conf
+vim conf/db.conf
 ```
-修改 `app.conf` 中数据库用户名、密码和数据库
+修改 `db.conf` 中数据库用户名、密码和数据库
 ```
 go clean
 go build
