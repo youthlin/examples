@@ -11,7 +11,8 @@ go clean
 go build
 ./example-beego
 ```
-打开浏览器 端口 8888
+或者 `go run main.go`  
+打开浏览器 端口 8888 (`app.conf` 可修改端口)
 
 免费天气 API: https://www.sojson.com/blog/305.html
 

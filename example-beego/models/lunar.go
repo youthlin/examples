@@ -32,7 +32,3 @@ type LunarData struct {
 	LunarYearString string         `json:"lunarYearString"`
 	BigMonth        bool           `json:"bigMonth"`
 }
-
-func init() {
-	// orm.RegisterModel(new(Lunar))
-}

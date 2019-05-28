@@ -17,14 +17,13 @@ var version string
 func init() {
 	files, e := ioutil.ReadDir("static/img/icon")
 	if e != nil {
-		logs.Error("ReadDir error: %=v", e)
+		logs.Error("Read icon dir error: %+v", e)
 	}
 	for _, png := range files {
 		name := png.Name()
 		icon[strings.TrimSuffix(name, ".png")] = "/static/img/" + name
 	}
-	logs.Info("icon: %s", icon)
-
+	//logs.Info("icon: %s", icon)
 	version = beego.AppConfig.String("version")
 }
 
@@ -47,6 +46,7 @@ func (this *MainController) Render() (e error) {
 	} else {
 		this.setTitle(title + " - 灵天气")
 	}
+	// super method
 	e = this.Controller.Render()
 	return
 }
@@ -66,8 +66,7 @@ func (this *MainController) Home() {
 func (this *MainController) CityList() {
 	cityMap, e := service.ListAllCity()
 	if e != nil {
-		this.Data["e"] = e
-		this.TplName = "error.html"
+		this.toError(e)
 		return
 	}
 	this.Data["CityMap"] = cityMap
@@ -116,7 +115,6 @@ func (this *MainController) Weather() {
 // @router /about
 func (this *MainController) About() {
 	detail := this.GetString("detail")
-	logs.Info("detail=%s", detail)
 	this.Data["ShowDetail"] = false
 	if detail != "" {
 		this.Data["ShowDetail"] = true

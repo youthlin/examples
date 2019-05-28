@@ -40,7 +40,7 @@ func init() {
 	weatherCron()
 }
 func weatherCron() {
-	util.StartTimer2(updateAllWeather, func(doneTime time.Time) time.Time {
+	util.StartTimer(updateAllWeather, func(doneTime time.Time) time.Time {
 		hour := doneTime.Hour()
 		// 4 9 14 20
 		var nextHour int

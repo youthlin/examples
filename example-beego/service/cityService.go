@@ -10,6 +10,7 @@ import (
 	"sort"
 )
 
+// 城市列表 第一次或从 json 文件加载到数据库
 func ListAllCity() (maps map[int]models.City, e error) {
 	var cities []*models.City
 	gDB.Find(&cities)
@@ -40,6 +41,7 @@ func cityListToMap(cities []*models.City) map[int]models.City {
 	return maps
 }
 
+// 按省份分组
 func GroupCities(maps *map[int]models.City) models.Provinces {
 	var provinces models.Provinces
 	for _, v := range *maps {
@@ -58,6 +60,7 @@ func GroupCities(maps *map[int]models.City) models.Provinces {
 	return provinces
 }
 
+// 按 id 获取城市
 func getCities(maps *map[int]models.City, pid int) models.Cities {
 	var cities models.Cities
 	for _, v := range *maps {
@@ -68,6 +71,8 @@ func getCities(maps *map[int]models.City, pid int) models.Cities {
 	sort.Sort(cities)
 	return cities
 }
+
+// 获取cities中每个城市的县级城市
 func getCountry(maps *map[int]models.City, cities models.Cities) map[models.City]models.Cities {
 	country := make(map[models.City]models.Cities)
 	for _, city := range cities {
@@ -76,6 +81,7 @@ func getCountry(maps *map[int]models.City, cities models.Cities) map[models.City
 	return country
 }
 
+// 前缀模糊搜索城市 仅支持中文 不支持拼音
 func SearchCity(words string) (maps map[int]models.City, e error) {
 	var cities []*models.City
 	gDB.Find(&cities, "name LIKE ?", words+"%")
@@ -83,6 +89,7 @@ func SearchCity(words string) (maps map[int]models.City, e error) {
 	return
 }
 
+// 搜索次数递增
 func CityCountIncrement(code string) {
 	var city models.City
 	if e := gDB.Model(&models.CityInstance).Where("code = ?", code).First(&city).Error; e == nil {
@@ -92,6 +99,8 @@ func CityCountIncrement(code string) {
 		logs.Error("add count error: %+v", e)
 	}
 }
+
+// 按搜索次数获取热门城市
 func ListCityByCount() (cities []models.City, err error) {
 	err = gDB.Model(&models.CityInstance).Not("code", defaultHotCode).Order("search_count desc").Limit(12).Find(&cities).Error
 	return

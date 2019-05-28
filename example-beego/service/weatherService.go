@@ -16,6 +16,7 @@ var UpdateTaskLastDoneAt time.Time
 var UpdateTaskNextStartedAt time.Time
 var UpdatedCity = []models.CityView{}
 
+// 具体天气页面
 func SearchWeather(code string, forceUpdate bool) (weather models.Weather, e error) {
 	if forceUpdate {
 		logs.Info("Force Update. code=%s", code)
@@ -43,6 +44,7 @@ func searchWeather0(code string, weather *models.Weather) error {
 	return gDB.Where("date = ? AND city_code = ?", date, code).Order("time desc").Limit(1).Find(weather).Error
 }
 
+// 更新所有城市的天气
 func updateAllWeather() error {
 	UpdateTaskRunning = true
 	UpdateTaskStartedAt = time.Now()
@@ -84,6 +86,7 @@ func updateAllWeather() error {
 	return nil
 }
 
+// 更新指定城市的天气
 func updateWeather(code string) error {
 	var weather models.Weather
 	e := GetRemoteJson("http://t.weather.itboy.net/api/weather/city/"+code, &weather)

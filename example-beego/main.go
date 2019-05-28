@@ -9,10 +9,11 @@ import (
 func init() {
 	// https://beego.me/docs/module/logs.md
 	logs.SetLogger(logs.AdapterConsole, `{"level":1,"color":true}`)
+	// 		"separate":["emergency", "alert", "critical", "error", "warning", "notice", "info", "debug"]
 	config := `{
 		"filename":"logs/weather.log",
 		"perm":"0775",
-		"separate":["emergency", "alert", "critical", "error", "warning", "notice", "info", "debug"]
+		"separate":["error", "info", "debug"]
 	}`
 	logs.SetLogger(logs.AdapterMultiFile, config)
 	logs.EnableFuncCallDepth(true)
