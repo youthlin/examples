@@ -10,11 +10,7 @@ import (
 	"time"
 )
 
-var UpdateTaskRunning bool
-var UpdateTaskStartedAt time.Time
-var UpdateTaskLastDoneAt time.Time
-var UpdateTaskNextStartedAt time.Time
-var UpdatedCity = []models.CityView{}
+var UpdateDetail models.UpdateDetail
 
 // 具体天气页面
 func SearchWeather(code string, forceUpdate bool) (weather models.Weather, e error) {
@@ -46,12 +42,13 @@ func searchWeather0(code string, weather *models.Weather) error {
 
 // 更新所有城市的天气
 func updateAllWeather() error {
-	UpdateTaskRunning = true
-	UpdateTaskStartedAt = time.Now()
+	UpdateDetail.TaskRunning = true
+	UpdateDetail.StartedAt = time.Now()
 	defer func() {
-		UpdateTaskRunning = false
-		UpdateTaskLastDoneAt = time.Now()
-		UpdatedCity = nil
+		UpdateDetail.TaskRunning = false
+		UpdateDetail.LastDoneAt = time.Now()
+		UpdateDetail.DoneCities = nil
+		UpdateDetail.DoneCount = 0
 	}()
 	maps, e := ListAllCity()
 	if e != nil {
@@ -62,6 +59,7 @@ func updateAllWeather() error {
 		ids = append(ids, k)
 	}
 	sort.Ints(ids)
+	UpdateDetail.TotalCount = len(ids)
 	for _, id := range ids {
 		v := maps[id]
 		if v.Code != "" {
@@ -72,13 +70,17 @@ func updateAllWeather() error {
 				errMsg = e.Error()
 				logs.Error("[update one error]更新天气出现异常 跳过该城市 city=%v error=%+v", v, e)
 			}
-
-			UpdatedCity = append(UpdatedCity, models.CityView{
-				Id:    v.Id,
-				Code:  v.Code,
-				Name:  v.Name,
-				Error: errMsg,
+			parent := maps[v.Pid]
+			UpdateDetail.DoneCities = append(UpdateDetail.DoneCities, models.CityView{
+				Id:         v.Id,
+				Code:       v.Code,
+				Name:       v.Name,
+				ParentId:   v.Pid,
+				ParentName: parent.Name,
+				ParentCode: parent.Code,
+				Error:      errMsg,
 			})
+			UpdateDetail.DoneCount++
 			// 1s=1000ms 休眠 500ms~2qps 250ms~4qps
 			time.Sleep(time.Millisecond * 300)
 		}

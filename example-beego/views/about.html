@@ -13,17 +13,7 @@
     </div>
     {{ if .ShowDetail }}
         <div>数据更新情况</div>
-        <div>
-            正在更新 = {{ .UpdateTaskRunning }}<br>
-            更新任务开始时间 = {{ .UpdateTaskStartedAt }}<br>
-            上次更新完成时间 = {{ .UpdateTaskLastDoneAt }}<br>
-        </div>
-        {{ if .UpdateTaskRunning }}
-            <p>本次更新任务已更新城市：</p>
-            <pre class="json">{{ .UpdatedCity }}</pre>
-        {{ else }}
-            下次更新时间 = {{ .UpdateTaskNextStartedAt }}<br>
-        {{ end }}
+        <pre class="json">{{ .UpdateDetail }}</pre>
     {{ end }}
 </div>
 <script>

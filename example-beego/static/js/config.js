@@ -218,7 +218,14 @@ function showJson() {
     var t = j.text();
     //debug(t);
     if (t.length > 0) {
-        t = JSON.stringify(JSON.parse(t), null, 4);
-        j.text(t);
+        var value = JSON.parse(t);
+        for (let c of value.DoneCities) {
+            c.Name = "<a href='/weather/" + c.Code + ".html'>" + c.Name + "</a>";
+            if (c.ParentCode.length > 0) {
+                c.ParentName = "<a href='/weather/" + c.ParentCode + ".html'>" + c.ParentName + "</a>";
+            }
+        }
+        t = JSON.stringify(value, null, 4);
+        j.html(t);
     }
 }

@@ -23,7 +23,6 @@ func init() {
 		name := png.Name()
 		icon[strings.TrimSuffix(name, ".png")] = "/static/img/" + name
 	}
-	//logs.Info("icon: %s", icon)
 	version = beego.AppConfig.String("version")
 }
 
@@ -118,12 +117,8 @@ func (this *MainController) About() {
 	this.Data["ShowDetail"] = false
 	if detail != "" {
 		this.Data["ShowDetail"] = true
-		this.Data["UpdateTaskRunning"] = service.UpdateTaskRunning
-		this.Data["UpdateTaskStartedAt"] = service.UpdateTaskStartedAt
-		this.Data["UpdateTaskLastDoneAt"] = service.UpdateTaskLastDoneAt
-		this.Data["UpdateTaskNextStartedAt"] = service.UpdateTaskNextStartedAt
-		bytes, _ := json.Marshal(service.UpdatedCity)
-		this.Data["UpdatedCity"] = string(bytes)
+		bytes, _ := json.Marshal(service.UpdateDetail)
+		this.Data["UpdateDetail"] = string(bytes)
 	}
 	this.TplName = "about.html"
 	this.setTitle("关于")

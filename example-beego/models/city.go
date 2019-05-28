@@ -51,8 +51,11 @@ func (provinces Provinces) Swap(i int, j int) {
 }
 
 type CityView struct {
-	Id    int
-	Code  string
-	Name  string
-	Error string
+	Id         int
+	Code       string
+	Name       string
+	ParentId   int
+	ParentName string
+	ParentCode string
+	Error      string
 }
