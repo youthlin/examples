@@ -82,7 +82,7 @@ func updateAllWeather() error {
 			})
 			UpdateDetail.DoneCount++
 			// 1s=1000ms 休眠 500ms~2qps 250ms~4qps
-			time.Sleep(time.Millisecond * 300)
+			time.Sleep(time.Second)
 		}
 	}
 	return nil
