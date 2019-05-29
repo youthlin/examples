@@ -80,13 +80,21 @@ func (this *MainController) CitySearch() {
 	if query == "" {
 		this.Data["json"] = models.MakeFail(1, "No query words: parameter q required")
 	} else {
-		maps, e := service.SearchCity(query)
+		allCities := service.GetAllCities()
+		cities, e := service.SearchCity(query)
 		if e != nil {
 			this.Data["json"] = models.MakeFail(2, fmt.Sprintf("query db error.%+v", e))
 		} else {
-			var result = make(map[string]string)
-			for _, v := range maps {
-				result[v.Code] = v.Name
+			var result []models.CityView
+			for _, city := range cities {
+				result = append(result, models.CityView{
+					Id:         city.Id,
+					Code:       city.Code,
+					Name:       city.Name,
+					ParentId:   city.Pid,
+					ParentCode: allCities[city.Pid].Code,
+					ParentName: allCities[city.Pid].Name,
+				})
 			}
 			this.Data["json"] = models.MakeSuccess(result)
 		}

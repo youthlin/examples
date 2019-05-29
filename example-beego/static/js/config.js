@@ -120,13 +120,15 @@ function suggest() {
             //方向键先处理
             var key = e.which;
             if (key === 13) {//enter
-                if (cityCode) {
+                if (cityCode.length > 4) {
                     window.location.href = '/weather/' + cityCode + ".html";
+                } else {
+                    window.location.href = '/cityList#p-' + cityCode;
                 }
                 return false;
             }
             if (key === 40 || key === 38 || key === 37 || key === 39) {// 40-down 38-up 37-left 39-right
-                var wrap = $target;
+                var wrap = $target.find('ul');
                 var current = wrap.find('li.hover');
                 if (key === 38) {//ip
                     if (current.length > 0) {
@@ -158,10 +160,10 @@ function suggest() {
                     }
                 }
                 cityCode = (current.data('code'));
-                debug("current=" + current + " code=" + cityCode);
+                debug("wrap=" + wrap.offset().top + "current=" + current.offset().top + "wrap.scrollTop=" + wrap.scrollTop() + " code=" + cityCode);
                 //如何通过 JQuery 将 DIV 的滚动条滚动到指定的位置
                 //http://www.cnblogs.com/jaxu/archive/2013/05/17/3083019.html
-                wrap.animate({scrollTop: current.offset().top - wrap.offset().top + wrap.scrollTop() - 70}, 'fast');
+                wrap.animate({scrollTop: current.offset().top - wrap.offset().top + wrap.scrollTop() - 70});
                 //wrap.scrollTop(current.offset().top - wrap.offset().top + wrap.scrollTop() - 70);
                 return false;
             }
@@ -191,13 +193,23 @@ function suggest() {
             $.get(action, function (result) {
                 debug("ajax get result=" + result);
                 if (result.code !== 0) {
-                    console.log("Error Ajax Get " + action + ": " + result)
+                    console.log("Error Ajax Get " + action + ": " + result);
                     return
                 }
                 var data = result.data;
                 var html = "<ul>";
-                for (var code in data) {
-                    html += "<li data-code='" + code + "'><a href=/weather/" + code + ".html>" + data[code] + "</a></li>";
+                for (let city of data) {
+                    var name = '';
+                    if (city.ParentName.length > 0) {
+                        name += city.ParentName + " - "
+                    }
+                    name += city.Name;
+                    if (city.Code.length > 0) {
+                        html += "<li data-code='" + city.Code + "'><a href=/weather/" + city.Code + ".html>" + name + "</a></li>";
+                    } else {
+                        //https://w.youthlin.com/cityList#p-2
+                        html += "<li data-code='" + city.Id + "'><a href=/cityList#p-" + city.Id + ">" + name + " </a></li >";
+                    }
                 }
                 $target.html(html + "</ul>");
                 $target.show();

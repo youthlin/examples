@@ -35,7 +35,7 @@ func init() {
 		defaultHotCode = append(defaultHotCode, k)
 	}
 	// 触发 load from json
-	_, _ = ListAllCity()
+	allCities, _ = ListAllCity()
 
 	weatherCron()
 }

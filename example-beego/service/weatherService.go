@@ -46,7 +46,7 @@ func updateAllWeather() error {
 	UpdateDetail.StartedAt = time.Now()
 	defer func() {
 		UpdateDetail.TaskRunning = false
-		UpdateDetail.LastDoneAt = time.Now()
+		UpdateDetail.DoneAt = time.Now()
 		UpdateDetail.DoneCities = nil
 		UpdateDetail.DoneCount = 0
 	}()

@@ -10,8 +10,17 @@ import (
 	"sort"
 )
 
+var allCities map[int]models.City
+
+func GetAllCities() map[int]models.City {
+	return allCities
+}
+
 // 城市列表 第一次或从 json 文件加载到数据库
 func ListAllCity() (maps map[int]models.City, e error) {
+	if allCities != nil {
+		return allCities, nil
+	}
 	var cities []*models.City
 	gDB.Find(&cities)
 	maps = cityListToMap(cities)
@@ -82,10 +91,8 @@ func getCountry(maps *map[int]models.City, cities models.Cities) map[models.City
 }
 
 // 前缀模糊搜索城市 仅支持中文 不支持拼音
-func SearchCity(words string) (maps map[int]models.City, e error) {
-	var cities []*models.City
+func SearchCity(words string) (cities []models.City, e error) {
 	gDB.Find(&cities, "name LIKE ?", words+"%")
-	maps = cityListToMap(cities)
 	return
 }
 
