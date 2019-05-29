@@ -11,6 +11,8 @@ import (
 )
 
 var allCities map[int]models.City
+var defaultHotCode []string
+var defaultHotCities []models.City
 
 func GetAllCities() map[int]models.City {
 	return allCities
@@ -111,4 +113,7 @@ func CityCountIncrement(code string) {
 func ListCityByCount() (cities []models.City, err error) {
 	err = gDB.Model(&models.CityInstance).Not("code", defaultHotCode).Order("search_count desc").Limit(12).Find(&cities).Error
 	return
+}
+func DefaultHotCities() []models.City {
+	return defaultHotCities
 }

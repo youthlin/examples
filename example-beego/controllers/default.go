@@ -56,7 +56,7 @@ func (this *MainController) Home() {
 	if err == nil {
 		this.Data["hot"] = cities
 	}
-	this.Data["defaultHot"] = service.DefaultHot
+	this.Data["defaultHot"] = service.DefaultHotCities()
 	this.TplName = "index.html"
 	this.setTitle("首页")
 }
