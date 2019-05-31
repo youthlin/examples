@@ -120,7 +120,8 @@ function suggest() {
             //方向键先处理
             var key = e.which;
             if (key === 13) {//enter
-                if (cityCode.length > 4) {
+                debug("cityCode="+cityCode);
+                if (cityCode.toString().length > 4) {
                     window.location.href = '/weather/' + cityCode + ".html";
                 } else {
                     window.location.href = '/cityList#p-' + cityCode;
@@ -196,7 +197,7 @@ function suggest() {
                     console.log("Error Ajax Get " + action + ": " + result);
                     return
                 }
-                var data = result.data;
+                var data = result.data || {};
                 var html = "<ul>";
                 for (let city of data) {
                     var name = '';
