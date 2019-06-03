@@ -1,8 +1,10 @@
 package com.youthlin.example.kafka;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -17,17 +19,15 @@ public class ConsumerFastStart {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
-        properties.put("key.deserializer",
-                "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("value.deserializer",
-                "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CompanySerializer.class.getName());
         properties.put("bootstrap.servers", ProducerFastStart.BROKER_LIST);
         properties.put("group.id", GROUP_ID);
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
+        KafkaConsumer<String, Company> consumer = new KafkaConsumer<>(properties);
         consumer.subscribe(Collections.singleton(ProducerFastStart.TOPIC));
         while (true) {
-            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
-            for (ConsumerRecord<String, String> record : records) {
+            ConsumerRecords<String, Company> records = consumer.poll(Duration.ofMillis(1000));
+            for (ConsumerRecord<String, Company> record : records) {
                 System.out.println(record);
             }
         }
