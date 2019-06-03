@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Stop output INFO at start -->
+    <!-- https://www.mkyong.com/logging/how-to-stop-logback-status-info-at-the-start-of-every-log/ -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- https://logback.qos.ch/manual/layouts.html#coloring -->
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-1.-1level) [%t] %cyan(%-40.40logger{39}) : %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.apache.kafka" level="info"/>
+
+    <root level="${log.level:-info}">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

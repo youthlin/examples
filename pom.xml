@@ -29,6 +29,7 @@
         <module>example-concurrent</module>
         <module>example-misc</module>
         <module>example-kilim</module>
+        <module>example-kafka</module>
     </modules>
 
     <properties>
