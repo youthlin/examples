@@ -91,7 +91,7 @@ func updateAllWeather() error {
 // 更新指定城市的天气
 func updateWeather(code string) error {
 	var weather models.Weather
-	e := GetRemoteJson("http://t.weather.itboy.net/api/weather/city/"+code, &weather)
+	e := GetRemoteJson("http://t.weather.sojson.com/api/weather/city/"+code, &weather)
 	if e != nil {
 		logs.Error("Update Weather Error: %+v", e)
 		return e
