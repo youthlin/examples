@@ -11,8 +11,10 @@ import (
 )
 
 var gDB *gorm.DB
+var updateWhenDbNotFind bool
 
 func init() {
+	updateWhenDbNotFind, _ = beego.AppConfig.Bool("update.when.db.not.find")
 	db, err := gorm.Open("mysql", beego.AppConfig.String("data.source.url"))
 	if err != nil {
 		panic(err)
