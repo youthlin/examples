@@ -107,7 +107,8 @@ func (this *MainController) CitySearch() {
 func (this *MainController) Weather() {
 	code := this.Ctx.Input.Param(":path")
 	ext := this.Ctx.Input.Param(":ext")
-	weather, err := service.SearchWeather(code, ext == "update")
+	debug := "true" == this.GetString("debug")
+	weather, err := service.SearchWeather(code, ext == "update" && debug)
 	if err != nil {
 		this.toError(err)
 		return
@@ -115,6 +116,7 @@ func (this *MainController) Weather() {
 	service.CityCountIncrement(code)
 	logs.Info("code=%s weather=%v", code, weather)
 	this.Data["weather"] = weather
+	this.Data["debug"] = debug
 	this.TplName = "weather.html"
 	this.setTitle(weather.CityInfo.Parent + "-" + weather.CityInfo.City + "天气预报")
 }

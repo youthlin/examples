@@ -25,15 +25,22 @@
             </tr>
             <tr>
                 <td><span class="title">空气质量</span> <span class="data">{{ $data.Quality }}</span></td>
-                <td><span class="title">
+                <td>
+                    {{ if  .debug  }}
+                        <span class="title">
                         <a target="_blank" class="text-dark"
                            href="http://t.weather.itboy.net/api/weather/city/{{ .weather.CityCode }}">
                             更新时间
                         </a>
-                    </span>
-                    <span class="data"><a href="{{ .weather.CityCode }}.update" rel="nofollow" class="text-dark">
-                            {{ .weather.CityInfo.UpdateTime }}</a>
-                    </span>
+                        </span>
+                        <span class="data">
+                            <a href="{{ .weather.CityCode }}.update?debug=true" rel="nofollow" class="text-dark">
+                                {{ .weather.CityInfo.UpdateTime }}</a>
+                        </span>
+                    {{ else }}
+                        <span class="title">更新时间</span>
+                        <span class="data">{{ .weather.CityInfo.UpdateTime }}</span>
+                    {{ end }}
                     {{ str2html "<!--" }}
                     <span class="d-none">
                         本系统请求接口时间           CreatedAt  {{ .weather.CreatedAt }} <br>
