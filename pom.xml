@@ -47,6 +47,7 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <kotlin.version>1.2.30</kotlin.version>
+        <dubbo.version>2.7.2</dubbo.version>
     </properties>
 
     <dependencyManagement>
@@ -186,21 +187,15 @@
             </dependency>
 
             <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>dubbo</artifactId>
-                <version>2.5.6</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo -->
-            <dependency>
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo</artifactId>
-                <version>2.7.0</version>
+                <version>${dubbo.version}</version>
             </dependency>
-
             <dependency>
-                <groupId>com.101tec</groupId>
-                <artifactId>zkclient</artifactId>
-                <version>0.10</version>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-dependencies-zookeeper</artifactId>
+                <version>${dubbo.version}</version>
+                <type>pom</type>
             </dependency>
 
             <dependency>
@@ -235,7 +230,6 @@
                 <artifactId>javacv-platform</artifactId>
                 <version>1.5</version>
             </dependency>
-
 
             <dependency>
                 <groupId>org.antlr</groupId>

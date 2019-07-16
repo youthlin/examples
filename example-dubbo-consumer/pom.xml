@@ -13,6 +13,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.youthlin.demo</groupId>
             <artifactId>example-dubbo-api</artifactId>
             <version>${project.version}</version>
@@ -22,8 +26,9 @@
             <artifactId>dubbo</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.101tec</groupId>
-            <artifactId>zkclient</artifactId>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-dependencies-zookeeper</artifactId>
+            <type>pom</type>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
