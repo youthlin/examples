@@ -46,7 +46,7 @@ abstract class BaseFlow<IN, OUT> implements Flow<OUT> {
 
     BaseFlow(BaseFlow prev) {
         Objects.requireNonNull(prev);
-        Preconditions.checkArgument(!prev.linkedOrConsumed);
+        Preconditions.checkState(!prev.linkedOrConsumed, "already linked");
         prev.linkedOrConsumed = true;
         this.source = prev.source;
         this.prev = prev;
@@ -285,15 +285,17 @@ abstract class BaseFlow<IN, OUT> implements Flow<OUT> {
      * @see Supplier#get()
      */
     static abstract class BaseTerminal<IN, OUT, R> implements Stage.TerminalAction<OUT, R>, Supplier<R> {
-        private BaseFlow<IN, OUT> baseFlow;
+        private BaseFlow<IN, OUT> lastFlow;
 
-        BaseTerminal(BaseFlow<IN, OUT> baseFlow) {
-            this.baseFlow = baseFlow;
+        BaseTerminal(BaseFlow<IN, OUT> lastFlow) {
+            Preconditions.checkArgument(!lastFlow.linkedOrConsumed, "already consumed");
+            lastFlow.linkedOrConsumed = true;
+            this.lastFlow = lastFlow;
         }
 
         @Override
         public <S_IN> R startAndGet(Visitor<S_IN> in) {
-            baseFlow.start(in, this);
+            lastFlow.start(in, this);
             return get();
         }
 
@@ -412,7 +414,7 @@ abstract class BaseFlow<IN, OUT> implements Flow<OUT> {
                 if (array != null) {
                     array[idx++] = out;
                 } else {
-                    Preconditions.checkArgument(list.size() < MAX_ARRAY_SIZE,
+                    Preconditions.checkState(list.size() < MAX_ARRAY_SIZE,
                             "max array size exceed: %s", MAX_ARRAY_SIZE);
                     list.add(out);
                 }
@@ -570,10 +572,6 @@ abstract class BaseFlow<IN, OUT> implements Flow<OUT> {
         return map(x -> 1L).reduce(0L, Long::sum);
     }
 
-    /**
-     * 任意一个元素满足条件
-     * 空的流返回 false
-     */
     @Override
     public boolean anyMatch(Predicate<? super OUT> predicate) {
         return terminal(new BaseTerminal<IN, OUT, Boolean>(this) {
@@ -600,10 +598,6 @@ abstract class BaseFlow<IN, OUT> implements Flow<OUT> {
         });
     }
 
-    /**
-     * 所有元素满足条件
-     * 空的流返回 true
-     */
     @Override
     public boolean allMatch(Predicate<? super OUT> predicate) {
         return terminal(new BaseTerminal<IN, OUT, Boolean>(this) {
@@ -624,10 +618,6 @@ abstract class BaseFlow<IN, OUT> implements Flow<OUT> {
         });
     }
 
-    /**
-     * 没有元素满足条件
-     * 空的流返回 true
-     */
     @Override
     public boolean noneMatch(Predicate<? super OUT> predicate) {
         return terminal(new BaseTerminal<IN, OUT, Boolean>(this) {

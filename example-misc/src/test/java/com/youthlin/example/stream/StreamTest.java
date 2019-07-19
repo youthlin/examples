@@ -91,8 +91,12 @@ public class StreamTest {
         //.forEach(System.out::println)
         //.toArray()
         ;
-        Object[] x = Flow.of().toArray();
+        Flow<Object> flow = Flow.of();
+        Object[] x = flow.toArray();
         System.out.println(Arrays.toString(x));
+        Flow<Integer> of = Flow.of(1, 2, 3, 4);
+        // of.skip(1);
+        of.limit(2).forEach(System.out::println);
     }
 
 }
