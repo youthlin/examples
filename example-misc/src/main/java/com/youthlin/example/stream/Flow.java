@@ -20,11 +20,11 @@ import java.util.stream.Collector;
 /**
  * 自定义流 对应 {@link java.util.stream.Stream}
  *
- * @param <T> 流的元素类型
+ * @param <T> 流出元素类型
  * @author youthlin.chen
  * @date 2019-07-18 20:39
  */
-@SuppressWarnings({"unused", "UnusedReturnValue"})
+@SuppressWarnings({ "unused", "UnusedReturnValue" })
 public interface Flow<T> {
     //region 无状态操作
 
@@ -161,13 +161,13 @@ public interface Flow<T> {
     /**
      * 消费每个元素
      *
-     * @param <U>         结果类型
+     * @param <R>         结果类型
      * @param identity    初始值
      * @param accumulator 累加器
      * @param combiner    合并器 可能会并行累加 用合并器合并累加的结果
      * @return 结果
      */
-    <U> U reduce(U identity, BiFunction<U, ? super T, U> accumulator, BinaryOperator<U> combiner);
+    <R> R reduce(R identity, BiFunction<R, ? super T, R> accumulator, BinaryOperator<R> combiner);
 
     /**
      * 收集元素
@@ -264,7 +264,7 @@ public interface Flow<T> {
      * @return collection 对应的自定义流
      */
     static <E> Flow<E> of(Collection<E> collection) {
-        return new BaseFlow.Head<>(VisitorImpl.of(collection));
+        return new AbstractFlow.Head<>(VisitorImpl.of(collection));
     }
 
     /**
@@ -275,7 +275,7 @@ public interface Flow<T> {
      * @return 迭代器对应的自定义流
      */
     static <E> Flow<E> of(Visitor<E> visitor) {
-        return new BaseFlow.Head<>(visitor);
+        return new AbstractFlow.Head<>(visitor);
     }
 
     /**
@@ -287,7 +287,7 @@ public interface Flow<T> {
      */
     @SafeVarargs
     static <E> Flow<E> of(E... elements) {
-        return new BaseFlow.Head<>(new VisitorImpl<>(Iterators.forArray(elements)));
+        return new AbstractFlow.Head<>(new VisitorImpl<>(Iterators.forArray(elements)));
     }
 
     /**
@@ -297,7 +297,7 @@ public interface Flow<T> {
      * @return 只包含指定元素的流
      */
     static <E> Flow<E> of(E element) {
-        return new BaseFlow.Head<>(VisitorImpl.of(Collections.singleton(element)));
+        return new AbstractFlow.Head<>(VisitorImpl.of(Collections.singleton(element)));
     }
 
     /**
@@ -337,7 +337,7 @@ public interface Flow<T> {
                 return element;
             }
         };
-        return new BaseFlow.Head<>(visitor);
+        return new AbstractFlow.Head<>(visitor);
     }
 
     /**
@@ -347,7 +347,7 @@ public interface Flow<T> {
      * @return 生成的无限流
      */
     static <E> Flow<E> generate(Supplier<E> s) {
-        return new BaseFlow.Head<>(new Visitor<E>() {
+        return new AbstractFlow.Head<>(new Visitor<E>() {
             @Override
             public boolean hasNext() {
                 return true;
