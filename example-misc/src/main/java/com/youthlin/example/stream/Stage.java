@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 /**
  * 一个操作对应的一个阶段
  *
- * @param <T> 当前阶段的元素类型
+ * @param <T> 当前阶段处理的元素类型
  * @author youthlin.chen
  * @date 2019-07-18 21:36
  */
@@ -36,11 +36,14 @@ interface Stage<T> extends Consumer<T> {
 
     /**
      * 操作链
+     *
+     * @param <T> 当前阶段处理的元素类型
+     * @param <R> 下游元素类型
      */
-    abstract class AbstractChainedStage<T, E_OUT> implements Stage<T> {
-        final Stage<? super E_OUT> downstream;
+    abstract class AbstractChainedStage<T, R> implements Stage<T> {
+        final Stage<R> downstream;
 
-        AbstractChainedStage(Stage<? super E_OUT> downstream) {
+        AbstractChainedStage(Stage<R> downstream) {
             this.downstream = Objects.requireNonNull(downstream);
         }
 
@@ -48,6 +51,9 @@ interface Stage<T> extends Consumer<T> {
         public void begin(long size) {
             downstream.begin(size);
         }
+
+        @Override
+        public abstract void accept(T t);
 
         @Override
         public void end() {
@@ -58,26 +64,26 @@ interface Stage<T> extends Consumer<T> {
         public boolean canFinish() {
             return downstream.canFinish();
         }
+
     }
 
     /**
      * 终止操作
      *
-     * @param <E_IN> 当前阶段的元素类型
-     * @param <OUT>  该终止操作将会产生的类型
+     * @param <T> 当前阶段处理的元素类型
+     * @param <R> 该终止操作将会产生的类型
      * @author youthlin.chen
      * @date 2019-07-19 09:51
      */
-    interface TerminalAction<E_IN, OUT> extends Stage<E_IN> {
+    interface TerminalStage<T, R> extends Stage<T> {
 
         /**
          * 开始对串联的流进行每个阶段的操作并返回最终结果
          *
-         * @param in     源迭代器
-         * @param <S_IN> 源迭代器元素的类型
+         * @param in 源迭代器
          * @return 该终止操作返回的结果
          */
-        <S_IN> OUT startAndGet(Visitor<S_IN> in);
+        R startAndGet(Visitor<?> in);
     }
 
 }
