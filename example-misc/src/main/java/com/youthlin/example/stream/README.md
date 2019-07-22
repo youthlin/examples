@@ -1,4 +1,4 @@
-# 自己实现 Java8 的 Stream 流(串行版)
+# [自己实现 Java8 的 Stream 流(串行版)](https://youthlin.com/?p=1644)
 ```
 List<Integer> list = Lists.newArrayList(1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 9, 9, 9, 1, 2, 3, 2, 3, 4);
 String[] strings = Flow.of(list)
@@ -235,3 +235,11 @@ Flow.of(list)
 你也可以在 IDEA 中从 `terminal` 方法开始打断点，
 代码中每个返回的抽象类都重写了 toString 方法，
 有助于 debug 区分各个类。
+
+代码地址： 
+- https://github.com/YouthLin/examples/tree/master/example-misc/src/main/java/com/youthlin/example/stream 
+- 本文首发地址 https://youthlin.com/?p=1644
+
+推荐阅读： 
+- [Stream Pipelines](https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/6-Stream%20Pipelines.md)
+- [浅析Java8 Stream原理](https://www.jianshu.com/p/dd5fb725331b)

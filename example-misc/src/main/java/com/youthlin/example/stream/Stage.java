@@ -64,7 +64,6 @@ interface Stage<T> extends Consumer<T> {
         public boolean canFinish() {
             return downstream.canFinish();
         }
-
     }
 
     /**

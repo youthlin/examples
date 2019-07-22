@@ -152,6 +152,7 @@ abstract class AbstractFlow<S, T> implements Flow<T> {
             }
         };
     }
+
     //endregion 无状态操作
 
     @Override
@@ -225,7 +226,7 @@ abstract class AbstractFlow<S, T> implements Flow<T> {
     }
 
     @Override
-    @SuppressWarnings({ "RedundantCast", "unchecked" })
+    @SuppressWarnings({"RedundantCast", "unchecked"})
     public Flow<T> sorted() {
         return sorted((Comparator<T>) Comparator.naturalOrder());
     }
