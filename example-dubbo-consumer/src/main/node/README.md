@@ -1,5 +1,9 @@
 # node - dubbo
 
+假定 node/Java/maven 已装好
+
+[dubbo.js](https://github.com/apache/dubbo-js)  
+
 - 准备好 Dubbo 接口的 Java API `mvn clean && mvn package && mvn install dependency:copy-dependencies`
 - 新建文件夹然后 `npm init` 初始化一个 node 项目
 - 新建文件 dubbo.json
@@ -17,6 +21,7 @@
   - entryJarPath: jar 路径
   - libDirPath: 依赖包文件夹 Maven项目通常是 target/dependency
   - providerSuffix: Dubbo 接口类名后缀
+- `npm install -g typescript` 安装 typescript  
 - `tsc --init`
    在 生成的 tsconfig.json 中 修改:
    ```json
@@ -74,3 +79,7 @@
 
     ```
     JavaString 这些是 [js-to-java](https://github.com/node-modules/js-to-java) 的类
+
+说明:    
+1. 不支持 node 作为提供方 只能调用 Java 暴露的接口  
+2. Dubbo 接口类需要有统一的后缀 配置在 dubbo.json 的 providerSuffix 字段  
