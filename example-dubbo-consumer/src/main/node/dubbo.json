@@ -1,0 +1,7 @@
+{
+  "output": "./ts/providers",
+  "entry": "com.youthlin.example.rpc.api.service",
+  "entryJarPath": "../../../../example-dubbo-api/target/example-dubbo-api-1.0-SNAPSHOT.jar",
+  "libDirPath": "../../../../example-dubbo-api/target/dependency",
+  "providerSuffix": "Service"
+}

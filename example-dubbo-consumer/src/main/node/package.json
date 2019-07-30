@@ -1,0 +1,23 @@
+{
+  "name": "node-dubbo-example",
+  "version": "1.0.0",
+  "description": "node dubbo example",
+  "main": "index.js",
+  "scripts": {
+    "j2t": "cd ../../../../example-dubbo-api && mvn clean && mvn package && mvn install dependency:copy-dependencies && cd ../example-dubbo-consumer/src/main/node && interpret -c dubbo.json",
+    "run": "tsc && node js/index.js"
+  },
+  "keywords": [
+    "node",
+    "dubbo"
+  ],
+  "author": "youthlin",
+  "license": "ISC",
+  "dependencies": {
+    "@types/js-to-java": "^2.4.0",
+    "@types/node": "^12.6.8",
+    "dubbo2.js": "^2.3.9",
+    "interpret-util": "0.0.6",
+    "js-to-java": "^2.6.1"
+  }
+}

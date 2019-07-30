@@ -1,7 +1,7 @@
 package com.youthlin.example.rpc.impl.service;
 
 import com.youthlin.example.rpc.api.service.CallBackListener;
-import com.youthlin.example.rpc.api.service.CallBackService;
+import com.youthlin.example.rpc.api.service.CallBackServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,10 +9,11 @@ import org.slf4j.LoggerFactory;
  * 创建: youthlin.chen
  * 时间: 2017-10-30 23:49
  */
-public class CallBackServiceImpl implements CallBackService<String> {
+public class CallBackServiceImpl implements CallBackServiceProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(CallBackServiceImpl.class);
 
-    @Override public boolean process(String param, CallBackListener<String> callback) {
+    @Override
+    public boolean process(String param, CallBackListener callback) {
         try {
             LOGGER.info("开始处理 2s 后完成");
             Thread.sleep(2000);

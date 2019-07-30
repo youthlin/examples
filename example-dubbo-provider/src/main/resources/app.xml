@@ -5,16 +5,20 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
     <dubbo:application name="hello-provider"/>
-    <dubbo:registry address="multicast://224.5.6.7:1234"/>
+    <!--    <dubbo:registry address="multicast://224.5.6.7:1234"/>-->
+    <dubbo:registry protocol="zookeeper" address="localhost:2181"/>
     <dubbo:protocol name="dubbo" port="20880"/>
 
     <bean id="helloService" class="com.youthlin.example.rpc.impl.service.HelloServiceImpl"/>
-    <dubbo:service interface="com.youthlin.example.rpc.api.service.HelloService" ref="helloService"/>
+    <dubbo:service interface="com.youthlin.example.rpc.api.service.HelloService"
+                   ref="helloService"/>
 
     <bean id="callBackService" class="com.youthlin.example.rpc.impl.service.CallBackServiceImpl"/>
-    <dubbo:service interface="com.youthlin.example.rpc.api.service.CallBackService" ref="callBackService">
+    <dubbo:service interface="com.youthlin.example.rpc.api.service.CallBackServiceProvider"
+                   ref="callBackService">
         <dubbo:method name="process" timeout="5000" async="true">
-            <dubbo:argument type="com.youthlin.example.rpc.api.service.CallBackListener" callback="true"/>
+            <dubbo:argument type="com.youthlin.example.rpc.api.service.CallBackListener"
+                            callback="true"/>
         </dubbo:method>
     </dubbo:service>
 
