@@ -2,7 +2,7 @@
   "name": "node-dubbo-example",
   "version": "1.0.0",
   "description": "node dubbo example",
-  "main": "index.js",
+  "main": "js/index.js",
   "scripts": {
     "j2t": "cd ../../../../example-dubbo-api && mvn clean && mvn package && mvn install dependency:copy-dependencies && cd ../example-dubbo-consumer/src/main/node && interpret -c dubbo.json",
     "run": "tsc && node js/index.js"
