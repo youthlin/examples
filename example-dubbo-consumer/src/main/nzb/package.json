@@ -1,0 +1,21 @@
+{
+  "name": "nzb-example",
+  "version": "1.0.0",
+  "description": "node-zookeeper-dubbo example",
+  "main": "index.js",
+  "scripts": {
+    "run": "node index.js"
+  },
+  "keywords": [
+    "node",
+    "zookeeper",
+    "dubbo"
+  ],
+  "author": "youthlin",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "js-to-java": "^2.6.1",
+    "node-zookeeper-dubbo": "^3.0.15"
+  }
+}
