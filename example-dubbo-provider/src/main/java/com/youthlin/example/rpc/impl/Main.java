@@ -16,6 +16,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:app.xml");
         context.start();
+        LOGGER.info("started.");
         System.in.read();
     }
 }
