@@ -22,6 +22,18 @@ let server = http.createServer((request, response) => {
             }
             if (stats.isFile()) {
                 console.log('200 ' + request.url);
+                if (filepath.endsWith('.html')) {
+                    response.setHeader('Content-Type', 'text/html;charset=UTF-8');
+                }
+                if (filepath.endsWith('.js')) {
+                    response.setHeader('Content-Type', 'text/javascript;charset=UTF-8');
+                }
+                if (filepath.endsWith('.css')) {
+                    response.setHeader('Content-Type', 'text/css;charset=UTF-8');
+                }
+                if (filepath.endsWith('.json')) {
+                    response.setHeader('Content-Type', 'application/json;charset=UTF-8');
+                }
                 response.writeHead(200);
                 // 将文件流导向response:
                 fs.createReadStream(filepath).pipe(response);
@@ -41,15 +53,21 @@ let server = http.createServer((request, response) => {
                             } else {
                                 href = pathname + '/' + file;
                             }
+                            if (isDir(path.join(filepath, file))) {
+                                href += '/';
+                                file += '/';
+                            }
                             return '<li><a href="' + href + '">'
-                                + path.join(filepath, file) + '</a></li>';
+                                + file + '</a></li>';
                         }
                     ).join('\r\n');
                     response.writeHead(200);
                     response.write('<!DOCTYPE html>' +
                         '<html lang="zh-CN">' +
                         '<head><meta charset="UTF-8"><title>Index of ' + pathname + '</title></head>' +
-                        '<body><ul>' +
+                        '<body>' +
+                        '<h2>' + filepath + '</h2>' +
+                        '<ul>' +
                         '<li><a href=".">刷新</a></li>\r\n' +
                         '<li><a href="..">上级</a></li>\r\n' +
                         '<li><a href="/">根目录</a></li>\r\n' +
@@ -69,15 +87,27 @@ let server = http.createServer((request, response) => {
 server.listen(8099, '0.0.0.0');
 console.log('Server is running at http://0.0.0.0:8099/');
 
+function isDir(file) {
+    try {
+        let stat = fs.statSync(file);
+        return stat.isDirectory();
+    } catch (e) {
+        return false;
+    }
+}
+
 function notFound(request, response, err) {
     console.log('404 ' + request.url + 'err:' + err);
     // 发送404响应:
     response.writeHead(404);
     const pathname = decodeURI(url.parse(request.url).pathname);
+    const filepath = path.join(root, pathname);
     response.write('<!DOCTYPE html>' +
         '<html lang="zh-CN">' +
         '<head><meta charset="UTF-8"><title>Index of ' + pathname + '</title></head>' +
-        '<body><ul>' +
+        '<body>' +
+        '<h2>' + filepath + '</h2>' +
+        '<ul>' +
         '<li><a href=".">刷新</a></li>\r\n' +
         '<li><a href="..">上级</a></li>\r\n' +
         '<li><a href="/">根目录</a></li>\r\n' +
