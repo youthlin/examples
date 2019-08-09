@@ -1,0 +1,11 @@
+{
+  "name": "example-node",
+  "version": "1.0.0",
+  "description": "node example",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js D:\\"
+  },
+  "author": "youthlin.chen",
+  "license": "ISC"
+}
