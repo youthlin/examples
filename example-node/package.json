@@ -4,7 +4,8 @@
   "description": "node example",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js /"
+    "start": "node index.js /",
+    "toc": "node $NODE_DEBUG_OPTION  toc.js"
   },
   "author": "youthlin.chen",
   "license": "ISC"
