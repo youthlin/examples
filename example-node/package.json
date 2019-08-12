@@ -8,5 +8,6 @@
     "toc": "node $NODE_DEBUG_OPTION  toc.js"
   },
   "author": "youthlin.chen",
-  "license": "ISC"
+  "license": "ISC",
+  "keywords": []
 }
