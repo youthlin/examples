@@ -1,4 +1,4 @@
-package com.youthlin.example.bplus;
+package com.youthlin.example.tree;
 
 import org.junit.After;
 import org.junit.Before;
