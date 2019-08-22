@@ -30,6 +30,7 @@
         <module>example-misc</module>
         <module>example-kilim</module>
         <module>example-kafka</module>
+        <module>example-compiler</module>
     </modules>
 
     <properties>
