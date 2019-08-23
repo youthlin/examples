@@ -29,7 +29,6 @@ public class IntScript {
         variables.put(LAST_ANSWER, 0);
     }
 
-
     public static void main(String[] args) {
         IntScript script = new IntScript();
         if (args.length > 0 && args[0].equals(VERBOSE_FLAG)) {
@@ -65,6 +64,7 @@ public class IntScript {
                     scriptText = "";
                 }
             } catch (Exception e) {
+                // log.error("", e);
                 System.err.println(e.getLocalizedMessage());
                 System.out.print("\n>");
                 scriptText = "";
@@ -107,6 +107,9 @@ public class IntScript {
                 // *  [intDeclare]     -> INT ID [intDecRight]    INT
                 // 返回 ID 的值
                 String varName = children.get(1).getValue();
+                if (variables.containsKey(varName)) {
+                    throw new IllegalStateException("variable already declared: " + varName);
+                }
                 TreeNode intDecRight = children.get(2);
                 result = evaluate(intDecRight, prefix);
                 variables.put(varName, result);
@@ -155,7 +158,7 @@ public class IntScript {
                 break;
             case primary:
                 //     * [primary]        -> IntLiteral | ID | '(' additive ')'
-                TreeNode child1 = node.getChildren().get(0);
+                TreeNode child1 = children.get(0);
                 if (child1.getTokenType().equals(TokenType.INTLITERAL)) {
                     result = Integer.parseInt(child1.getValue());
                     break;
@@ -163,10 +166,17 @@ public class IntScript {
                 if (child1.getTokenType().equals(TokenType.ID)) {
                     String name = child1.getValue();
                     if (variables.containsKey(name)) {
-                        //todo
+                        result = variables.get(name);
+                        if (result == null) {
+                            throw new IllegalStateException("variable has not been set any value: " + name);
+                        }
+                    } else {
+                        throw new Exception("unknown variable: " + name);
                     }
+                    break;
                 }
-
+                TreeNode additive = children.get(1);
+                result = evaluate(additive, prefix);
                 break;
             case expressionStmt:
                 // *  [expressionStmt] -> [exp] ';'               IntLiteral ID (

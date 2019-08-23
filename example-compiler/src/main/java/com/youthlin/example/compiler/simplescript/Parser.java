@@ -36,7 +36,6 @@ public class Parser {
     private Token lastRead;
     private int pos;
 
-
     public static void main(String[] args) {
         test("int a;");
         test("int a = 1;");
@@ -66,8 +65,15 @@ public class Parser {
 
     public ParseResult parse(List<Token> tokens) {
         reset(tokens);
-        TreeNode root = script();
-        return new ParseResult().setRoot(root).setErrorList(errorList);
+        ParseResult result = new ParseResult();
+        try {
+            TreeNode root = script();
+            result.setRoot(root);
+        } catch (Exception e) {
+            addError(e.getLocalizedMessage());
+            log.error("", e);
+        }
+        return result.setErrorList(errorList);
     }
 
     private void reset(List<Token> source) {
@@ -78,19 +84,13 @@ public class Parser {
         pos = 0;
     }
 
-
     /**
      * [script]         -> [stmt]+
      */
     private TreeNode script() {
-        Token peekToken = peekToken();
-        if (peekToken == null) {
-            addError("Empty tokens");
-            return null;
-        }
         TreeNode stmt = stmt();
         TreeNode root = new TreeNode(TreeNodeType.script).addChild(stmt);
-        while (peekToken() != null && errorList.isEmpty()) {
+        while (hasNext() && errorList.isEmpty()) {
             root.addChild(stmt());
         }
         return root;
@@ -102,13 +102,8 @@ public class Parser {
      * [stmt]           -> [assignStmt]            ID
      */
     private TreeNode stmt() {
-        Token peekToken = peekToken();
-        if (peekToken == null) {
-            addError(UNEXPECTED_EOF);
-            return null;
-        }
         TreeNode stmt = new TreeNode(TreeNodeType.stmt);
-        switch (peekToken.getTokenType()) {
+        switch (peekToken().getTokenType()) {
             case INT:
                 stmt.addChild(intDeclare());
                 break;
@@ -153,13 +148,8 @@ public class Parser {
      * [intDecRight]    -> ';'                     ;
      */
     private TreeNode intDeclareRight() {
-        Token peekToken = peekToken();
-        if (peekToken == null) {
-            addError(UNEXPECTED_EOF);
-            return null;
-        }
         TreeNode node = new TreeNode(TreeNodeType.intDecRight);
-        switch (peekToken.getTokenType()) {
+        switch (peekToken().getTokenType()) {
             case ASSIGNMENT:
                 node.addChild(match(TokenType.ASSIGNMENT), additive(), match(TokenType.SEMI));
                 break;
@@ -180,14 +170,11 @@ public class Parser {
         TreeNode child = multiplicative();
         node.addChild(child);
         Token peekToken = peekToken();
-        if (peekToken == null) {
-            addError(UNEXPECTED_EOF);
-            return null;
-        }
-        if (peekToken.getTokenType().equals(TokenType.PLUS)
+        while (peekToken.getTokenType().equals(TokenType.PLUS)
                 || peekToken.getTokenType().equals(TokenType.MINUS)) {
             node.addChild(match(peekToken.getTokenType()),
                     multiplicative());
+            peekToken = peekToken();
         }
         return node;
     }
@@ -199,13 +186,10 @@ public class Parser {
         TreeNode node = new TreeNode(TreeNodeType.multiplicative);
         node.addChild(primary());
         Token peekToken = peekToken();
-        if (peekToken == null) {
-            addError(UNEXPECTED_EOF);
-            return null;
-        }
-        if (peekToken.getTokenType().equals(TokenType.TIMES)
-                || peekToken.getTokenType().equals(TokenType.OVER)) {
+        while (peekToken().getTokenType().equals(TokenType.TIMES)
+                || peekToken().getTokenType().equals(TokenType.OVER)) {
             node.addChild(match(peekToken.getTokenType()), primary());
+            peekToken = peekToken();
         }
         return node;
     }
@@ -214,13 +198,8 @@ public class Parser {
      * [primary]        -> IntLiteral | ID | '(' additive ')'
      */
     private TreeNode primary() {
-        Token peekToken = peekToken();
-        if (peekToken == null) {
-            addError(UNEXPECTED_EOF);
-            return null;
-        }
         TreeNode node = new TreeNode(TreeNodeType.primary);
-        TokenType tokenType = peekToken.getTokenType();
+        TokenType tokenType = peekToken().getTokenType();
         switch (tokenType) {
             case INTLITERAL:
             case ID:
@@ -258,10 +237,6 @@ public class Parser {
 
     private TreeNode match(TokenType expected) {
         Token token = getToken();
-        if (token == null) {
-            addError(UNEXPECTED_EOF);
-            return null;
-        }
         TokenType type = token.getTokenType();
         if (type.equals(expected)) {
             return new TreeNode(TreeNodeType.Terminal, token.getValue()).setTokenType(type);
@@ -279,7 +254,7 @@ public class Parser {
         StringBuilder sb = new StringBuilder(msg);
         Token lastRead = getLastRead();
         if (lastRead != null) {
-            sb.append(" after ")
+            sb.append(" near ")
                     .append(lastRead.getLine()).append(" 行 ")
                     .append(lastRead.getColumn()).append(" 列(")
                     .append(lastRead.getValue()).append(") ")
@@ -289,7 +264,12 @@ public class Parser {
             sb.append(" expected: ").append(Arrays.stream(expected)
                     .map(TokenType::getName).collect(Collectors.joining(",")));
         }
-        errorList.add(new ErrorMessage(pos, sb.toString()));
+        int line = 0, column = 0;
+        if (lastRead != null) {
+            line = lastRead.getLine();
+            column = lastRead.getColumn();
+        }
+        errorList.add(new ErrorMessage(ErrorMessage.ErrorType.Parser, pos, line, column, sb.toString()));
     }
 
     private boolean hasErrorSince(int position) {
@@ -317,17 +297,22 @@ public class Parser {
     }
 
     private Token getToken() {
-        if (pos < size) {
+        if (hasNext()) {
             return lastRead = tokenList.get(pos++);
         }
-        return null;
+        throw new IllegalStateException(UNEXPECTED_EOF);
+    }
+
+    private boolean hasNext() {
+        return pos < size;
     }
 
     private Token peekToken() {
-        if (pos < size) {
+        if (hasNext()) {
             return tokenList.get(pos);
         }
-        return null;
+        addError(UNEXPECTED_EOF);
+        throw new IllegalStateException(UNEXPECTED_EOF);
     }
 
     private Token getLastRead() {

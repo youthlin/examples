@@ -10,7 +10,20 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ErrorMessage {
-    private int pos;
-    private String message;
+    public enum ErrorType {
+        Lexer, Parser
+    }
 
+    private final ErrorType type;
+    private final int pos;
+    private final int line;
+    private final int column;
+    private final String message;
+
+    public String toString() {
+        if (type == ErrorType.Lexer) {
+            return String.format("[词法错误]%d 行 %d 列：%s", line, column, message);
+        }
+        return String.format("[语法错误](TokenIndex=%d) %d 行 %d 列: %s", pos, line, column, message);
+    }
 }

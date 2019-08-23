@@ -57,7 +57,7 @@ public class Lexer {
         List<Token> tokens = Lists.newArrayList();
         LexerResult result = new LexerResult().tokenList(tokens).errorList(errors);
         if (code == null) {
-            errors.add(new ErrorMessage(0, "source code is null"));
+            errors.add(error("source code is null"));
             return result;
         }
         reader = new CharArrayReader(code.toCharArray());
@@ -69,7 +69,7 @@ public class Lexer {
                 token = getToken();
             }
         } catch (IOException e) {
-            errors.add(new ErrorMessage(0, "Unexpected IOException: " + e.getLocalizedMessage()));
+            errors.add(error("Unexpected IOException: " + e.getLocalizedMessage()));
         }
         return result;
     }
@@ -123,7 +123,7 @@ public class Lexer {
                         state = State.InCompare;
                     } else {
                         log.debug("Unexpected char:{}. already read:{}", showChar(ch), sb.toString());
-                        errors.add(error("Unexpected char:" + showChar(ch)));
+                        errors.add(error("Unexpected char: " + showChar(ch)));
                         state = State.Error;
                     }
                     //endregion 开始
@@ -141,6 +141,11 @@ public class Lexer {
                     break;
                 case InNum:
                     if (!isDigit(ch)) {
+                        if (isAlpha(ch) || ch == '_') {
+                            errors.add(error("Unexpected char: " + showChar(ch)));
+                            state = State.Error;
+                            break;
+                        }
                         unGetChar(ch);
                         return new Token(line, column, TokenType.INTLITERAL, toStringWithoutLast(sb));
                     }
@@ -188,7 +193,7 @@ public class Lexer {
     }
 
     private ErrorMessage error(String msg) {
-        return new ErrorMessage(line, "[" + line + " 行:" + column + " 列]" + msg);
+        return new ErrorMessage(ErrorMessage.ErrorType.Lexer, 0, line, column, msg);
     }
 
     private void deleteLast(StringBuilder sb) {
