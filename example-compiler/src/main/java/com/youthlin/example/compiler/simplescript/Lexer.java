@@ -51,13 +51,13 @@ public class Lexer {
     private Reader reader;
     private int line = 1;
     private int column = 0;
-    private List<String> errors = Lists.newArrayList();
+    private List<ErrorMessage> errors = Lists.newArrayList();
 
     public LexerResult tokenize(String code) {
         List<Token> tokens = Lists.newArrayList();
         LexerResult result = new LexerResult().tokenList(tokens).errorList(errors);
         if (code == null) {
-            errors.add("source code is null");
+            errors.add(new ErrorMessage(0, "source code is null"));
             return result;
         }
         reader = new CharArrayReader(code.toCharArray());
@@ -69,7 +69,7 @@ public class Lexer {
                 token = getToken();
             }
         } catch (IOException e) {
-            errors.add("Unexpected IOException: " + e.getLocalizedMessage());
+            errors.add(new ErrorMessage(0, "Unexpected IOException: " + e.getLocalizedMessage()));
         }
         return result;
     }
@@ -84,7 +84,7 @@ public class Lexer {
             switch (state) {
                 case Normal:
                     //region 开始
-                    if (isAlpha(ch)) {
+                    if (isAlpha(ch) || ch == '_') {
                         state = State.InId;
                     } else if (isDigit(ch)) {
                         state = State.InNum;
@@ -130,7 +130,7 @@ public class Lexer {
                     break;
                 case InId:
                     //region 标识符
-                    if (!isAlpha(ch) && !isDigit(ch)) {
+                    if (!isAlpha(ch) && !isDigit(ch) && ch != '_') {
                         //已经不是标识符
                         unGetChar(ch);
                         String value = toStringWithoutLast(sb);
@@ -187,8 +187,8 @@ public class Lexer {
         return null;
     }
 
-    private String error(String msg) {
-        return "[" + line + " 行:" + column + " 列]" + msg;
+    private ErrorMessage error(String msg) {
+        return new ErrorMessage(line, "[" + line + " 行:" + column + " 列]" + msg);
     }
 
     private void deleteLast(StringBuilder sb) {

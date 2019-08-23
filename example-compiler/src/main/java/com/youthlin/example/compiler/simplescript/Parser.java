@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * (12) [otherTerm]      -> 空                       ; )
  * (13) [otherTerm]      -> '+' [term]              +
  * (14) [otherTerm]      -> '-' [term]              -
- * (15) [otherFactor]    -> 空                       ; )
+ * (15) [otherFactor]    -> 空                       + - ; )
  * (16) [otherFactor]    -> '*' [factor]            *
  * (17) [otherFactor]    -> '/' [factor]            /
  * (18) [expressionStmt] -> [exp] ';'               IntLiteral ID (
@@ -39,10 +39,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Parser {
     private List<Token> tokenList;
-    private List<ParseResult.Error> errorList;
+    private List<ErrorMessage> errorList;
     private int size;
     private Token lastRead;
     private int pos;
+
 
     public static void main(String[] args) {
         test("int a;");
@@ -62,12 +63,27 @@ public class Parser {
         }
     }
 
+    public ParseResult parse(String code) {
+        Lexer lexer = new Lexer();
+        LexerResult tokenize = lexer.tokenize(code);
+        if (tokenize.success()) {
+            return parse(tokenize.tokenList());
+        }
+        return new ParseResult().setErrorList(tokenize.errorList());
+    }
+
     public ParseResult parse(List<Token> tokens) {
-        tokenList = Lists.newArrayList(tokens);
-        size = tokenList.size();
-        errorList = Lists.newArrayList();
+        reset(tokens);
         TreeNode root = script();
         return new ParseResult().setRoot(root).setErrorList(errorList);
+    }
+
+    private void reset(List<Token> source) {
+        tokenList = source;
+        errorList = Lists.newArrayList();
+        size = source.size();
+        lastRead = null;
+        pos = 0;
     }
 
 
@@ -112,7 +128,7 @@ public class Parser {
                 int position = pos;
                 TreeNode child = expressionStmt();
                 if (hasErrorSince(position)) {
-                    List<ParseResult.Error> lastErrors = clearErrorSince(position);
+                    List<ErrorMessage> lastErrors = clearErrorSince(position);
                     log.debug("expressionStmt() error:{}", lastErrors);
                     pos = position;
                     child = assignStmt();
@@ -297,7 +313,7 @@ public class Parser {
         }
         TokenType type = token.getTokenType();
         if (type.equals(expected)) {
-            return new TreeNode(TreeNodeType.Terminal, token.getValue());
+            return new TreeNode(TreeNodeType.Terminal, token.getValue()).setTokenType(type);
         }
         addError("", expected);
         return null;
@@ -322,7 +338,7 @@ public class Parser {
             sb.append(" expected: ").append(Arrays.stream(expected)
                     .map(TokenType::getName).collect(Collectors.joining(",")));
         }
-        errorList.add(new ParseResult.Error(pos, sb.toString()));
+        errorList.add(new ErrorMessage(pos, sb.toString()));
     }
 
     private boolean hasErrorSince(int position) {
@@ -332,12 +348,12 @@ public class Parser {
         return errorList.get(errorList.size() - 1).getPos() > position;
     }
 
-    private List<ParseResult.Error> clearErrorSince(int position) {
+    private List<ErrorMessage> clearErrorSince(int position) {
         if (!errorList.isEmpty()) {
             int index = errorList.size() - 1;
-            List<ParseResult.Error> remove = Lists.newArrayList();
+            List<ErrorMessage> remove = Lists.newArrayList();
             for (int i = index; i >= 0; i--) {
-                ParseResult.Error error = errorList.get(i);
+                ErrorMessage error = errorList.get(i);
                 if (error.getPos() > position) {
                     index = i;
                     remove.add(error);

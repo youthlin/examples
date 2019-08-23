@@ -15,6 +15,7 @@ import java.util.List;
 @Accessors(chain = true)
 public class TreeNode {
     private TreeNodeType type;
+    private TokenType tokenType;
     private String value;
     private List<TreeNode> children;
 

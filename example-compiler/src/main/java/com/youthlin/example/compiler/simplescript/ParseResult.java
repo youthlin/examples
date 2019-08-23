@@ -1,6 +1,5 @@
 package com.youthlin.example.compiler.simplescript;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,13 +13,10 @@ import java.util.List;
 @Accessors(chain = true)
 public class ParseResult {
     private TreeNode root;
-    private List<Error> errorList;
+    private List<ErrorMessage> errorList;
 
-    @Data
-    @AllArgsConstructor
-    public static class Error {
-        private int pos;
-        private String message;
+    public boolean success() {
+        return errorList == null || errorList.isEmpty();
     }
 
     public void dump() {

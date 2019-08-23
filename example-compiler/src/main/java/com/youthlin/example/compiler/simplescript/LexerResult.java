@@ -14,7 +14,7 @@ import java.util.List;
 @Accessors(chain = true, fluent = true)
 public class LexerResult {
     private List<Token> tokenList;
-    private List<String> errorList;
+    private List<ErrorMessage> errorList;
 
     public boolean success() {
         return errorList == null || errorList.isEmpty();
