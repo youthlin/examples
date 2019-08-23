@@ -25,12 +25,12 @@ public class LexerResult {
     }
 
     public void dump() {
-        System.out.println(Strings.repeat("-", 10));
+        System.out.println(Strings.repeat("-", 50));
         if (success()) {
             tokenList.forEach(System.out::println);
         } else {
             errorList.forEach(System.err::println);
         }
-        System.out.println(Strings.repeat("-", 10));
+        System.out.println(Strings.repeat("-", 50));
     }
 }

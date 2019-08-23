@@ -14,7 +14,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum TokenType {
     //标识符
-    ID("id"), ERROR("error"), INTC("intNumber"),
+    ID("id"), ERROR("error"), INTLITERAL("intNumber"),
     //保留字
     INT("int"), IF("if"), ELSE("else"),
     //特殊符号

@@ -1,12 +1,3 @@
-
-```
- programm -> intDeclare | expressionStatement | assignmentStatement
- intDeclare -> 'int' Id ( = additive) ';'
- expressionStatement -> addtive ';'
- addtive -> multiplicative ( (+ | -) multiplicative)*
- multiplicative -> primary ( (* | /) primary)*
- primary -> IntLiteral | Id | (additive)
- ```
  
 PPT：  
 https://github.com/YouthLin/SNL-Compiler/tree/master/%E8%AF%BE%E4%BB%B6

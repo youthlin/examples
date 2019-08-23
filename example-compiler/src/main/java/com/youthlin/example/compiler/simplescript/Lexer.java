@@ -142,7 +142,7 @@ public class Lexer {
                 case InNum:
                     if (!isDigit(ch)) {
                         unGetChar(ch);
-                        return new Token(line, column, TokenType.INTC, toStringWithoutLast(sb));
+                        return new Token(line, column, TokenType.INTLITERAL, toStringWithoutLast(sb));
                     }
                     break;
                 case InCompare:
