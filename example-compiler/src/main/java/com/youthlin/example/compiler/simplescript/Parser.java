@@ -11,26 +11,18 @@ import java.util.stream.Collectors;
 
 /**
  * <pre>
- * (00) [script]         -> [stmt]+
- * (01) [stmt]           -> [intDeclare]            INT
- * (02) [stmt]           -> [expressionStmt]        IntLiteral ID (
- * (03) [stmt]           -> [assignStmt]            ID
- * (04) [intDeclare]     -> INT ID [intDecRight]    INT
- * (05) [intDecRight]    -> '=' [exp] ';'           =
- * (06) [intDecRight]    -> ';'                     ;
- * (07) [exp]            -> [term] [otherTerm]      IntLiteral ID (
- * (08) [term]           -> [factor] [otherFactor]  IntLiteral ID (
- * (09) [factor]         -> IntLiteral              IntLiteral
- * (10) [factor]         -> ID                      ID
- * (11) [factor]         -> '(' [exp] ')'           (
- * (12) [otherTerm]      -> 空                       ; )
- * (13) [otherTerm]      -> '+' [term]              +
- * (14) [otherTerm]      -> '-' [term]              -
- * (15) [otherFactor]    -> 空                       + - ; )
- * (16) [otherFactor]    -> '*' [factor]            *
- * (17) [otherFactor]    -> '/' [factor]            /
- * (18) [expressionStmt] -> [exp] ';'               IntLiteral ID (
- * (19) [assignStmt]     -> ID '=' [exp] ';'        ID
+ *      [script]         -> [stmt]+
+ *      [stmt]           -> [intDeclare]
+ *      [stmt]           -> [expressionStmt]
+ *      [stmt]           -> [assignStmt]
+ *      [intDeclare]     -> INT ID [intDecRight]
+ *      [intDecRight]    -> '=' [additive] ';'
+ *      [intDecRight]    -> ';'
+ *      [additive]       -> [multiplicative] ( '+'|'-' [multiplicative] )*
+ *      [multiplicative] -> [primary] ( '*'|'/' [primary] )*
+ *      [primary]        -> IntLiteral | ID | '(' additive ')'
+ *      [expressionStmt] -> [additive] ';'
+ *      [assignStmt]     -> ID '=' [additive] ';'
  * </pre>
  *
  * @author youthlin.chen
@@ -88,7 +80,7 @@ public class Parser {
 
 
     /**
-     * (00) [script]         -> [stmt]+
+     * [script]         -> [stmt]+
      */
     private TreeNode script() {
         Token peekToken = peekToken();
@@ -105,9 +97,9 @@ public class Parser {
     }
 
     /**
-     * (01) [stmt]           -> [intDeclare]            INT
-     * (02) [stmt]           -> [expressionStmt]        IntLiteral ID (
-     * (03) [stmt]           -> [assignStmt]            ID
+     * [stmt]           -> [intDeclare]            INT
+     * [stmt]           -> [expressionStmt]        IntLiteral ID (
+     * [stmt]           -> [assignStmt]            ID
      */
     private TreeNode stmt() {
         Token peekToken = peekToken();
@@ -148,7 +140,7 @@ public class Parser {
     }
 
     /**
-     * (04) [intDeclare]     -> INT ID [intDecRight]    INT
+     * [intDeclare]     -> INT ID [intDecRight]    INT
      */
     private TreeNode intDeclare() {
         TreeNode intDeclare = new TreeNode(TreeNodeType.intDeclare);
@@ -157,8 +149,8 @@ public class Parser {
     }
 
     /**
-     * (05) [intDecRight]    -> '=' [exp] ';'           =
-     * (06) [intDecRight]    -> ';'                     ;
+     * [intDecRight]    -> '=' [exp] ';'           =
+     * [intDecRight]    -> ';'                     ;
      */
     private TreeNode intDeclareRight() {
         Token peekToken = peekToken();
@@ -169,7 +161,7 @@ public class Parser {
         TreeNode node = new TreeNode(TreeNodeType.intDecRight);
         switch (peekToken.getTokenType()) {
             case ASSIGNMENT:
-                node.addChild(match(TokenType.ASSIGNMENT), exp(), match(TokenType.SEMI));
+                node.addChild(match(TokenType.ASSIGNMENT), additive(), match(TokenType.SEMI));
                 break;
             case SEMI:
                 node.addChild(match(TokenType.SEMI));
@@ -181,42 +173,61 @@ public class Parser {
     }
 
     /**
-     * (07) [exp]            -> [term] [otherTerm]      IntLiteral ID (
+     * [additive]       -> [multiplicative] ( '+'|'-' [multiplicative] )*
      */
-    private TreeNode exp() {
-        TreeNode node = new TreeNode(TreeNodeType.exp);
-        return node.addChild(term(), otherTerm());
-    }
-
-    /**
-     * (08) [term]           -> [factor] [otherFactor]  IntLiteral ID (
-     */
-    private TreeNode term() {
-        TreeNode node = new TreeNode(TreeNodeType.term);
-        return node.addChild(factor(), otherFactor());
-    }
-
-    /**
-     * (09) [factor]         -> IntLiteral              IntLiteral
-     * (10) [factor]         -> ID                      ID
-     * (11) [factor]         -> '(' [exp] ')'           (
-     */
-    private TreeNode factor() {
+    private TreeNode additive() {
+        TreeNode node = new TreeNode(TreeNodeType.additive);
+        TreeNode child = multiplicative();
+        node.addChild(child);
         Token peekToken = peekToken();
         if (peekToken == null) {
             addError(UNEXPECTED_EOF);
             return null;
         }
-        TreeNode node = new TreeNode(TreeNodeType.factor);
-        switch (peekToken.getTokenType()) {
+        if (peekToken.getTokenType().equals(TokenType.PLUS)
+                || peekToken.getTokenType().equals(TokenType.MINUS)) {
+            node.addChild(match(peekToken.getTokenType()),
+                    multiplicative());
+        }
+        return node;
+    }
+
+    /**
+     * [multiplicative] -> [primary] ( '*'|'/' [primary] )*
+     */
+    private TreeNode multiplicative() {
+        TreeNode node = new TreeNode(TreeNodeType.multiplicative);
+        node.addChild(primary());
+        Token peekToken = peekToken();
+        if (peekToken == null) {
+            addError(UNEXPECTED_EOF);
+            return null;
+        }
+        if (peekToken.getTokenType().equals(TokenType.TIMES)
+                || peekToken.getTokenType().equals(TokenType.OVER)) {
+            node.addChild(match(peekToken.getTokenType()), primary());
+        }
+        return node;
+    }
+
+    /**
+     * [primary]        -> IntLiteral | ID | '(' additive ')'
+     */
+    private TreeNode primary() {
+        Token peekToken = peekToken();
+        if (peekToken == null) {
+            addError(UNEXPECTED_EOF);
+            return null;
+        }
+        TreeNode node = new TreeNode(TreeNodeType.primary);
+        TokenType tokenType = peekToken.getTokenType();
+        switch (tokenType) {
             case INTLITERAL:
-                node.addChild(match(TokenType.INTLITERAL));
-                break;
             case ID:
-                node.addChild(match(TokenType.ID));
+                node.addChild(match(tokenType));
                 break;
             case LPAREN:
-                node.addChild(match(TokenType.LPAREN), exp(), match(TokenType.RPAREN));
+                node.addChild(match(TokenType.LPAREN), additive(), match(TokenType.RPAREN));
                 break;
             default:
                 addError("", TokenType.INTLITERAL, TokenType.ID, TokenType.LPAREN);
@@ -225,82 +236,22 @@ public class Parser {
     }
 
     /**
-     * (15) [otherFactor]    -> 空                      + - ; )
-     * (16) [otherFactor]    -> '*' [factor]            *
-     * (17) [otherFactor]    -> '/' [factor]            /
-     */
-    private TreeNode otherFactor() {
-        Token peekToken = peekToken();
-        if (peekToken == null) {
-            addError(UNEXPECTED_EOF);
-            return null;
-        }
-        TreeNode node = new TreeNode(TreeNodeType.otherFactor);
-        switch (peekToken.getTokenType()) {
-            case TIMES:
-                node.addChild(match(TokenType.TIMES), factor());
-                break;
-            case OVER:
-                node.addChild(match(TokenType.OVER), factor());
-                break;
-            case SEMI:
-            case RPAREN:
-            case PLUS:
-            case MINUS:
-                node.addChild(new TreeNode());
-                break;
-            default:
-                addError("", TokenType.TIMES, TokenType.OVER, TokenType.SEMI, TokenType.RPAREN, TokenType.PLUS, TokenType.MINUS);
-        }
-        return node;
-    }
-
-    /**
-     * (12) [otherTerm]      -> 空                       ; )
-     * (13) [otherTerm]      -> '+' [term]              +
-     * (14) [otherTerm]      -> '-' [term]              -
-     */
-    private TreeNode otherTerm() {
-        Token peekToken = peekToken();
-        if (peekToken == null) {
-            addError(UNEXPECTED_EOF);
-            return null;
-        }
-        TreeNode node = new TreeNode(TreeNodeType.otherTerm);
-        switch (peekToken.getTokenType()) {
-            case PLUS:
-                node.addChild(match(TokenType.PLUS), term());
-                break;
-            case MINUS:
-                node.addChild(match(TokenType.MINUS), term());
-                break;
-            case SEMI:
-            case RPAREN:
-                node.addChild(new TreeNode());
-                break;
-            default:
-                addError("", TokenType.PLUS, TokenType.MINUS, TokenType.SEMI, TokenType.RPAREN);
-        }
-        return node;
-    }
-
-    /**
-     * (18) [expressionStmt] -> [exp] ';'               IntLiteral ID (
+     * [expressionStmt] -> [exp] ';'               IntLiteral ID (
      */
     private TreeNode expressionStmt() {
         return new TreeNode(TreeNodeType.expressionStmt)
-                .addChild(exp(), match(TokenType.SEMI));
+                .addChild(additive(), match(TokenType.SEMI));
     }
 
     /**
-     * * (19) [assignStmt]     -> ID '=' [exp] ';'        ID
+     * *      [assignStmt]     -> ID '=' [exp] ';'        ID
      */
     private TreeNode assignStmt() {
         return new TreeNode(TreeNodeType.assignStmt)
                 .addChild(
                         match(TokenType.ID),
                         match(TokenType.ASSIGNMENT),
-                        exp(),
+                        additive(),
                         match(TokenType.SEMI)
                 );
     }

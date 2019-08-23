@@ -88,117 +88,98 @@ public class IntScript {
         }
         Integer result = null;
         TreeNodeType type = node.getType();
+        List<TreeNode> children = node.getChildren();
         switch (type) {
             case script:
-                // * (00) [script]         -> [stmt]+
+                // *  [script]         -> [stmt]+
                 // 最后一条语句的值作为返回值
                 // fallthrough
             case stmt:
-                // * (01) [stmt]           -> [intDeclare]            INT
-                // * (02) [stmt]           -> [expressionStmt]        IntLiteral ID (
-                // * (03) [stmt]           -> [assignStmt]            ID
+                // *  [stmt]           -> [intDeclare]            INT
+                // *  [stmt]           -> [expressionStmt]        IntLiteral ID (
+                // *  [stmt]           -> [assignStmt]            ID
                 // children 应该就是 1 个
-                for (TreeNode child : node.getChildren()) {
+                for (TreeNode child : children) {
                     result = evaluate(child, prefix);
                 }
                 break;
             case intDeclare:
-                // * (04) [intDeclare]     -> INT ID [intDecRight]    INT
+                // *  [intDeclare]     -> INT ID [intDecRight]    INT
                 // 返回 ID 的值
-                String varName = node.getChildren().get(1).getValue();
-                TreeNode intDecRight = node.getChildren().get(2);
+                String varName = children.get(1).getValue();
+                TreeNode intDecRight = children.get(2);
                 result = evaluate(intDecRight, prefix);
                 variables.put(varName, result);
                 break;
             case intDecRight:
-                // * (05) [intDecRight]    -> '=' [exp] ';'           =
-                // * (06) [intDecRight]    -> ';'                     ;
-                if (node.getChildren().size() == 1) {
+                // *  [intDecRight]    -> '=' [exp] ';'           =
+                // *  [intDecRight]    -> ';'                     ;
+                if (children.size() == 1) {
                     result = null;
                     break;
                 }
-                TreeNode exp = node.getChildren().get(1);
+                TreeNode exp = children.get(1);
                 result = evaluate(exp, prefix);
                 break;
-            case exp:
-                // * (07) [exp]            -> [term] [otherTerm]      IntLiteral ID (
-                // * (08) [term]           -> [factor] [otherFactor]  IntLiteral ID (
-                // * (12) [otherTerm]      -> 空                       ; )
-                // * (13) [otherTerm]      -> '+' [term]              +
-                // * (14) [otherTerm]      -> '-' [term]              -
-                TreeNode term = node.getChildren().get(0);
-                TreeNode otherTerm = node.getChildren().get(1);
-                Integer termValue = evaluate(term, prefix);
-                if (otherTerm.getChildren().size() > 1) {
-                    TreeNode addOp = otherTerm.getChildren().get(0);
-                    TreeNode addTerm = otherTerm.getChildren().get(1);
-                    Integer addTermValue = evaluate(addTerm, prefix);
-                    if (addTermValue == null) {
-                        result = termValue;
-                        break;
-                    }
-                    if (addOp.getValue().equals(TokenType.PLUS.getName())) {
-                        result = termValue + addTermValue;
+            case additive:
+                //  [additive]       -> [multiplicative] ( '+'|'-' [multiplicative] )*
+                TreeNode add1 = children.get(0);
+                Integer add1Value = evaluate(add1, prefix);
+                for (int i = 1; i < children.size(); i++) {
+                    TreeNode op = children.get(i);
+                    TreeNode add2 = children.get(++i);
+                    Integer add2Value = evaluate(add2, prefix);
+                    if (op.getTokenType().equals(TokenType.PLUS)) {
+                        add1Value = add1Value + add2Value;
                     } else {
-                        result = termValue - addTermValue;
+                        add1Value = add1Value - add2Value;
                     }
-                } else {
-                    result = termValue;
                 }
+                result = add1Value;
                 break;
-            case term:
-                // * (08) [term]           -> [factor] [otherFactor]  IntLiteral ID (
-                // * (09) [factor]         -> IntLiteral              IntLiteral
-                // * (10) [factor]         -> ID                      ID
-                // * (11) [factor]         -> '(' [exp] ')'           (
-                // * (15) [otherFactor]    -> 空                       + - ; )
-                // * (16) [otherFactor]    -> '*' [factor]            *
-                // * (17) [otherFactor]    -> '/' [factor]            /
-                TreeNode factor = node.getChildren().get(0);
-                TreeNode otherFactor = node.getChildren().get(1);
-                Integer factorValue = evaluate(factor, prefix);
-                if (otherFactor.getChildren().size() > 1) {
-                    TreeNode op = otherFactor.getChildren().get(0);
-                    TreeNode multiFactor = otherFactor.getChildren().get(1);
-                    Integer multiValue = evaluate(multiFactor, prefix);
-                    if (multiValue == null) {
-                        result = factorValue;
-                        break;
-                    }
-                    if (op.getValue().equals(TokenType.TIMES.getName())) {
-                        result = factorValue * multiValue;
+            case multiplicative:
+                // [multiplicative] -> [primary] ( '*'|'/' [primary] )*
+                TreeNode pri = children.get(0);
+                Integer mul1 = evaluate(pri, prefix);
+                for (int i = 1; i < children.size(); i++) {
+                    TreeNode op = children.get(i);
+                    TreeNode pri2 = children.get(++i);
+                    Integer mul2 = evaluate(pri2, prefix);
+                    if (op.getTokenType().equals(TokenType.TIMES)) {
+                        mul1 = mul1 * mul2;
                     } else {
-                        result = factorValue / multiValue;
+                        mul1 = mul1 / mul2;
                     }
-                } else {
-                    result = factorValue;
                 }
+                result = mul1;
                 break;
-            case factor:
-                // * (09) [factor]         -> IntLiteral              IntLiteral
-                // * (10) [factor]         -> ID                      ID
-                // * (11) [factor]         -> '(' [exp] ')'           (
-                List<TreeNode> children = node.getChildren();
-                if (children.size() == 1) {
-                    TreeNode child = children.get(0);
-                    result = evaluate(child, prefix);
-                } else {
-                    TreeNode factorExp = children.get(1);
-                    result = evaluate(factorExp, prefix);
+            case primary:
+                //     * [primary]        -> IntLiteral | ID | '(' additive ')'
+                TreeNode child1 = node.getChildren().get(0);
+                if (child1.getTokenType().equals(TokenType.INTLITERAL)) {
+                    result = Integer.parseInt(child1.getValue());
+                    break;
                 }
+                if (child1.getTokenType().equals(TokenType.ID)) {
+                    String name = child1.getValue();
+                    if (variables.containsKey(name)) {
+                        //todo
+                    }
+                }
+
                 break;
             case expressionStmt:
-                // * (18) [expressionStmt] -> [exp] ';'               IntLiteral ID (
-                TreeNode expStmtChild = node.getChildren().get(0);
+                // *  [expressionStmt] -> [exp] ';'               IntLiteral ID (
+                TreeNode expStmtChild = children.get(0);
                 result = evaluate(expStmtChild, prefix);
                 break;
             case assignStmt:
-                // * (19) [assignStmt]     -> ID '=' [exp] ';'        ID
-                String assName = node.getChildren().get(0).getValue();
+                // *  [assignStmt]     -> ID '=' [exp] ';'        ID
+                String assName = children.get(0).getValue();
                 if (!variables.containsKey(assName)) {
                     throw new IllegalStateException("Can not assign value to unknown variable: " + assName);
                 }
-                TreeNode assStmtExp = node.getChildren().get(2);
+                TreeNode assStmtExp = children.get(2);
                 result = evaluate(assStmtExp, prefix);
                 variables.put(assName, result);
                 break;

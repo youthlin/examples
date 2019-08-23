@@ -12,11 +12,10 @@ public enum TreeNodeType {
     expressionStmt,
     assignStmt,
     intDecRight,
-    exp,
-    term,
-    otherTerm,
-    factor,
-    otherFactor,
+
+    additive,
+    multiplicative,
+    primary,
 
     Terminal,
 
