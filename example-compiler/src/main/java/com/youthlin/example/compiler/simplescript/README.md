@@ -1,4 +1,29 @@
- 
+![IntScript](../../../../../../resources/IntScript.png)
+简单整型脚本 产生式：
+```
+[script]         -> [stmt]+
+[stmt]           -> [intDeclare]
+[stmt]           -> [expressionStmt]
+[stmt]           -> [assignStmt]
+[intDeclare]     -> INT ID [intDecRight]
+[intDecRight]    -> '=' [additive] ';'
+[intDecRight]    -> ';'
+[additive]       -> [multiplicative] ( '+'|'-' [multiplicative] )*
+[multiplicative] -> [primary] ( '*'|'/' [primary] )*
+[primary]        -> IntLiteral | ID | '(' additive ')'
+[expressionStmt] -> [additive] ';'
+[assignStmt]     -> ID '=' [additive] ';'
+```
+[词法分析器 Lexer.java](Lexer.java)  
+[语法分析器 Parser.java](Parser.java)  
+[脚本执行器 IntScript.java](IntScript.java)  
+
+see also: [RichardGong/PlayWithCompiler](https://github.com/RichardGong/PlayWithCompiler/tree/a9fd83f084e35be93e949c0d2f4ed3859b92f80e/lab/craft)
+
+<hr>
+
+# 基本概念复习
+
 PPT：  
 https://github.com/YouthLin/SNL-Compiler/tree/master/%E8%AF%BE%E4%BB%B6
 
