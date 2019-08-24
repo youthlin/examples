@@ -58,6 +58,8 @@ public class SimpleTreeNode<T> implements TreeNode<T, SimpleTreeNode<T>> {
         System.out.println(TreeNode.toString(root));
         System.out.println(TreeNode.toString(root, 10));
         System.out.println(TreeNode.toString(root, 0, "\n", '-', '|', '`'));
+        System.out.println(TreePrinter.toString(root, SimpleTreeNode::getChildren, SimpleTreeNode::printData,
+                0, "\r\n", '_', '|', '|'));
     }
 
 }

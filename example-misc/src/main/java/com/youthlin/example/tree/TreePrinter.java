@@ -1,9 +1,14 @@
 package com.youthlin.example.tree;
 
+import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.function.Function;
 
 /**
  * @author : youthlin.chen @ 2019-06-15 20:27
@@ -213,5 +218,200 @@ public class TreePrinter {
         return END_FLAG;
     }
     //endregion static flag
+
+    /**
+     * 包装结点 有一些 tostring 需要用的临时状态变量和方法，为了不侵入应用 所以包装一下
+     */
+    private static class Wrap<N> {
+        private boolean printed;
+        private final N node;
+        private final List<Wrap<N>> children;
+
+        private Wrap(N node, Function<N, List<N>> getChildren) {
+            this.node = node;
+            List<N> children = getChildren.apply(node);
+            if (children != null) {
+                this.children = Lists.newArrayList();
+                for (N child : children) {
+                    if (child == null) {
+                        this.children.add(null);
+                    } else {
+                        this.children.add(new Wrap<>(child, getChildren));
+                    }
+                }
+            } else {
+                this.children = null;
+            }
+        }
+
+        private boolean hasChildNotPrinted() {
+            if (children == null) {
+                return false;
+            }
+            for (Wrap child : children) {
+                if (!child.printed) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean hasChild() {
+            return children != null && !children.isEmpty();
+        }
+
+        private static void appendOffset(StringBuilder sb, int offset) {
+            for (int i = 0; i < offset; i++) {
+                sb.append(" ");
+            }
+        }
+
+        private static <N> void pushChild(Stack<Wrap<N>> stack, Wrap<N> node) {
+            if (node.hasChild()) {
+                int size = node.children.size();
+                Wrap<N> tmp;
+                // 先 push 最右边的，这样 pop 时先拿到最左边的
+                for (int i = size - 1; i >= 0; i--) {
+                    tmp = node.children.get(i);
+                    if (tmp != null) {
+                        stack.push(tmp);
+                    }
+                }
+            }
+        }
+
+        private static <N> void insert(ArrayList<Wrap<N>> list, Wrap<N> node, int index) {
+            if (list.size() <= index) {
+                list.add(node);
+            } else {
+                list.set(index, node);
+            }
+        }
+
+        private static <N> boolean isChildOf(Wrap<N> node, Wrap<N> parent) {
+            if (parent == null || !parent.hasChild()) {
+                return false;
+            }
+            for (Wrap child : parent.children) {
+                if (child == node) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static <N> void appendBlank(StringBuilder sb, Wrap<N> preLineNode, int nodeIndex,
+                Function<N, String> toString) {
+            for (int j = 0; j < toString.apply(preLineNode.node).length() - 1; j++) {
+                sb.append(" ");
+            }
+            //abc_xy
+            //  |  |_vw
+            //  |_xyz
+            //index 是 0 时 只需要输出【 pre 宽度 - 1 个】空格即可。如上 abc 之下的空格都是2个
+            //但不是 0 时，需要输出【 pre 宽度个】空格。如上 第二行两个竖线之间就是【 xy 的宽度个=2个】空格
+            if (nodeIndex > 0) {
+                sb.append(" ");
+            }
+        }
+
+        private static boolean isLastChildOf(Wrap node, Wrap parent) {
+            if (parent == null || !parent.hasChild()) {
+                return false;
+            }
+            return node == parent.children.get(parent.children.size() - 1);
+        }
+
+    }
+
+    public static <N> String toString(N root, Function<N, List<N>> getChildren,
+            Function<N, String> dataToString, int offset, String newLine,
+            char horizontal, char vertical, char verticalLastChild) {
+        Wrap<N> prevLineNode, current = new Wrap<>(root, getChildren);
+        StringBuilder sb = new StringBuilder();
+        Wrap.appendOffset(sb, offset);
+        sb.append(dataToString.apply(current.node));
+
+        // 用来先序遍历
+        Stack<Wrap<N>> stack = new Stack<>();
+        Wrap.pushChild(stack, current);
+        // list 用来保存横向的最新的已输出结点
+        // 如 abc_xy_xyz 处理完这行 list=[abc, xy, xyz]
+        //      |_XY     处理完这行 list=[abc, XY, xyz](其中 xyz 没有用了，但还在 list 里也无妨)
+        //         |_vw  处理这里时，需要遍历 list 看当前 vw 是否是 list 某一项的子结点。处理完这行 list=[abc, XY, vw]
+        ArrayList<Wrap<N>> list = Lists.newArrayList(current);
+        // 下标，输出后从左往右从 0 开始记
+        int index = 0;
+        // 即将输出的结点是否是行首结点 初始因为 root 已输出 所以不是行首
+        boolean isLineHead = false;
+        while (!stack.isEmpty()) {
+            current = stack.pop();
+            if (!isLineHead) {
+                // 即将输出的结点不是行首 直接输出下划线接着连接就可以
+                sb.append(horizontal).append(dataToString.apply(current.node));
+                current.printed = true;
+                if (current.hasChild()) {
+                    Wrap.insert(list, current, ++index);
+                    Wrap.pushChild(stack, current);
+                    isLineHead = false;
+                } else {
+                    //没有子结点了 下次就要另起一行 是行首了
+                    isLineHead = true;
+                    index = 0;
+                    sb.append(newLine);
+                    Wrap.appendOffset(sb, offset);
+                }
+            } else {
+                // 即将输出的结点是行首 要看输出空格还是竖线
+                for (int i = 0; i < list.size(); i++) {
+                    prevLineNode = list.get(i);
+                    index = i;
+                    if (Wrap.isChildOf(current, prevLineNode)) {
+                        // pre
+                        // ↓
+                        // abc_xx
+                        //   |_yy
+                        //     ↑
+                        //     current
+                        Wrap.appendBlank(sb, prevLineNode, i, dataToString);
+                        if (Wrap.isLastChildOf(current, prevLineNode)) {
+                            sb.append(verticalLastChild);
+                        } else {
+                            sb.append(vertical);
+                        }
+                        sb.append(horizontal).append(dataToString.apply(current.node));
+                        current.printed = true;
+                        if (current.hasChild()) {
+                            Wrap.insert(list, current, ++index);
+                            Wrap.pushChild(stack, current);
+                            isLineHead = false;
+                        } else {
+                            sb.append(newLine);
+                            Wrap.appendOffset(sb, offset);
+                            index = 0;
+                            isLineHead = true;
+                        }
+                        //跳出 for
+                        break;
+                    } else {
+                        Wrap.appendBlank(sb, prevLineNode, i, dataToString);
+                        if (prevLineNode.hasChildNotPrinted()) {
+                            //abc_xx
+                            //  |  |_yyy 这行的第一个竖线 遍历上一行的 abc 时 当前结点 yyy 不是 abc 的子结点，而且 abc 还有子结点没有输出
+                            //  |_xyz
+                            sb.append(vertical);
+                        } else {
+                            // abc_xx
+                            //       |_yyy
+                            //    ↑这里不是竖线，因为 abc 的子结点都输出了
+                            sb.append(" ");
+                        }
+                    }
+                }
+
+            }
+        }
+        return sb.toString();
+    }
 
 }
