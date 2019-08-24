@@ -261,7 +261,7 @@ public class Parser {
             ;
         }
         if (expected != null) {
-            sb.append(" expected: ").append(Arrays.stream(expected)
+            sb.append(". expected: ").append(Arrays.stream(expected)
                     .map(TokenType::getName).collect(Collectors.joining(",")));
         }
         int line = 0, column = 0;
