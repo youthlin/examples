@@ -56,10 +56,13 @@ public class SimpleTreeNode<T> implements TreeNode<T, SimpleTreeNode<T>> {
         a.addChild(new SimpleTreeNode<>("ABCd"));
         root.addChild(a);
         System.out.println(TreeNode.toString(root));
-        System.out.println(TreeNode.toString(root, 10));
-        System.out.println(TreeNode.toString(root, 0, "\n", '-', '|', '`'));
         System.out.println(TreePrinter.toString(root, SimpleTreeNode::getChildren, SimpleTreeNode::printData,
-                0, "\r\n", '_', '|', '|'));
+                new TreePrinter.Option().offset(10)));
+        System.out.println(TreePrinter.toString(root, SimpleTreeNode::getChildren, SimpleTreeNode::printData,
+                new TreePrinter.Option().horizontal('━').verticalLineHead('┃').verticalToChild('┣')
+                        .verticalLastChild('┗')));
+        System.out.println(TreePrinter.toString(root, SimpleTreeNode::getChildren, SimpleTreeNode::printData,
+                TreePrinter.Option.DEFAULT));
     }
 
 }

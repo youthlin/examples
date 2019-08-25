@@ -1,7 +1,12 @@
 package com.youthlin.example.tree;
 
 import com.google.common.collect.Lists;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.experimental.Accessors;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -324,12 +329,61 @@ public class TreePrinter {
 
     }
 
+    @Data
+    @Accessors(chain = true, fluent = true)
+    public static class Option {
+        private static final String NEW_LINE;
+
+        static {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            pw.println();
+            NEW_LINE = sw.toString();
+        }
+
+        public static final Option DEFAULT = new Option() {
+            @Override
+            public Option offset(int offset) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option newLine(String newLine) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option horizontal(char horizontal) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option verticalToChild(char vertical) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option verticalLastChild(char verticalLastChild) {
+                throw new UnsupportedOperationException();
+            }
+        };
+
+        private int offset = 0;
+        @NonNull
+        private String newLine = NEW_LINE;
+        // 搜一下制表符 复制的
+        private char horizontal = '─';
+        private char verticalLineHead = '│';
+        private char verticalToChild = '├';
+        private char verticalLastChild = '└';
+
+    }
+
     public static <N> String toString(N root, Function<N, List<N>> getChildren,
-            Function<N, String> dataToString, int offset, String newLine,
-            char horizontal, char vertical, char verticalLastChild) {
+            Function<N, String> dataToString, Option option) {
         Wrap<N> prevLineNode, current = new Wrap<>(root, getChildren);
         StringBuilder sb = new StringBuilder();
-        Wrap.appendOffset(sb, offset);
+        Wrap.appendOffset(sb, option.offset);
         sb.append(dataToString.apply(current.node));
 
         // 用来先序遍历
@@ -348,7 +402,7 @@ public class TreePrinter {
             current = stack.pop();
             if (!isLineHead) {
                 // 即将输出的结点不是行首 直接输出下划线接着连接就可以
-                sb.append(horizontal).append(dataToString.apply(current.node));
+                sb.append(option.horizontal).append(dataToString.apply(current.node));
                 current.printed = true;
                 if (current.hasChild()) {
                     Wrap.insert(list, current, ++index);
@@ -358,8 +412,8 @@ public class TreePrinter {
                     //没有子结点了 下次就要另起一行 是行首了
                     isLineHead = true;
                     index = 0;
-                    sb.append(newLine);
-                    Wrap.appendOffset(sb, offset);
+                    sb.append(option.newLine);
+                    Wrap.appendOffset(sb, option.offset);
                 }
             } else {
                 // 即将输出的结点是行首 要看输出空格还是竖线
@@ -375,19 +429,19 @@ public class TreePrinter {
                         //     current
                         Wrap.appendBlank(sb, prevLineNode, i, dataToString);
                         if (Wrap.isLastChildOf(current, prevLineNode)) {
-                            sb.append(verticalLastChild);
+                            sb.append(option.verticalLastChild);
                         } else {
-                            sb.append(vertical);
+                            sb.append(option.verticalToChild);
                         }
-                        sb.append(horizontal).append(dataToString.apply(current.node));
+                        sb.append(option.horizontal).append(dataToString.apply(current.node));
                         current.printed = true;
                         if (current.hasChild()) {
                             Wrap.insert(list, current, ++index);
                             Wrap.pushChild(stack, current);
                             isLineHead = false;
                         } else {
-                            sb.append(newLine);
-                            Wrap.appendOffset(sb, offset);
+                            sb.append(option.newLine);
+                            Wrap.appendOffset(sb, option.offset);
                             index = 0;
                             isLineHead = true;
                         }
@@ -399,7 +453,7 @@ public class TreePrinter {
                             //abc_xx
                             //  |  |_yyy 这行的第一个竖线 遍历上一行的 abc 时 当前结点 yyy 不是 abc 的子结点，而且 abc 还有子结点没有输出
                             //  |_xyz
-                            sb.append(vertical);
+                            sb.append(option.verticalLineHead);
                         } else {
                             // abc_xx
                             //       |_yyy
