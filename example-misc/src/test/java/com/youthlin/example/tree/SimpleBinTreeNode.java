@@ -53,6 +53,24 @@ public class SimpleBinTreeNode<T> implements BinTreeNode<T, SimpleBinTreeNode<T>
         System.out.println(TreePrinter.toString(root,
                 n -> Lists.newArrayList(n.getLeft(), n.getRight()),
                 BinTreeNode::printData, TreePrinter.Option.DEFAULT));
+        System.out.println(TreePrinter.toString(root,
+                n -> Lists.newArrayList(n.getRight(), n.getLeft()),
+                BinTreeNode::printData, new TreePrinter.Option().nullNodeToString(() -> "空")));
+        // root
+        //   \
+        //    a
+        //     \
+        //      b
+        root = new SimpleBinTreeNode<>("root");
+        a = new SimpleBinTreeNode<>("a");
+        root.right = a;
+        a.right = new SimpleBinTreeNode<>("b");
+        System.out.println("--------------------------------------");
+        System.out.println(BinTreeNode.toString(root));
+        System.out.println(TreePrinter.toString(root,
+                n -> Lists.newArrayList(n.getLeft(), n.getRight()),
+                BinTreeNode::printData, TreePrinter.Option.DEFAULT));
+
     }
 
 }

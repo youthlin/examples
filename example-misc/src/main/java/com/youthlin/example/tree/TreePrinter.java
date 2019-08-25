@@ -426,8 +426,8 @@ public class TreePrinter {
                     sb.append(option.horizontal).append(option.nullNodeToString.get());
                 } else {
                     sb.append(option.horizontal).append(dataToString.apply(current.node));
-                    current.printed = true;
                 }
+                current.printed = true;
                 if (current.hasChild()) {
                     Wrap.insert(list, current, ++index);
                     Wrap.pushChild(stack, current);
