@@ -14,41 +14,123 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author : youthlin.chen @ 2019-06-15 20:27
  */
 public class TreePrinter {
+    @Data
+    @Accessors(chain = true, fluent = true)
+    public static class Option {
+        private static final String NEW_LINE;
 
-    public static <T, N extends BinTreeNode<T, N>> String printTree(BinTreeNode<T, N> root) {
-        return printTree(root, 0);
+        static {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            pw.println();
+            NEW_LINE = sw.toString();
+        }
+
+        public static final Option DEFAULT = new Option() {
+            @Override
+            public Option offset(int offset) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option newLine(String newLine) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option horizontal(char horizontal) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option verticalToChild(char vertical) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option verticalLastChild(char verticalLastChild) {
+                throw new UnsupportedOperationException();
+            }
+        };
+
+        private int offset = 0;
+        @NonNull
+        private String newLine = NEW_LINE;
+        // 搜一下制表符 复制的
+        private char verticalLineHead = '│';
+        private char verticalToChild = '├';
+        private char verticalLastChild = '└';
+        private char horizontal = '─';
+        private char leftCorner = '┌';
+        private char rightCorner = '┐';
+        private char leftVertical = '│';
+        private char rightVertical = '│';
+        private Supplier<String> nullNodeToString = () -> "";
     }
 
-    public static <T, N extends BinTreeNode<T, N>> String printTree(BinTreeNode<T, N> root, int offset) {
-        return printTree(root, offset, " ", "_", "|");
+    private static class BinWrap<N> {
+        private static final BinWrap END_FLAG = new BinWrap();
+        final N node;
+        final BinWrap<N> left;
+        final BinWrap<N> right;
+        int offset;
+
+        BinWrap() {
+            node = null;
+            left = null;
+            right = null;
+        }
+
+        BinWrap(N node, Function<N, N> getLeft, Function<N, N> getRight) {
+            this.node = Objects.requireNonNull(node);
+            N left = getLeft.apply(node);
+            if (left != null) {
+                this.left = new BinWrap<>(left, getLeft, getRight);
+            } else {
+                this.left = null;
+            }
+            N right = getRight.apply(node);
+            if (right != null) {
+                this.right = new BinWrap<>(right, getLeft, getRight);
+            } else {
+                this.right = null;
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        private static <N> BinWrap<N> getEndFlag() {
+            return END_FLAG;
+        }
     }
 
-    public static <T, N extends BinTreeNode<T, N>> String printTree(BinTreeNode<T, N> root, int offset,
-            String blankChar, String underLineChar, String verticalChar) {
+    public static <N> String printTree(N root, Function<N, N> getLeft, Function<N, N> getRight,
+            Function<N, String> print, Option option) {
         if (root == null) {
             return "";
         }
+        int offset = option.offset;
         int leftBlankCount = offset;
 
         // 中序遍历 准备工作 计算每个结点的偏移量
-        Stack<BinTreeNode<T, N>> stack = new Stack<>();
+        Stack<BinWrap<N>> stack = new Stack<>();
         //辅助变量 用于判断偏移量是否需要调整
-        BinTreeNode<T, N> pre = root;
-        BinTreeNode<T, N> current = root;
+        BinWrap<N> wrapRoot = new BinWrap<>(root, getLeft, getRight);
+        BinWrap<N> pre = wrapRoot, current = wrapRoot;
         do {
             //往最左
             while (current != null) {
                 stack.push(current);
-                current = current.getLeft();
+                current = current.left;
             }
             if (!stack.isEmpty()) {
                 current = stack.pop();
-                if (current.getLeft() == pre) {
+                if (current.left == pre) {
                     /*
                      * 这种直接左子树宽度只有 1 的需要调整 加一个偏移量 因为要至少有一个下划线
                      *  _0
@@ -59,11 +141,11 @@ public class TreePrinter {
                      * |
                      * 90
                      * */
-                    if (pre.dataWidth() < 2) {
+                    if (print.apply(pre.node).length() < 2) {
                         offset++;
                     }
                 }
-                if (pre.getRight() == current) {
+                if (pre.right == current) {
                     /*
                      * 中序下一个是直接右子树的 需要调整
                      * 2_
@@ -78,25 +160,25 @@ public class TreePrinter {
                      * */
                     offset++;
                 }
-                current.setOffset(offset);
-                offset += current.dataWidth();
+                current.offset = offset;
+                offset += print.apply(current.node).length();
                 pre = current;
-                current = current.getRight();
+                current = current.right;
             }
         } while (current != null || !stack.isEmpty());
 
         // 层次遍历 真正输出
-        Queue<BinTreeNode<T, N>> q = new LinkedList<>();
-        q.offer(root);
+        Queue<BinWrap<N>> q = new LinkedList<>();
+        q.offer(wrapRoot);
         // 标志结点 用于标识每层的结尾
-        q.offer(getEndFlag());
+        q.offer(BinWrap.getEndFlag());
         StringBuilder sb = new StringBuilder();
         int currentOffset = 0;
-        String leftBlankStr = repeatChar(blankChar, leftBlankCount);
+        String leftBlankStr = repeatChar(' ', leftBlankCount);
         sb.append(leftBlankStr);
         while (true) {
-            if (q.peek() == getEndFlag()) {
-                sb.append('\n');
+            if (q.peek() == BinWrap.getEndFlag()) {
+                sb.append(option.newLine);
                 break;
             }
             // 每一层的下划线和数据
@@ -104,15 +186,15 @@ public class TreePrinter {
                 current = q.poll();
                 // 想不到吧 取出来又放进去了 为了等下输出竖线用的
                 q.offer(current);
-                if (current == getEndFlag()) {
+                if (current == BinWrap.getEndFlag()) {
                     // 这层结束了 该换行了
-                    sb.append("\n").append(leftBlankStr);
+                    sb.append(option.newLine).append(leftBlankStr);
                     currentOffset = 0;
                     break;
                 }
-                int thisOffset = Objects.requireNonNull(current).getOffset();
+                int thisOffset = Objects.requireNonNull(current).offset;
                 // 有左子树 先输出左边的空格和下划线
-                if (current.getLeft() != null) {
+                if (current.left != null) {
                     /*
                      *
                      * 01234567890123
@@ -125,46 +207,48 @@ public class TreePrinter {
                      * 对于 11 13 来说 是队列的第一个 先是从头开始的空格 然后是下划线
                      * 对于 15 来说 先是从当前光标开始的空格 然后是下划线
                      * */
-                    int leftOffset = current.getLeft().getOffset();
+                    int leftOffset = current.left.offset;
                     // 左子树那个点是空格 所以+1 下划线是从左子树那个点再往右一格开始
-                    sb.append(repeatChar(blankChar, leftOffset - currentOffset + 1));
+                    sb.append(repeatChar(' ', leftOffset - currentOffset));
+                    sb.append(option.leftCorner);
                     currentOffset = leftOffset + 1;
-                    sb.append(repeatChar(underLineChar, thisOffset - currentOffset));
+                    sb.append(repeatChar(option.horizontal, thisOffset - currentOffset));
                     currentOffset = thisOffset;
                 }
                 // 输出本身
-                String str = current.printData();
-                sb.append(repeatChar(blankChar, thisOffset - currentOffset)).append(str);
+                String str = print.apply(current.node);
+                sb.append(repeatChar(' ', thisOffset - currentOffset)).append(str);
                 currentOffset = thisOffset + str.length();
 
                 // 有右子树 输出右边的下划线
-                if (current.getRight() != null) {
-                    int rightOffset = current.getRight().getOffset();
-                    sb.append(repeatChar(underLineChar, rightOffset - currentOffset));
-                    currentOffset = rightOffset;
+                if (current.right != null) {
+                    int rightOffset = current.right.offset;
+                    sb.append(repeatChar(option.horizontal, rightOffset - currentOffset));
+                    sb.append(option.rightCorner);
+                    currentOffset = rightOffset + 1;
                 }
             }
 
             //每一层的竖线
             while (true) {
                 current = q.poll();
-                if (current == END_FLAG) {
-                    sb.append("\n").append(leftBlankStr);
+                if (current == BinWrap.getEndFlag()) {
+                    sb.append(option.newLine).append(leftBlankStr);
                     currentOffset = 0;
-                    q.offer(getEndFlag());
+                    q.offer(BinWrap.getEndFlag());
                     break;
                 }
-                BinTreeNode<T, N> left = Objects.requireNonNull(current).getLeft();
+                BinWrap<N> left = Objects.requireNonNull(current).left;
                 if (left != null) {
-                    int leftOffset = left.getOffset();
-                    sb.append(repeatChar(blankChar, leftOffset - currentOffset)).append(verticalChar);
+                    int leftOffset = left.offset;
+                    sb.append(repeatChar(' ', leftOffset - currentOffset)).append(option.leftVertical);
                     currentOffset = leftOffset + 1;
                     q.offer(left);
                 }
-                BinTreeNode<T, N> right = current.getRight();
+                BinWrap<N> right = current.right;
                 if (right != null) {
-                    int rightOffset = right.getOffset();
-                    sb.append(repeatChar(blankChar, rightOffset - currentOffset)).append(verticalChar);
+                    int rightOffset = right.offset;
+                    sb.append(repeatChar(' ', rightOffset - currentOffset)).append(option.rightVertical);
                     currentOffset = rightOffset + 1;
                     q.offer(right);
                 }
@@ -173,7 +257,7 @@ public class TreePrinter {
         return sb.toString();
     }
 
-    private static String repeatChar(String ch, int count) {
+    private static String repeatChar(char ch, int count) {
         if (count == 0) {
             return "";
         }
@@ -184,69 +268,55 @@ public class TreePrinter {
         return sb.toString();
     }
 
-    //region static flag
-
-    private static final BinTreeNode END_FLAG = new BinTreeNode() {
-
-        @Override
-        public Object getData() {
-            return null;
-        }
-
-        @Override
-        public BinTreeNode getLeft() {
-            return null;
-        }
-
-        @Override
-        public BinTreeNode getRight() {
-            return null;
-        }
-
-        @Override
-        public String printData() {
-            return null;
-        }
-
-        @Override
-        public void setOffset(int offset) {
-        }
-
-        @Override
-        public int getOffset() {
-            return 0;
-        }
-    };
-
-    @SuppressWarnings("unchecked")
-    private static <T, N extends BinTreeNode<T, N>> BinTreeNode<T, N> getEndFlag() {
-        return END_FLAG;
-    }
-    //endregion static flag
-
     /**
      * 包装结点 有一些 tostring 需要用的临时状态变量和方法，为了不侵入应用 所以包装一下
      */
     private static class Wrap<N> {
+        private boolean isNull;
         private boolean printed;
         private final N node;
         private final List<Wrap<N>> children;
 
+        private static <N> Wrap<N> newNullNode() {
+            return new Wrap<>();
+        }
+
+        private Wrap() {
+            isNull = true;
+            this.node = null;
+            this.children = null;
+        }
+
         private Wrap(N node, Function<N, List<N>> getChildren) {
             this.node = node;
             List<N> children = getChildren.apply(node);
+            ArrayList<Wrap<N>> list = null;
             if (children != null) {
-                this.children = Lists.newArrayList();
+                list = Lists.newArrayList();
+                boolean childAllNull = true;
+                boolean hasNullChild = false;
                 for (N child : children) {
                     if (child == null) {
-                        this.children.add(null);
+                        hasNullChild = true;
+                        list.add(null);
                     } else {
-                        this.children.add(new Wrap<>(child, getChildren));
+                        childAllNull = false;
+                        list.add(new Wrap<>(child, getChildren));
                     }
                 }
-            } else {
-                this.children = null;
+                if (childAllNull) {
+                    list = null;
+                } else {
+                    if (hasNullChild) {
+                        for (int i = 0; i < list.size(); i++) {
+                            if (list.get(i) == null) {
+                                list.set(i, newNullNode());
+                            }
+                        }
+                    }
+                }
             }
+            this.children = list;
         }
 
         private boolean hasChildNotPrinted() {
@@ -278,9 +348,9 @@ public class TreePrinter {
                 // 先 push 最右边的，这样 pop 时先拿到最左边的
                 for (int i = size - 1; i >= 0; i--) {
                     tmp = node.children.get(i);
-                    if (tmp != null) {
-                        stack.push(tmp);
-                    }
+                    //if (tmp != null) {
+                    stack.push(tmp);
+                    //}
                 }
             }
         }
@@ -329,56 +399,6 @@ public class TreePrinter {
 
     }
 
-    @Data
-    @Accessors(chain = true, fluent = true)
-    public static class Option {
-        private static final String NEW_LINE;
-
-        static {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            pw.println();
-            NEW_LINE = sw.toString();
-        }
-
-        public static final Option DEFAULT = new Option() {
-            @Override
-            public Option offset(int offset) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Option newLine(String newLine) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Option horizontal(char horizontal) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Option verticalToChild(char vertical) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Option verticalLastChild(char verticalLastChild) {
-                throw new UnsupportedOperationException();
-            }
-        };
-
-        private int offset = 0;
-        @NonNull
-        private String newLine = NEW_LINE;
-        // 搜一下制表符 复制的
-        private char horizontal = '─';
-        private char verticalLineHead = '│';
-        private char verticalToChild = '├';
-        private char verticalLastChild = '└';
-
-    }
-
     public static <N> String toString(N root, Function<N, List<N>> getChildren,
             Function<N, String> dataToString, Option option) {
         Wrap<N> prevLineNode, current = new Wrap<>(root, getChildren);
@@ -402,8 +422,12 @@ public class TreePrinter {
             current = stack.pop();
             if (!isLineHead) {
                 // 即将输出的结点不是行首 直接输出下划线接着连接就可以
-                sb.append(option.horizontal).append(dataToString.apply(current.node));
-                current.printed = true;
+                if (current.isNull) {
+                    sb.append(option.horizontal).append(option.nullNodeToString.get());
+                } else {
+                    sb.append(option.horizontal).append(dataToString.apply(current.node));
+                    current.printed = true;
+                }
                 if (current.hasChild()) {
                     Wrap.insert(list, current, ++index);
                     Wrap.pushChild(stack, current);
@@ -433,7 +457,11 @@ public class TreePrinter {
                         } else {
                             sb.append(option.verticalToChild);
                         }
-                        sb.append(option.horizontal).append(dataToString.apply(current.node));
+                        if (current.isNull) {
+                            sb.append(option.horizontal).append(option.nullNodeToString.get());
+                        } else {
+                            sb.append(option.horizontal).append(dataToString.apply(current.node));
+                        }
                         current.printed = true;
                         if (current.hasChild()) {
                             Wrap.insert(list, current, ++index);

@@ -18,16 +18,6 @@ public class SimpleTreeNode<T> implements TreeNode<T, SimpleTreeNode<T>> {
         this.data = data;
     }
 
-    @Override
-    public T getData() {
-        return data;
-    }
-
-    @Override
-    public List<SimpleTreeNode<T>> getChildren() {
-        return children;
-    }
-
     public void addChild(SimpleTreeNode<T> child) {
         if (children == null) {
             children = Lists.newArrayList();

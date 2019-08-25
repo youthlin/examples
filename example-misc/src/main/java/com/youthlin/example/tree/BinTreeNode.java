@@ -10,15 +10,12 @@ public interface BinTreeNode<T, N extends BinTreeNode<T, N>> {
 
     N getRight();
 
-    void setOffset(int offset);
-
-    int getOffset();
-
     default String printData() {
         return String.valueOf(getData());
     }
 
-    default int dataWidth() {
-        return printData().length();
+    static <T, N extends BinTreeNode<T, N>> String toString(BinTreeNode<T, N> root) {
+        return TreePrinter.printTree(root, BinTreeNode::getLeft, BinTreeNode::getRight, BinTreeNode::printData,
+                TreePrinter.Option.DEFAULT);
     }
 }
