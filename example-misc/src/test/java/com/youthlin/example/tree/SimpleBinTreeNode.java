@@ -33,7 +33,7 @@ public class SimpleBinTreeNode<T> implements BinTreeNode<T, SimpleBinTreeNode<T>
         SimpleBinTreeNode<String> nullNode = new SimpleBinTreeNode<>(null);
         System.out.println(BinTreeNode.toString(root));
         System.out.println(TreePrinter
-                .printTree(root, SimpleBinTreeNode::getLeft, SimpleBinTreeNode::getRight, SimpleBinTreeNode::printData,
+                .toString(root, SimpleBinTreeNode::getLeft, SimpleBinTreeNode::getRight, SimpleBinTreeNode::printData,
                         new TreePrinter.Option().offset(2).leftCorner(' ').horizontal('_').rightCorner(' ')
                                 .leftVertical('|').rightVertical('|')));
         System.out.println(TreePrinter.toString(root,

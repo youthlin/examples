@@ -50,7 +50,7 @@ public class SimpleTreeNode<T> implements TreeNode<T, SimpleTreeNode<T>> {
                 new TreePrinter.Option().offset(10)));
         System.out.println(TreePrinter.toString(root, SimpleTreeNode::getChildren, SimpleTreeNode::printData,
                 new TreePrinter.Option().horizontal('━').verticalLineHead('┃').verticalToChild('┣')
-                        .verticalLastChild('┗')));
+                        .verticalToLastChild('┗')));
         System.out.println(TreePrinter.toString(root, SimpleTreeNode::getChildren, SimpleTreeNode::printData,
                 TreePrinter.Option.DEFAULT));
     }

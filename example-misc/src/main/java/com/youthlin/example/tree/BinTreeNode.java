@@ -15,7 +15,8 @@ public interface BinTreeNode<T, N extends BinTreeNode<T, N>> {
     }
 
     static <T, N extends BinTreeNode<T, N>> String toString(BinTreeNode<T, N> root) {
-        return TreePrinter.printTree(root, BinTreeNode::getLeft, BinTreeNode::getRight, BinTreeNode::printData,
-                TreePrinter.Option.DEFAULT);
+        return TreePrinter.toString(root, BinTreeNode::getLeft, BinTreeNode::getRight,
+                BinTreeNode::printData, TreePrinter.Option.DEFAULT);
     }
+
 }

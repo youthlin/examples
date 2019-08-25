@@ -20,6 +20,9 @@ import java.util.function.Supplier;
  * @author : youthlin.chen @ 2019-06-15 20:27
  */
 public class TreePrinter {
+    /**
+     * 自定义输出选项
+     */
     @Data
     @Accessors(chain = true, fluent = true)
     public static class Option {
@@ -44,7 +47,7 @@ public class TreePrinter {
             }
 
             @Override
-            public Option horizontal(char horizontal) {
+            public Option verticalLineHead(char horizontal) {
                 throw new UnsupportedOperationException();
             }
 
@@ -54,22 +57,100 @@ public class TreePrinter {
             }
 
             @Override
-            public Option verticalLastChild(char verticalLastChild) {
+            public Option verticalToLastChild(char verticalLastChild) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option horizontal(char vertical) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option leftCorner(char vertical) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option rightCorner(char vertical) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option leftVertical(char vertical) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option rightVertical(char vertical) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Option nullNodeToString(Supplier<String> nullNodeToString) {
                 throw new UnsupportedOperationException();
             }
         };
 
+        /**
+         * 整体偏移几个空格
+         */
         private int offset = 0;
+        /**
+         * 换行符
+         */
         @NonNull
         private String newLine = NEW_LINE;
         // 搜一下制表符 复制的
+        /**
+         * 不链接子结点的竖线
+         * 如
+         * a_b
+         * │ |_c 这行的第一个竖线
+         * └-d
+         */
         private char verticalLineHead = '│';
+        /**
+         * 连接子结点的竖线
+         * 如
+         * a─b
+         * ├─c 这行的竖线
+         * └─d
+         */
         private char verticalToChild = '├';
-        private char verticalLastChild = '└';
+        /**
+         * 连接最后一个子结点的竖线
+         * 如
+         * a─b
+         * ├─c
+         * └─d  这行的竖线
+         */
+        private char verticalToLastChild = '└';
+        /**
+         * 横线 二叉树横版输出 多叉树竖版输出
+         */
         private char horizontal = '─';
+        /**
+         * 二叉树横版输出 左边的角
+         * ┌--root 这行的第一个
+         * |
+         * left
+         */
         private char leftCorner = '┌';
+        /**
+         * 二叉树横版输出右边转角
+         * ┌-root--┐ 这行最后一个
+         * |       |
+         * left    right
+         */
         private char rightCorner = '┐';
+        /**
+         * 二叉树横版输出连接左子树的竖线
+         */
         private char leftVertical = '│';
+        /**
+         * 二叉树横版输出连接右子树的竖线
+         */
         private char rightVertical = '│';
         private Supplier<String> nullNodeToString = () -> "";
     }
@@ -109,7 +190,7 @@ public class TreePrinter {
         }
     }
 
-    public static <N> String printTree(N root, Function<N, N> getLeft, Function<N, N> getRight,
+    public static <N> String toString(N root, Function<N, N> getLeft, Function<N, N> getRight,
             Function<N, String> print, Option option) {
         if (root == null) {
             return "";
@@ -270,11 +351,13 @@ public class TreePrinter {
 
     /**
      * 包装结点 有一些 tostring 需要用的临时状态变量和方法，为了不侵入应用 所以包装一下
+     * 所有子结点都为空 则不输出子结点
+     * 部分子结点为空，将会输出 null 结点，使用 {@link Option#nullNodeToString} 输出 null 结点
      */
     private static class Wrap<N> {
-        private boolean isNull;
         private boolean printed;
         private final N node;
+        private final boolean isNull;
         private final List<Wrap<N>> children;
 
         private static <N> Wrap<N> newNullNode() {
@@ -282,23 +365,22 @@ public class TreePrinter {
         }
 
         private Wrap() {
-            isNull = true;
             this.node = null;
+            this.isNull = true;
             this.children = null;
         }
 
         private Wrap(N node, Function<N, List<N>> getChildren) {
-            this.node = node;
+            this.node = Objects.requireNonNull(node);
+            this.isNull = false;
             List<N> children = getChildren.apply(node);
             ArrayList<Wrap<N>> list = null;
             if (children != null) {
                 list = Lists.newArrayList();
                 boolean childAllNull = true;
-                boolean hasNullChild = false;
                 for (N child : children) {
                     if (child == null) {
-                        hasNullChild = true;
-                        list.add(null);
+                        list.add(newNullNode());
                     } else {
                         childAllNull = false;
                         list.add(new Wrap<>(child, getChildren));
@@ -306,14 +388,6 @@ public class TreePrinter {
                 }
                 if (childAllNull) {
                     list = null;
-                } else {
-                    if (hasNullChild) {
-                        for (int i = 0; i < list.size(); i++) {
-                            if (list.get(i) == null) {
-                                list.set(i, newNullNode());
-                            }
-                        }
-                    }
                 }
             }
             this.children = list;
@@ -400,11 +474,11 @@ public class TreePrinter {
     }
 
     public static <N> String toString(N root, Function<N, List<N>> getChildren,
-            Function<N, String> dataToString, Option option) {
+            Function<N, String> nodeToString, Option option) {
         Wrap<N> prevLineNode, current = new Wrap<>(root, getChildren);
         StringBuilder sb = new StringBuilder();
         Wrap.appendOffset(sb, option.offset);
-        sb.append(dataToString.apply(current.node));
+        sb.append(nodeToString.apply(current.node));
 
         // 用来先序遍历
         Stack<Wrap<N>> stack = new Stack<>();
@@ -425,7 +499,7 @@ public class TreePrinter {
                 if (current.isNull) {
                     sb.append(option.horizontal).append(option.nullNodeToString.get());
                 } else {
-                    sb.append(option.horizontal).append(dataToString.apply(current.node));
+                    sb.append(option.horizontal).append(nodeToString.apply(current.node));
                 }
                 current.printed = true;
                 if (current.hasChild()) {
@@ -451,16 +525,16 @@ public class TreePrinter {
                         //   |_yy
                         //     ↑
                         //     current
-                        Wrap.appendBlank(sb, prevLineNode, i, dataToString);
+                        Wrap.appendBlank(sb, prevLineNode, i, nodeToString);
                         if (Wrap.isLastChildOf(current, prevLineNode)) {
-                            sb.append(option.verticalLastChild);
+                            sb.append(option.verticalToLastChild);
                         } else {
                             sb.append(option.verticalToChild);
                         }
                         if (current.isNull) {
                             sb.append(option.horizontal).append(option.nullNodeToString.get());
                         } else {
-                            sb.append(option.horizontal).append(dataToString.apply(current.node));
+                            sb.append(option.horizontal).append(nodeToString.apply(current.node));
                         }
                         current.printed = true;
                         if (current.hasChild()) {
@@ -476,16 +550,16 @@ public class TreePrinter {
                         //跳出 for
                         break;
                     } else {
-                        Wrap.appendBlank(sb, prevLineNode, i, dataToString);
+                        Wrap.appendBlank(sb, prevLineNode, i, nodeToString);
                         if (prevLineNode.hasChildNotPrinted()) {
                             //abc_xx
                             //  |  |_yyy 这行的第一个竖线 遍历上一行的 abc 时 当前结点 yyy 不是 abc 的子结点，而且 abc 还有子结点没有输出
-                            //  |_xyz
+                            //  |_xyz  这里 xyz 是上一行的子结点 为了在上一行举例子也画出来了 其实这行是在上面的 if 输出的，而不是在这个 else 块里
                             sb.append(option.verticalLineHead);
                         } else {
                             // abc_xx
                             //       |_yyy
-                            //    ↑这里不是竖线，因为 abc 的子结点都输出了
+                            //    ↑这里不是竖线而是空白，因为 abc 的子结点都输出了
                             sb.append(" ");
                         }
                     }
