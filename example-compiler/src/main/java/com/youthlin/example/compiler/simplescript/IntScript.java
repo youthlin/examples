@@ -2,6 +2,8 @@ package com.youthlin.example.compiler.simplescript;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.youthlin.example.tree.TreePrinter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -9,6 +11,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * 仅支持整型的脚本
@@ -21,9 +24,11 @@ public class IntScript {
     private static final String LAST_ANSWER = "_ans_";
     private static final String REPEAT = Strings.repeat("-", 20);
     private static final String VERBOSE_FLAG = "-v";
+    private static final String PRINT_TREE = "-tree";
     private static final String EXIT = "exit();";
     private Map<String, Integer> variables = Maps.newHashMap();
     private boolean verbose;
+    private boolean printTree;
 
     {
         variables.put(LAST_ANSWER, 0);
@@ -31,9 +36,9 @@ public class IntScript {
 
     public static void main(String[] args) {
         IntScript script = new IntScript();
-        if (args.length > 0 && args[0].equals(VERBOSE_FLAG)) {
-            script.verbose = true;
-        }
+        Set<String> argSet = Sets.newHashSet(args);
+        script.verbose = argSet.contains(VERBOSE_FLAG);
+        script.printTree = argSet.contains(PRINT_TREE);
         script.printHello();
         Parser parser = new Parser();
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -54,7 +59,12 @@ public class IntScript {
                         result.dump();
                     }
                     if (result.success()) {
-                        script.evaluate(result.getRoot(), "");
+                        TreeNode root = result.getRoot();
+                        script.evaluate(root, "");
+                        if (script.printTree) {
+                            System.out.println(TreePrinter.toString(root, TreeNode::getChildren, TreeNode::getValue,
+                                    TreePrinter.Option.DEFAULT));
+                        }
                     } else {
                         System.err.println(REPEAT + " Script: " + REPEAT);
                         System.err.println(scriptText);
