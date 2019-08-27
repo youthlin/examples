@@ -1,0 +1,8 @@
+import lib = "sort.0";
+var x = {5, 8, 4, 7, 3};
+lib.sort(x);
+print(x);
+var f = (any[] input, fun void(any[]) sortFun):void {
+    sortFun(input);
+};
+f(x, lib.sort);
