@@ -44,7 +44,7 @@ varInit     :   '{' expList? '}'                    // 用数组初始化
 
 
 // 可以作为参数的类型 void 不可以作为参数。
-argType     :   argType ('[' exp? ']')+
+argType     :   argType '[' exp? ']'
             |   primaryType
             |   funType
             ;
