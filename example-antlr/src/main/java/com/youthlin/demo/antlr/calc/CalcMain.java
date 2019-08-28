@@ -1,16 +1,12 @@
 package com.youthlin.demo.antlr.calc;
 
-import com.google.common.collect.Lists;
-import com.youthlin.example.tree.TreePrinter;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 /**
  * 创建: youthlin.chen
@@ -33,25 +29,6 @@ public class CalcMain {
 //        eval.visit(tree);
 
         System.out.println(tree.toStringTree(parser));
-
-        System.out.println(TreePrinter.toString(tree, node -> {
-            int count = node.getChildCount();
-            ArrayList<ParseTree> list = Lists.newArrayListWithExpectedSize(count);
-            for (int i = 0; i < count; i++) {
-                list.add(node.getChild(i));
-            }
-            return list;
-        }, node -> {
-            Object payload = node.getPayload();
-            if (payload instanceof RuleContext) {
-                int ruleIndex = ((RuleContext) payload).getRuleIndex();
-                int len = CalcParser.ruleNames.length;
-                if (ruleIndex >= 0 && ruleIndex < len) {
-                    return CalcParser.ruleNames[ruleIndex];
-                }
-            }
-            return node.getText();
-        }, TreePrinter.Option.DEFAULT));
 
     }
 }
