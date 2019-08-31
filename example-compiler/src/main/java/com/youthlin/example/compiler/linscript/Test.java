@@ -24,7 +24,7 @@ public class Test {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         LinScriptParser parser = new LinScriptParser(tokens);
         ParseTree tree = parser.script();
-        System.out.println(Util.treeToString(tree));
+        System.out.println(Util.treeToString(parser,tree));
 
         Consumer<String> consumer=test("")::test1;
     }
