@@ -124,11 +124,9 @@ formalParameters
 
 methodBody  :   ';' | block ;
 
-
 expression  :   primary
-            |   expression bop='.' ( IDENTIFIER | methodCall )
+            |   expression bop='.'  IDENTIFIER ( '(' expressionList? ')' )?
             |   expression '[' expression ']'
-            |   methodCall
             |   expression '(' expressionList? ')'
             |   '(' typeType ')' expression
             |   expression postfix=('++' | '--')
@@ -167,7 +165,6 @@ floatLiteral
             :   FLOAT_LITERAL
             |   HEX_FLOAT_LITERAL
             ;
-methodCall  :   IDENTIFIER '(' expressionList? ')' ;
 expressionList
             :   expression (',' expression )* ;
 lambdaExpression
