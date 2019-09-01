@@ -1,7 +1,9 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
 import com.google.common.collect.Lists;
-import lombok.Data;
+import com.youthlin.example.compiler.Jsons;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -11,7 +13,8 @@ import java.util.List;
  *
  * @author : youthlin.chen @ 2019-09-01 10:05
  */
-@Data
+@Getter
+@Setter
 public class ScopedSymbol extends Symbol implements IScope {
     private IScope parent;
     private List<ISymbol> symbols = Lists.newArrayList();
@@ -19,6 +22,17 @@ public class ScopedSymbol extends Symbol implements IScope {
 
     public ScopedSymbol(String name, IScope parent) {
         super(name, parent);
+        parent.getChildScopes().add(this);
+    }
+
+    @Override
+    public String toString() {
+        return Jsons.toJson(this);
+    }
+
+    @Override
+    public String getScopeName() {
+        return getSymbolName();
     }
 
 }

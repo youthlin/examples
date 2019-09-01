@@ -24,4 +24,5 @@ public interface IScope {
      */
     List<IScope> getChildScopes();
 
+    String getScopeName();
 }

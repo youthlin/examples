@@ -4,19 +4,22 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 /**
- * 语义检查
+ * 语义检查 semantics
  *
  * @author : youthlin.chen @ 2019-08-31 23:32
  */
-public class SematicValidator {
+public class SemanticValidator {
     public boolean validate(ParseTree tree) {
         //语义树
         AnnotatedTree at = new AnnotatedTree(tree);
         //第一趟 构造作用域、类型
-        TypeAndScopeScanner typeAndScopeScanner = new TypeAndScopeScanner(at);
+        SymbolTypeScopeScanner symbolTypeScopeScanner = new SymbolTypeScopeScanner(at);
         ParseTreeWalker walker = new ParseTreeWalker();
         //遍历语法树 执行第一趟遍历
-        walker.walk(typeAndScopeScanner, at.getTree());
+        walker.walk(symbolTypeScopeScanner, at.getTree());
+        System.err.println(at.showError());
+        System.out.println(at.getGlobalScope().print());
+        System.out.println(at);
 
         return true;
     }

@@ -1,8 +1,9 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
+import com.youthlin.example.compiler.Jsons;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,10 +14,12 @@ import java.util.Objects;
  *
  * @author : youthlin.chen @ 2019-09-01 10:04
  */
-@Data
+@Getter
+@Setter
 public class Method extends ScopedSymbol {
     private IType returnType;
     private List<IType> parameterType;
+    private List<String> parameterTypeName;
     @Getter(AccessLevel.NONE)
     private FunctionType functionType;
 
@@ -26,12 +29,17 @@ public class Method extends ScopedSymbol {
 
     public FunctionType toFunctionType() {
         if (functionType == null) {
-            functionType = new FunctionType();
+            functionType = new FunctionType(this);
             functionType.setReturnType(Objects.requireNonNull(returnType));
             functionType.setParameterType(Objects.requireNonNull(parameterType));
         }
         return functionType;
 
+    }
+
+    @Override
+    public String toString() {
+        return Jsons.toJson(this);
     }
 
 }

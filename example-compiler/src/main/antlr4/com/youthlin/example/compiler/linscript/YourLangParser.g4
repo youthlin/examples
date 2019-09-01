@@ -75,7 +75,7 @@ arrayInitializer
             :   '{' (variableInitializer (',' variableInitializer)* ','? )? '}' ;
 
 localTypeDeclaration
-            :   (structDeclaration | interfaceDeclaration) ';' ;
+            :   (structDeclaration | interfaceDeclaration) ;
 
 
 structDeclaration
@@ -116,7 +116,7 @@ constantDeclarator
             :   IDENTIFIER ('[' ']')* '=' variableInitializer ;
 
 methodDeclaration
-            :   returnType IDENTIFIER formalParameters  ('[' ']')* (THROWS qualifiedNameList)?  methodBody;
+            :   returnType IDENTIFIER formalParameters  (THROWS qualifiedNameList)?  methodBody;
 returnType
             :   typeType | VOID ;
 formalParameters

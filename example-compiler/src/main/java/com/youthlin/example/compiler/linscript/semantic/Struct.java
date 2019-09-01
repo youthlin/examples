@@ -1,9 +1,10 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
 import com.google.common.collect.Lists;
+import com.youthlin.example.compiler.Jsons;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -12,8 +13,10 @@ import java.util.List;
  *
  * @author : youthlin.chen @ 2019-08-31 22:45
  */
-@Data
+@Getter
+@Setter
 public class Struct extends ScopedSymbol implements IType {
+    private Struct superStruct;
     @Getter(AccessLevel.NONE)
     private List<ISymbol> fields = Lists.newArrayList();
     @Getter(AccessLevel.NONE)
@@ -37,6 +40,16 @@ public class Struct extends ScopedSymbol implements IType {
     @Override
     public String getTypeName() {
         return "struct " + getSymbolName();
+    }
+
+    @Override
+    public String toString() {
+        return Jsons.toJson(this);
+    }
+
+    @Override
+    public String getScopeName() {
+        return getTypeName();
     }
 
 }
