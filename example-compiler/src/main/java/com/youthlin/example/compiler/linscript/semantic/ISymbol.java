@@ -17,4 +17,6 @@ public interface ISymbol {
      */
     IScope getScope();
 
+    IType getType();
+
 }

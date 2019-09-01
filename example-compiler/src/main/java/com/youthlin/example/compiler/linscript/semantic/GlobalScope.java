@@ -1,6 +1,5 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
-import com.youthlin.example.compiler.Jsons;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,11 +13,6 @@ import lombok.Setter;
 public class GlobalScope extends BlockScope {
     public GlobalScope() {
         super(null);
-    }
-
-    @Override
-    public String toString() {
-        return Jsons.toJson(this);
     }
 
     @Override
@@ -46,4 +40,5 @@ public class GlobalScope extends BlockScope {
         }
         return sb.toString();
     }
+
 }

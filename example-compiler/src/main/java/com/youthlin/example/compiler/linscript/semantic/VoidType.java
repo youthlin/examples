@@ -1,7 +1,5 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
-import com.youthlin.example.compiler.Jsons;
-
 /**
  * void 类型
  *
@@ -20,7 +18,7 @@ public class VoidType implements IType {
 
     @Override
     public String toString() {
-        return Jsons.toJson(this);
+        return getTypeName();
     }
 
 }

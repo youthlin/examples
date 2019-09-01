@@ -1,7 +1,6 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
 import com.google.common.collect.Lists;
-import com.youthlin.example.compiler.Jsons;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,11 +37,6 @@ public class FunctionType implements IType {
             }
         }
         return sb.append(")").toString();
-    }
-
-    @Override
-    public String toString() {
-        return Jsons.toJson(this);
     }
 
 }

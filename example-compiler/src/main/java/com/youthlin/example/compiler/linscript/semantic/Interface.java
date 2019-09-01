@@ -1,6 +1,5 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
-import com.youthlin.example.compiler.Jsons;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +11,7 @@ import lombok.Setter;
 public class Interface extends ScopedSymbol implements IType {
     public Interface(String name, IScope parent) {
         super(name, parent);
+        setType(this);
     }
 
     @Override
@@ -20,12 +20,8 @@ public class Interface extends ScopedSymbol implements IType {
     }
 
     @Override
-    public String toString() {
-        return Jsons.toJson(this);
-    }
-
-    @Override
     public String getScopeName() {
         return getTypeName();
     }
+
 }

@@ -1,6 +1,5 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
-import com.youthlin.example.compiler.Jsons;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,14 +31,9 @@ public class Method extends ScopedSymbol {
             functionType = new FunctionType(this);
             functionType.setReturnType(Objects.requireNonNull(returnType));
             functionType.setParameterType(Objects.requireNonNull(parameterType));
+            setType(functionType);
         }
         return functionType;
-
-    }
-
-    @Override
-    public String toString() {
-        return Jsons.toJson(this);
     }
 
 }

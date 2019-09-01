@@ -2,7 +2,6 @@ package com.youthlin.example.compiler.linscript.semantic;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
-import com.youthlin.example.compiler.Jsons;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,11 +48,6 @@ public class BlockScope implements IScope {
             }
         }
         return "BlockScope#" + count++;
-    }
-
-    @Override
-    public String toString() {
-        return Jsons.toJson(this);
     }
 
 }

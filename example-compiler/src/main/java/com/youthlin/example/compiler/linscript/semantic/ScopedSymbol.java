@@ -1,7 +1,6 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
 import com.google.common.collect.Lists;
-import com.youthlin.example.compiler.Jsons;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,11 +22,6 @@ public class ScopedSymbol extends Symbol implements IScope {
     public ScopedSymbol(String name, IScope parent) {
         super(name, parent);
         parent.getChildScopes().add(this);
-    }
-
-    @Override
-    public String toString() {
-        return Jsons.toJson(this);
     }
 
     @Override

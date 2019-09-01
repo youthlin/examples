@@ -1,7 +1,6 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
 import com.google.common.collect.Lists;
-import com.youthlin.example.compiler.Jsons;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +23,7 @@ public class Struct extends ScopedSymbol implements IType {
 
     public Struct(String name, IScope parent) {
         super(name, parent);
+        setType(this);
     }
 
     public void addField(ISymbol field) {
@@ -40,11 +40,6 @@ public class Struct extends ScopedSymbol implements IType {
     @Override
     public String getTypeName() {
         return "struct " + getSymbolName();
-    }
-
-    @Override
-    public String toString() {
-        return Jsons.toJson(this);
     }
 
     @Override

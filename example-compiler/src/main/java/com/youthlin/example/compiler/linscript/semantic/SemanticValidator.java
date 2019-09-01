@@ -15,11 +15,13 @@ public class SemanticValidator {
         //第一趟 构造作用域、类型
         SymbolTypeScopeScanner symbolTypeScopeScanner = new SymbolTypeScopeScanner(at);
         ParseTreeWalker walker = new ParseTreeWalker();
-        //遍历语法树 执行第一趟遍历
+        //遍历语法树 执行第一趟遍历 识别作用域、符号、类型
         walker.walk(symbolTypeScopeScanner, at.getTree());
         System.err.println(at.showError());
         System.out.println(at.getGlobalScope().print());
-        System.out.println(at);
+        //第二趟 为符号设置类型
+        TypeResolver typeResolver = new TypeResolver(at);
+        walker.walk(typeResolver, at.getTree());
 
         return true;
     }

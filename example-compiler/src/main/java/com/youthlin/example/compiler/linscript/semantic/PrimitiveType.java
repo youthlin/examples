@@ -1,6 +1,5 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
-import com.youthlin.example.compiler.Jsons;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +21,7 @@ public class PrimitiveType implements IType {
 
     @Override
     public String toString() {
-        return Jsons.toJson(this);
+        return typeName;
     }
 
 }

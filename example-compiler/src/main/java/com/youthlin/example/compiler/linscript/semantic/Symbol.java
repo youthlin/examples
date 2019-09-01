@@ -1,7 +1,6 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.youthlin.example.compiler.Jsons;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,16 +15,12 @@ public class Symbol implements ISymbol {
     private String symbolName;
     @JsonIgnore
     private IScope scope;
+    private IType type;
 
     public Symbol(String symbolName, IScope parent) {
         this.symbolName = symbolName;
         this.scope = parent;
         parent.getSymbols().add(this);
-    }
-
-    @Override
-    public String toString() {
-        return Jsons.toJson(this);
     }
 
 }
