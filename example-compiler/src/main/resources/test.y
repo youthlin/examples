@@ -1,47 +1,27 @@
-int aIntG=0;
-int[] arrG;
-fun void(int) vf = (int a)->{
-    test(a);
-};
-void test(int input){
-    if(input<0)return;
-    test(input--);
-}
-var lambda = (a,b)->"";
+int age = (10+1);
+var year = 2019;
 interface IRun{
     void run();
 }
 struct Animal implements IRun{
-    int aA;
-    void run(){
-        //...
-    }
-    void run(int aAniRun){
-        //...
-        b=aA+1;
-        arrG[        this.aA];
-        arrG[        this];
+    string name;
+    int age;
+    string say(){
         run();
-        this.run();
-    }
-    int run(int b);
-    int run();
-    int aA;
-}
-var IRun;
-{
-    interface Animal{}
-    int vf;
-    if(true){
-        int vf;
+        return "先跑一下再叫";
     }
 }
-label:
-for(int aFor;;){
-    int aFor;
-    break label;
+struct Dog extends Animal{
+    int color;
+    void run(){
+        super.say() + name + color;
+    }
 }
-{
-IRun dogG;
-(int(int a)->a)(1);
-}
+Animal dog = Dog();
+dog.name = "WangWang";
+dog.age = 3;
+dog.aaa = () -> {
+    return void()->{
+        this.year;
+    };
+};

@@ -4,6 +4,7 @@ import com.youthlin.example.compiler.linscript.YourLangParser;
 import com.youthlin.example.compiler.linscript.YourLangParserBaseListener;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +30,7 @@ public class TypeInfer extends YourLangParserBaseListener {
         }
 
         IScope scope = at.getScopeMap().get(primary);
+        IScope currentScope = scope;
         if (primary.THIS() != null) {
             while (scope != null && !(scope instanceof Struct)) {
                 scope = scope.getParent();
@@ -38,6 +40,19 @@ public class TypeInfer extends YourLangParserBaseListener {
                 log.info("识别出 this 是结构类型{}", scope);
             } else {
                 at.getErrorMap().put(primary, "'this' can not use here");
+            }
+            return;
+        }
+        if (primary.SUPER() != null) {
+            while (scope != null && !(scope instanceof Struct)) {
+                scope = scope.getParent();
+            }
+            if (scope != null) {
+                Struct superStruct = ((Struct) scope).getSuperStruct();
+                at.getTypeMap().put(primary, superStruct);
+                log.info("识别出 super 是结构类型 {}", superStruct);
+            } else {
+                at.getErrorMap().put(primary, "'super' can not use here");
             }
             return;
         }
@@ -65,6 +80,7 @@ public class TypeInfer extends YourLangParserBaseListener {
             return;
         }
 
+        // 变量、字段、方法
         if (primary.IDENTIFIER() != null) {
             String id = primary.IDENTIFIER().getText();
             IType type = null;
@@ -77,6 +93,22 @@ public class TypeInfer extends YourLangParserBaseListener {
                     }
                 }
                 scope = scope.getParent();
+            }
+            if (type == null) {
+                scope = currentScope;
+                while (!(scope instanceof Struct)) {
+                    scope = scope.getParent();
+                }
+                // 字段和方法不能重名
+                Symbol field = Util.findFieldSince((Struct) scope, id);
+                if (field != null) {
+                    type = field.getType();
+                } else {
+                    Method method = Util.findMethodSince((Struct) scope, id);
+                    if (method != null) {
+                        type = method.getType();
+                    }
+                }
             }
             if (type == null) {
                 at.getErrorMap().put(primary, "Unknown symbol: " + id);
@@ -152,12 +184,38 @@ public class TypeInfer extends YourLangParserBaseListener {
                 }
                 return;
             }
-            // 赋值 todo 推断 var 变量类型
-            if (Objects.equals(ctx.bop.getText(), "=")) {
-
-            }
+            processBop(ctx, leftExp, ctx.bop, rightExp);
+            return;
         }
-
+        if (ctx.assign != null) {
+            processAssign(ctx, leftExp, rightExp);
+            return;
+        }
+        if (ctx.postfix != null) {
+            //todo 是否可以自增自减
+            switch (ctx.postfix.getText()) {
+                case "++":
+                case "--":
+                default:
+            }
+            return;
+        }
+        if (ctx.prefix != null) {
+            switch (ctx.prefix.getText()) {
+                case "~":
+                    typeMap.put(ctx, PrimitiveType.INT);
+                    return;
+                case "!":
+                    typeMap.put(ctx, PrimitiveType.BOOLEAN);
+                    return;
+                case "+":
+                case "-":
+                case "++":
+                case "--":
+                default:
+            }
+            return;
+        }
         //数组取下标操作
         if (ctx.index != null) {
             IType arrType = typeMap.get(leftExp);
@@ -179,6 +237,12 @@ public class TypeInfer extends YourLangParserBaseListener {
         if (ctx.call != null) {
             //todo 推断 ((x)->x++)(1); 根据 rightExp 推断左部类型是 fun int(int)
             IType funType = typeMap.get(leftExp);
+            if (funType instanceof Struct) {
+                //构造方法
+                at.getTypeMap().put(ctx, funType);
+                log.debug("推断构造方法 {} 返回类型为 {}", ctx.getText(), funType);
+                return;
+            }
             if (!(funType instanceof FunctionType)) {
                 at.getErrorMap().put(ctx, leftExp.getText() + " is not a method");
             } else {
@@ -199,4 +263,49 @@ public class TypeInfer extends YourLangParserBaseListener {
             typeMap.put(ctx, typeMap.get(ctx.lambdaExpression()));
         }
     }
+
+    //todo
+    private void processBop(YourLangParser.ExpressionContext ctx, YourLangParser.ExpressionContext leftExp,
+            Token op, YourLangParser.ExpressionContext rightExp) {
+        Map<ParserRuleContext, IType> typeMap = at.getTypeMap();
+        switch (op.getText()) {
+            case "+":
+                //数字相加是数字 数字+string 是 string 其他报错(必须显示 toString)
+            case "%":
+            case "-":
+            case "*":
+            case "/":
+            case ">>":
+            case ">>>":
+            case "<<":
+            case "<=":
+            case ">=":
+            case "==":
+            case "!=":
+            case ">":
+            case "<":
+            case "&":
+            case "|":
+            case "^":
+            case "&&":
+            case "||":
+            case "?":
+            default:
+        }
+
+    }
+
+    //赋值 todo 推断 var 变量类型
+    private void processAssign(YourLangParser.ExpressionContext ctx, YourLangParser.ExpressionContext leftExp,
+            YourLangParser.ExpressionContext rightExp) {
+        IType leftType = at.getTypeMap().get(leftExp);
+        //检查左边是否可以被赋值
+        if (leftType instanceof VoidType) {
+            at.getErrorMap().put(ctx, "Can not assign to void type");
+        }
+
+        //检查右边类型是否可以兼容给左边
+
+    }
+
 }

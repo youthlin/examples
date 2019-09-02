@@ -137,7 +137,7 @@ expression  :   primary
             |   prefix=('~'|'!') rightExp=expression
             |   leftExp=expression bop=('*'|'/'|'%') rightExp=expression
             |   leftExp=expression bop=('+'|'-') rightExp=expression
-            |   leftExp=expression ('<' '<' | '>' '>' '>' | '>' '>')rightExp= expression
+            |   leftExp=expression bop=('<<'|'>>>'|'>>') rightExp= expression
             |   leftExp=expression bop=('<=' | '>=' | '>' | '<') rightExp=expression
             |   leftExp=expression bop=INSTANCEOF typeType
             |   leftExp=expression bop=('==' | '!=') rightExp=expression
@@ -148,12 +148,13 @@ expression  :   primary
             |   leftExp=expression bop='||' rightExp=expression
             |   leftExp=expression bop='?' midExp=expression ':' rightExp=expression
             |   <assoc=right> leftExp=expression
-                   bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
+                   assign=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
                 rightExp=expression
             |   lambdaExpression
             ;
 primary     :   '(' expression ')'
             |   THIS
+            |   SUPER
             |   literal
             |   IDENTIFIER
             ;

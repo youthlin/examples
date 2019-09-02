@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Data
 public class AnnotatedTree {
     private ParseTree tree;
-    private GlobalScope globalScope = new GlobalScope();
+    private GlobalScope globalScope = GlobalScope.INSTANCE;
     private Map<ParserRuleContext, IType> typeMap = Maps.newHashMap();
     private Map<ParserRuleContext, IScope> scopeMap = Maps.newHashMap();
     private Map<ParserRuleContext, ISymbol> symbolMap = Maps.newHashMap();

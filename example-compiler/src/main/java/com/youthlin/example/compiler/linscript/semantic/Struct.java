@@ -13,7 +13,8 @@ import java.util.List;
 @Getter
 @Setter
 public class Struct extends ScopedSymbol implements IType {
-    private Struct superStruct;
+    public static final Struct ANY = new Struct("Any", GlobalScope.INSTANCE);
+    private Struct superStruct = ANY;
     private List<Interface> superInterfaces;
 
     public Struct(String name, IScope parent) {
