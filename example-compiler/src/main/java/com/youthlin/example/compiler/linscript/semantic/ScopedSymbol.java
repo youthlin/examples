@@ -14,13 +14,14 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class ScopedSymbol extends Symbol implements IScope {
+public abstract class ScopedSymbol extends Symbol implements IScope {
     private IScope parent;
     private List<ISymbol> symbols = Lists.newArrayList();
     private List<IScope> childScopes = Lists.newArrayList();
 
     public ScopedSymbol(String name, IScope parent) {
         super(name, parent);
+        this.parent = parent;
         parent.getChildScopes().add(this);
     }
 

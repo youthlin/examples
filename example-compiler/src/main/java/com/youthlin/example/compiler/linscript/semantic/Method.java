@@ -1,6 +1,5 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,22 +17,25 @@ import java.util.Objects;
 public class Method extends ScopedSymbol {
     private IType returnType;
     private List<IType> parameterType;
-    private List<String> parameterTypeName;
-    @Getter(AccessLevel.NONE)
-    private FunctionType functionType;
 
     public Method(String name, IScope parent) {
         super(name, parent);
     }
 
-    public FunctionType toFunctionType() {
-        if (functionType == null) {
-            functionType = new FunctionType(this);
-            functionType.setReturnType(Objects.requireNonNull(returnType));
-            functionType.setParameterType(Objects.requireNonNull(parameterType));
-            setType(functionType);
-        }
-        return functionType;
+    public void done() {
+        FunctionType functionType = new FunctionType();
+        functionType.setReturnType(Objects.requireNonNull(returnType));
+        functionType.setParameterType(Objects.requireNonNull(parameterType));
+        setType(functionType);
     }
 
+    @Override
+    public Kind getKind() {
+        return Kind.Method;
+    }
+
+    @Override
+    public String toString() {
+        return "Method " + getSymbolName();
+    }
 }

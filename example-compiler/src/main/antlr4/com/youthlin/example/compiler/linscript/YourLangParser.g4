@@ -57,7 +57,9 @@ localVariableDeclaration
             :   VAR variableDeclarators
             |   typeType variableDeclarators
             ;
-typeType    :   ( qualifiedName | primitiveType | funType ) ('[' ']')* ;
+typeType    :   ( qualifiedName | primitiveType | funType ) arrTypeSuffix* ;
+arrTypeSuffix
+            :   '[' ']' ;
 primitiveType
             :   BOOLEAN | INT | STRING ;
 funType     :   FUNCTION returnType '(' typeList? ')' ;
@@ -111,9 +113,10 @@ interfaceMemberDeclaration
 fieldDeclaration
             :   localVariableDeclaration ';' ;
 constDeclaration
-            :   typeType    constantDeclarator (',' constantDeclarator)* ';';
+            :   typeType    constantDeclarator (',' constantDeclarator)* ';'
+            |   VAR constantDeclarator (',' constantDeclarator)* ';';
 constantDeclarator
-            :   IDENTIFIER ('[' ']')* '=' variableInitializer ;
+            :   IDENTIFIER arrTypeSuffix* '=' variableInitializer ;
 
 methodDeclaration
             :   returnType IDENTIFIER formalParameters  (THROWS qualifiedNameList)?  methodBody;
@@ -125,28 +128,28 @@ formalParameters
 methodBody  :   ';' | block ;
 
 expression  :   primary
-            |   expression bop='.'  IDENTIFIER ( '(' expressionList? ')' )?
-            |   expression '[' expression ']'
-            |   expression '(' expressionList? ')'
-            |   '(' typeType ')' expression
-            |   expression postfix=('++' | '--')
-            |   prefix=('+'|'-'|'++'|'--') expression
-            |   prefix=('~'|'!') expression
-            |   expression bop=('*'|'/'|'%') expression
-            |   expression bop=('+'|'-') expression
-            |   expression ('<' '<' | '>' '>' '>' | '>' '>') expression
-            |   expression bop=('<=' | '>=' | '>' | '<') expression
-            |   expression bop=INSTANCEOF typeType
-            |   expression bop=('==' | '!=') expression
-            |   expression bop='&' expression
-            |   expression bop='^' expression
-            |   expression bop='|' expression
-            |   expression bop='&&' expression
-            |   expression bop='||' expression
-            |   expression bop='?' expression ':' expression
-            |   <assoc=right> expression
+            |   leftExp=expression bop='.'  IDENTIFIER ( call='(' expressionList? ')' )?
+            |   leftExp=expression index='[' rightExp=expression ']'
+            |   leftExp=expression call='(' expressionList? ')'
+            |   cast='(' typeType ')' rightExp=expression
+            |   leftExp=expression postfix=('++' | '--')
+            |   prefix=('+'|'-'|'++'|'--') rightExp=expression
+            |   prefix=('~'|'!') rightExp=expression
+            |   leftExp=expression bop=('*'|'/'|'%') rightExp=expression
+            |   leftExp=expression bop=('+'|'-') rightExp=expression
+            |   leftExp=expression ('<' '<' | '>' '>' '>' | '>' '>')rightExp= expression
+            |   leftExp=expression bop=('<=' | '>=' | '>' | '<') rightExp=expression
+            |   leftExp=expression bop=INSTANCEOF typeType
+            |   leftExp=expression bop=('==' | '!=') rightExp=expression
+            |   leftExp=expression bop='&' rightExp=expression
+            |   leftExp=expression bop='^' rightExp=expression
+            |   leftExp=expression bop='|' rightExp=expression
+            |   leftExp=expression bop='&&' rightExp=expression
+            |   leftExp=expression bop='||' rightExp=expression
+            |   leftExp=expression bop='?' midExp=expression ':' rightExp=expression
+            |   <assoc=right> leftExp=expression
                    bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
-                expression
+                rightExp=expression
             |   lambdaExpression
             ;
 primary     :   '(' expression ')'
@@ -170,9 +173,9 @@ expressionList
 lambdaExpression
             :   returnType?  lambdaParameters '->' lambdaBody ;
 lambdaParameters
-            :   IDENTIFIER
-            |   '(' formalParameterList? ')'
-            |   '(' IDENTIFIER (',' IDENTIFIER)* ')'
+            :   IDENTIFIER                              #withOneId
+            |   '(' formalParameterList? ')'            #withType
+            |   '(' IDENTIFIER (',' IDENTIFIER)* ')'    #withIds
             ;
 formalParameterList
             :   formalParameter (',' formalParameter)* (',' lastFormalParameter)?

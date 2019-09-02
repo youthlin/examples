@@ -1,21 +1,32 @@
-int a=0,a=1,a=2;
-fun void() vf = (int a)->{
-    print(a);
+int aIntG=0;
+int[] arrG;
+fun void(int) vf = (int a)->{
+    test(a);
 };
+void test(int input){
+    if(input<0)return;
+    test(input--);
+}
+var lambda = (a,b)->"";
 interface IRun{
     void run();
 }
 struct Animal implements IRun{
-    int a;
+    int aA;
     void run(){
         //...
     }
-    void run(int a){
+    void run(int aAniRun){
         //...
+        b=aA+1;
+        arrG[        this.aA];
+        arrG[        this];
+        run();
+        this.run();
     }
     int run(int b);
     int run();
-    int a;
+    int aA;
 }
 var IRun;
 {
@@ -25,7 +36,12 @@ var IRun;
         int vf;
     }
 }
-
-for(int a;;){
-    int a;
+label:
+for(int aFor;;){
+    int aFor;
+    break label;
+}
+{
+IRun dogG;
+(int(int a)->a)(1);
 }

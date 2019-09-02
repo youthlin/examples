@@ -11,16 +11,16 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Symbol implements ISymbol {
+public abstract class Symbol implements ISymbol {
     private String symbolName;
     @JsonIgnore
     private IScope scope;
     private IType type;
 
-    public Symbol(String symbolName, IScope parent) {
+    public Symbol(String symbolName, IScope scope) {
         this.symbolName = symbolName;
-        this.scope = parent;
-        parent.getSymbols().add(this);
+        this.scope = scope;
+        scope.getSymbols().add(this);
     }
 
 }

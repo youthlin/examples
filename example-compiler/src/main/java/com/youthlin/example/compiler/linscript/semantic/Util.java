@@ -8,28 +8,121 @@ import java.util.Objects;
  */
 public class Util {
 
-    public static <T> T findSymbolOnScope(IScope scope, String name, Class<T> type) {
-        for (ISymbol symbol : scope.getSymbols()) {
-            if (symbol.getClass().equals(type)) {
-                if (Objects.equals(symbol.getSymbolName(), name)) {
-                    return type.cast(symbol);
-                }
-            }
-        }
-        return null;
-    }
-
-    public static boolean checkDuplicateMethodOnScope(IScope scope, String name, List<String> parameterType) {
-        for (ISymbol symbol : scope.getSymbols()) {
-            if (symbol instanceof Method) {
-                if (Objects.equals(symbol.getSymbolName(), name)
-                        && Objects.equals(((Method) symbol).getParameterTypeName(), parameterType)
-                ) {
-                    return true;
-                }
+    public static boolean hasSymbolOnScope(IScope scope, String name, Class<?>... types) {
+        for (Class<?> type : types) {
+            if (hasSymbolOnScope(scope, name, type)) {
+                return true;
             }
         }
         return false;
     }
 
+    private static boolean hasSymbolOnScope(IScope scope, String name, Class<?> type) {
+        for (ISymbol symbol : scope.getSymbols()) {
+            if (Objects.equals(symbol.getSymbolName(), name) && symbol.getClass().equals(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Symbol findFieldSince(Struct struct, String fieldName) {
+        if (struct == null) {
+            return null;
+        }
+        for (ISymbol symbol : struct.getSymbols()) {
+            if (Objects.equals(symbol.getSymbolName(), fieldName)
+                    && (symbol instanceof Variable) || symbol instanceof Constant) {
+                return (Symbol) symbol;
+            }
+        }
+        Symbol find = findFieldSince(struct.getSuperStruct(), fieldName);
+        if (find != null) {
+            return find;
+        }
+        List<Interface> superInterfaces = struct.getSuperInterfaces();
+        if (superInterfaces == null) {
+            return null;
+        }
+        for (Interface superInterface : superInterfaces) {
+            find = findFieldSince(superInterface, fieldName);
+            if (find != null) {
+                return find;
+            }
+        }
+        return null;
+    }
+
+    public static Symbol findFieldSince(Interface itfs, String fieldName) {
+        if (itfs == null) {
+            return null;
+        }
+        for (ISymbol symbol : itfs.getSymbols()) {
+            if (Objects.equals(symbol.getSymbolName(), fieldName)
+                    && (symbol instanceof Variable) || symbol instanceof Constant) {
+                return (Symbol) symbol;
+            }
+        }
+        List<Interface> superInterfaces = itfs.getSuperInterfaces();
+        if (superInterfaces == null) {
+            return null;
+        }
+        for (Interface superInterface : superInterfaces) {
+            Symbol find = findFieldSince(superInterface, fieldName);
+            if (find != null) {
+                return find;
+            }
+        }
+        return null;
+    }
+
+    public static Method findMethodSince(Struct struct, String methodName) {
+        if (struct == null) {
+            return null;
+        }
+        for (ISymbol symbol : struct.getSymbols()) {
+            if (Objects.equals(symbol.getSymbolName(), methodName)
+                    && symbol instanceof Method) {
+                return (Method) symbol;
+            }
+        }
+        Method find = findMethodSince(struct.getSuperStruct(), methodName);
+        if (find != null) {
+            return find;
+        }
+        List<Interface> superInterfaces = struct.getSuperInterfaces();
+        if (superInterfaces == null) {
+            return null;
+        }
+        for (Interface superInterface : superInterfaces) {
+            find = findMethodSince(superInterface, methodName);
+            if (find != null) {
+                return find;
+            }
+        }
+        return null;
+    }
+
+    public static Method findMethodSince(Interface itfs, String methodName) {
+        if (itfs == null) {
+            return null;
+        }
+        for (ISymbol symbol : itfs.getSymbols()) {
+            if (Objects.equals(symbol.getSymbolName(), methodName)
+                    && symbol instanceof Method) {
+                return (Method) symbol;
+            }
+        }
+        List<Interface> superInterfaces = itfs.getSuperInterfaces();
+        if (superInterfaces == null) {
+            return null;
+        }
+        for (Interface superInterface : superInterfaces) {
+            Method find = findMethodSince(superInterface, methodName);
+            if (find != null) {
+                return find;
+            }
+        }
+        return null;
+    }
 }

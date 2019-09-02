@@ -50,4 +50,8 @@ public class BlockScope implements IScope {
         return "BlockScope#" + count++;
     }
 
+    @Override
+    public String toString() {
+        return getScopeName();
+    }
 }

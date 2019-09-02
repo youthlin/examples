@@ -3,6 +3,7 @@ package com.youthlin.example.compiler.linscript.semantic;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -13,17 +14,16 @@ import java.util.List;
  */
 @Getter
 @Setter
+@ToString
 public class FunctionType implements IType {
-    private IScope scope;
     private IType returnType;
     private List<IType> parameterType = Lists.newArrayList();
 
-    public FunctionType(IScope scope) {
-        this.scope = scope;
+    public FunctionType() {
     }
 
+    @Override
     public String getTypeName() {
-
         StringBuilder sb = new StringBuilder("fun ")
                 .append(returnType == null ? "<returnType>" : returnType.getTypeName())
                 .append("(");

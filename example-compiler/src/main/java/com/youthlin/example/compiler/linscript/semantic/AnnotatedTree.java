@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +50,20 @@ public class AnnotatedTree {
                     sb.append(entry.getValue());
                     return sb.toString();
                 }).collect(Collectors.joining("\n"));
+    }
+
+    public IType findTypeSinceScope(String name, IScope scope) {
+        while (scope != null) {
+            for (ISymbol symbol : scope.getSymbols()) {
+                if (symbol instanceof Struct || symbol instanceof Interface) {
+                    if (Objects.equals(symbol.getSymbolName(), name)) {
+                        return (IType) symbol;
+                    }
+                }
+            }
+            scope = scope.getParent();
+        }
+        return null;
     }
 
 }

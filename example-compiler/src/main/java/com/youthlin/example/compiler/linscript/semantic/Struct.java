@@ -1,7 +1,5 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
-import com.google.common.collect.Lists;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,25 +14,11 @@ import java.util.List;
 @Setter
 public class Struct extends ScopedSymbol implements IType {
     private Struct superStruct;
-    @Getter(AccessLevel.NONE)
-    private List<ISymbol> fields = Lists.newArrayList();
-    @Getter(AccessLevel.NONE)
-    private List<Method> methods = Lists.newArrayList();
+    private List<Interface> superInterfaces;
 
     public Struct(String name, IScope parent) {
         super(name, parent);
         setType(this);
-    }
-
-    public void addField(ISymbol field) {
-        fields.add(field);
-        getSymbols().add(field);
-    }
-
-    public void addMethod(Method method) {
-        methods.add(method);
-        getSymbols().add(method);
-        getChildScopes().add(method);
     }
 
     @Override
@@ -45,6 +29,16 @@ public class Struct extends ScopedSymbol implements IType {
     @Override
     public String getScopeName() {
         return getTypeName();
+    }
+
+    @Override
+    public Kind getKind() {
+        return Kind.Struct;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Struct %s", getSymbolName());
     }
 
 }

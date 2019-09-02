@@ -10,18 +10,25 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
  */
 public class SemanticValidator {
     public boolean validate(ParseTree tree) {
+        ParseTreeWalker walker = new ParseTreeWalker();
+
         //语义树
         AnnotatedTree at = new AnnotatedTree(tree);
+
         //第一趟 构造作用域、类型
         SymbolTypeScopeScanner symbolTypeScopeScanner = new SymbolTypeScopeScanner(at);
-        ParseTreeWalker walker = new ParseTreeWalker();
-        //遍历语法树 执行第一趟遍历 识别作用域、符号、类型
         walker.walk(symbolTypeScopeScanner, at.getTree());
-        System.err.println(at.showError());
         System.out.println(at.getGlobalScope().print());
+
         //第二趟 为符号设置类型
         TypeResolver typeResolver = new TypeResolver(at);
         walker.walk(typeResolver, at.getTree());
+
+        //第三趟 类型推断
+        TypeInfer typeInfer = new TypeInfer(at);
+        walker.walk(typeInfer, at.getTree());
+
+        System.err.println(at.showError());
 
         return true;
     }
