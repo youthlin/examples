@@ -20,8 +20,8 @@ public class Test {
         YourLangParser parser = new YourLangParser(new CommonTokenStream(lexer));
         YourLangParser.YourLangContext context = parser.yourLang();
         SemanticValidator semanticValidator = new SemanticValidator();
-        AnnotatedTree at = semanticValidator.validate(context, file);
-        semanticValidator.validate(at);
+        AnnotatedTree at = semanticValidator.validate2(context, file);
+        semanticValidator.validate2(at);
     }
 
 }

@@ -20,11 +20,12 @@ public class SemanticValidator {
     private Map<File, AnnotatedTree> fileAnnotatedTreeMap = Maps.newHashMap();
     private Set<AnnotatedTree> validated = Sets.newHashSet();
 
-    public AnnotatedTree validate(YourLangParser.YourLangContext context, File file) {
+    public AnnotatedTree validate2(YourLangParser.YourLangContext context, File file) {
         AnnotatedTree processed = fileAnnotatedTreeMap.get(file);
         if (processed != null) {
             return processed;
         }
+        Util.setCurrentFile(file);
         AnnotatedTree at = new AnnotatedTree(context, file);
         fileAnnotatedTreeMap.put(file, at);
         ParseTreeWalker walker = new ParseTreeWalker();
@@ -41,14 +42,15 @@ public class SemanticValidator {
         return at;
     }
 
-    public void validate(AnnotatedTree at) {
+    public void validate2(AnnotatedTree at) {
         if (validated.contains(at)) {
             return;
         }
         validated.add(at);
         for (AnnotatedTree from : at.getImportFrom()) {
-            validate(from);
+            validate2(from);
         }
+        Util.setCurrentFile(at.getFile());
         log.info("========== 类型推断 {} ==========", at.getFile());
         ParseTreeWalker walker = new ParseTreeWalker();
         //第三趟 类型推断

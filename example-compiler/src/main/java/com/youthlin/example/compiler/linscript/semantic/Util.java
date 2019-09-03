@@ -1,7 +1,9 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
 import com.google.common.collect.Lists;
+import org.slf4j.MDC;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -139,4 +141,7 @@ public class Util {
         return null;
     }
 
+    public static void setCurrentFile(File file) {
+        MDC.put("CURRENT", file.getName());
+    }
 }

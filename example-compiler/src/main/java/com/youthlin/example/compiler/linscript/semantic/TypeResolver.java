@@ -22,16 +22,16 @@ public class TypeResolver extends BaseListener {
 
     @Override
     public void exitImportPart(YourLangParser.ImportPartContext ctx) {
-        for (ImportSymbol importSymbol : at.getImportSymbols()) {
-            for (Symbol exportSymbol : importSymbol.getImportAt().getExportSymbols()) {
-                if (Objects.equals(exportSymbol.getSymbolName(), importSymbol.getOriginal())) {
-                    importSymbol.setType(exportSymbol.getType());
-                    log.debug("导入的符号是{} 从文件{}导出 真实类型是 {}", importSymbol,
-                            importSymbol.getImportAt().getFile(), exportSymbol.getType());
-                }
+        ImportSymbol importSymbol = (ImportSymbol) at.getSymbolMap().get(ctx);
+        for (Symbol exportSymbol : importSymbol.getImportAt().getExportSymbols()) {
+            if (Objects.equals(exportSymbol.getSymbolName(), importSymbol.getOriginal())) {
+                importSymbol.setType(exportSymbol.getType());
+                log.debug("导入的符号是{} 从文件{}导出 真实类型是 {}", importSymbol,
+                        importSymbol.getImportAt().getFile(), exportSymbol.getType());
             }
         }
     }
+
 
     /**
      * funType 的形参有递归使用 typeType 所以要在 exit 时处理。
