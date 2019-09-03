@@ -1,11 +1,15 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
+import com.youthlin.example.compiler.linscript.YourLangLexer;
 import com.youthlin.example.compiler.linscript.YourLangParser;
-import com.youthlin.example.compiler.linscript.YourLangParserBaseListener;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Stack;
 
@@ -15,18 +19,19 @@ import java.util.Stack;
  * @author : youthlin.chen @ 2019-08-31 22:53
  */
 @Slf4j
-public class SymbolTypeScopeScanner extends YourLangParserBaseListener {
-    private AnnotatedTree annotatedTree;
+public class SymbolTypeScopeScanner extends BaseListener {
     private Stack<IScope> scopeStack = new Stack<>();
+    private SemanticValidator validator;
 
-    public SymbolTypeScopeScanner(AnnotatedTree tree) {
-        annotatedTree = tree;
+    public SymbolTypeScopeScanner(AnnotatedTree tree, SemanticValidator validator) {
+        super(tree);
+        this.validator = validator;
     }
 
     private void pushScope(ParserRuleContext context, IScope scope) {
         log.debug("进入新的作用域 {}", scope);
         scopeStack.push(scope);
-        annotatedTree.getScopeMap().put(context, scope);
+        at.getScopeMap().put(context, scope);
     }
 
     private void popScope() {
@@ -40,7 +45,47 @@ public class SymbolTypeScopeScanner extends YourLangParserBaseListener {
 
     @Override
     public void enterYourLang(YourLangParser.YourLangContext ctx) {
-        pushScope(ctx, annotatedTree.getGlobalScope());
+        pushScope(ctx, at.getGlobalScope());
+    }
+
+    @Override
+    public void enterImportPart(YourLangParser.ImportPartContext ctx) {
+        String fileName = ctx.STRING_LITERAL().getText();
+        fileName = fileName.substring(1, fileName.length() - 1);
+        File currentFile = at.getFile();
+        if (currentFile == null) {
+            error(log, ctx, "Can not use import when not file mode");
+        } else {
+            File importFile = new File(currentFile.getParent(), fileName);
+            String path = importFile.getAbsolutePath();
+            if (importFile.exists()) {
+                log.info("导入文件 {}", path);
+                try {
+                    YourLangLexer lexer = new YourLangLexer(CharStreams.fromPath(importFile.toPath()));
+                    YourLangParser parser = new YourLangParser(new CommonTokenStream(lexer));
+                    log.info(">>>开始处理文件 {}", path);
+                    AnnotatedTree importAt = validator.validate(parser.yourLang(), importFile);
+                    log.debug("导入文件 类型已处理? {}", importAt.isTypeResolved());
+                    IScope scope = currentScope();
+                    String original = ctx.original.getText();
+                    String name = original;
+                    if (ctx.rename != null) {
+                        name = ctx.rename.getText();
+                    }
+                    at.getImportFrom().add(importAt);
+                    importAt.getExportTo().add(at);
+                    ImportSymbol symbol = new ImportSymbol(scope, name, original, importFile, importAt);
+                    at.getImportSymbols().add(symbol);
+                    at.getSymbolMap().put(ctx, symbol);
+                    log.info("<<<处理完成 {}", path);
+                    log.info("导入文件 {} 符号 {} as {}", fileName, original, name);
+                } catch (IOException e) {
+                    error(log, ctx, "IOException when process file {}" + path);
+                }
+            } else {
+                error(log, ctx, "Import file not found: " + path);
+            }
+        }
     }
 
     @Override
@@ -64,11 +109,11 @@ public class SymbolTypeScopeScanner extends YourLangParserBaseListener {
             log.debug("检查标识符 语句标签 {}", labelName);
             IScope scope = currentScope();
             if (Util.hasSymbolOnScope(scope, labelName, Label.class)) {
-                annotatedTree.getErrorMap().put(ctx, "Duplicated label name '" + labelName
+                at.getErrorMap().put(ctx, "Duplicated label name '" + labelName
                         + "' on scope: " + scope.getScopeName());
             }
             Label label = new Label(labelName, scope);
-            annotatedTree.getSymbolMap().put(ctx, label);
+            at.getSymbolMap().put(ctx, label);
         }
     }
 
@@ -94,13 +139,13 @@ public class SymbolTypeScopeScanner extends YourLangParserBaseListener {
         log.debug("检查标识符 接口标识符 {}", interfaceName);
         IScope currentScope = currentScope();
         if (Util.hasSymbolOnScope(currentScope, interfaceName, Interface.class, Struct.class)) {
-            annotatedTree.getErrorMap().put(ctx, "Duplicated interface/struct name '" + interfaceName
+            at.getErrorMap().put(ctx, "Duplicated interface/struct name '" + interfaceName
                     + "' on scope: " + currentScope.getScopeName());
         }
         Interface anInterface = new Interface(interfaceName, currentScope);
         pushScope(ctx, anInterface);
-        annotatedTree.getTypeMap().put(ctx, anInterface);
-        annotatedTree.getSymbolMap().put(ctx, anInterface);
+        at.getTypeMap().put(ctx, anInterface);
+        at.getSymbolMap().put(ctx, anInterface);
     }
 
     @Override
@@ -114,11 +159,11 @@ public class SymbolTypeScopeScanner extends YourLangParserBaseListener {
         log.debug("检查标识符 常量 {}", name);
         IScope scope = currentScope();
         if (Util.hasSymbolOnScope(scope, name, Variable.class, Constant.class)) {
-            annotatedTree.getErrorMap().put(ctx, "Duplicated parameter name '" + name
+            at.getErrorMap().put(ctx, "Duplicated parameter name '" + name
                     + "' on scope: " + scope.getScopeName());
         }
         Constant constant = new Constant(name, scope);
-        annotatedTree.getSymbolMap().put(ctx, constant);
+        at.getSymbolMap().put(ctx, constant);
     }
 
     @Override
@@ -127,13 +172,13 @@ public class SymbolTypeScopeScanner extends YourLangParserBaseListener {
         log.debug("检查标识符 结构体 {}", structName);
         IScope currentScope = currentScope();
         if (Util.hasSymbolOnScope(currentScope, structName, Interface.class, Struct.class)) {
-            annotatedTree.getErrorMap().put(ctx, "Duplicated interface/struct name '" + structName
+            at.getErrorMap().put(ctx, "Duplicated interface/struct name '" + structName
                     + "' on scope: " + currentScope.getScopeName());
         }
         Struct struct = new Struct(structName, currentScope);
         pushScope(ctx, struct);
-        annotatedTree.getTypeMap().put(ctx, struct);
-        annotatedTree.getSymbolMap().put(ctx, struct);
+        at.getTypeMap().put(ctx, struct);
+        at.getSymbolMap().put(ctx, struct);
     }
 
     @Override
@@ -148,12 +193,12 @@ public class SymbolTypeScopeScanner extends YourLangParserBaseListener {
         IScope currentScope = currentScope();
         Method method = new Method(methodName, currentScope);
         pushScope(ctx, method);
-        annotatedTree.getSymbolMap().put(ctx, method);
+        at.getSymbolMap().put(ctx, method);
     }
 
     @Override
     public void exitMethodDeclaration(YourLangParser.MethodDeclarationContext ctx) {
-        annotatedTree.getScopeMap().put(ctx, currentScope());
+        at.getScopeMap().put(ctx, currentScope());
         popScope();
     }
 
@@ -186,11 +231,11 @@ public class SymbolTypeScopeScanner extends YourLangParserBaseListener {
     private void addVar(ParserRuleContext ctx, String name, IScope scope) {
         log.debug("检查标识符 变量 {}", name);
         if (Util.hasSymbolOnScope(scope, name, Variable.class, Constant.class)) {
-            annotatedTree.getErrorMap().put(ctx, "Duplicated parameter name '" + name
+            at.getErrorMap().put(ctx, "Duplicated parameter name '" + name
                     + "' on scope: " + scope.getScopeName());
         }
         Variable variable = new Variable(name, scope);
-        annotatedTree.getSymbolMap().put(ctx, variable);
+        at.getSymbolMap().put(ctx, variable);
     }
 
     @Override
@@ -210,7 +255,7 @@ public class SymbolTypeScopeScanner extends YourLangParserBaseListener {
     @Override
     public void enterFunType(YourLangParser.FunTypeContext ctx) {
         FunctionType functionType = new FunctionType();
-        annotatedTree.getTypeMap().put(ctx, functionType);
+        at.getTypeMap().put(ctx, functionType);
     }
 
     @Override
@@ -225,7 +270,7 @@ public class SymbolTypeScopeScanner extends YourLangParserBaseListener {
         if (ctx instanceof YourLangParser.YourLangContext) {
             return;
         }
-        annotatedTree.getScopeMap().put(ctx, currentScope());
+        at.getScopeMap().put(ctx, currentScope());
     }
 
 }

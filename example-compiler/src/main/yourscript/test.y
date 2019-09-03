@@ -1,3 +1,4 @@
+import "Std.y" -> Std;
 int age = (10+1);
 var year = 2019;
 interface IRun{
@@ -20,8 +21,11 @@ struct Dog extends Animal{
 Animal dog = Dog();
 dog.name = "WangWang";
 dog.age = 3;
-dog.aaa = () -> {
+dog.color = () -> {
     return void()->{
         this.year;
     };
 };
+dog.run(1);
+Std.out.print("Hello, World");
+export Dog;

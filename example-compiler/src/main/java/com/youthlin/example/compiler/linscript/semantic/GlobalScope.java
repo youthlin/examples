@@ -11,9 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GlobalScope extends BlockScope {
-    public static final GlobalScope INSTANCE = new GlobalScope();
-
-    private GlobalScope() {
+    public GlobalScope() {
         super(null);
     }
 

@@ -12,4 +12,9 @@ public class Constant extends Symbol {
     public Kind getKind() {
         return Kind.Constant;
     }
+
+    @Override
+    public String toString() {
+        return "Constant " + getSymbolName();
+    }
 }

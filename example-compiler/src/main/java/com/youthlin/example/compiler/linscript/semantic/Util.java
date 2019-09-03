@@ -1,5 +1,7 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
+import com.google.common.collect.Lists;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -10,20 +12,31 @@ public class Util {
 
     public static boolean hasSymbolOnScope(IScope scope, String name, Class<?>... types) {
         for (Class<?> type : types) {
-            if (hasSymbolOnScope(scope, name, type)) {
+            if (findSymbolOnScope(scope, name, type) != null) {
                 return true;
             }
         }
         return false;
     }
 
-    private static boolean hasSymbolOnScope(IScope scope, String name, Class<?> type) {
-        for (ISymbol symbol : scope.getSymbols()) {
-            if (Objects.equals(symbol.getSymbolName(), name) && symbol.getClass().equals(type)) {
-                return true;
+    public static List<ISymbol> findSymbolOnScope(IScope scope, String name, Class<?>... types) {
+        List<ISymbol> list = Lists.newArrayList();
+        for (Class<?> type : types) {
+            ISymbol find = findSymbolOnScope(scope, name, type);
+            if (find != null) {
+                list.add(find);
             }
         }
-        return false;
+        return list;
+    }
+
+    private static ISymbol findSymbolOnScope(IScope scope, String name, Class<?> type) {
+        for (ISymbol symbol : scope.getSymbols()) {
+            if (Objects.equals(symbol.getSymbolName(), name) && symbol.getClass().equals(type)) {
+                return symbol;
+            }
+        }
+        return null;
     }
 
     public static Symbol findFieldSince(Struct struct, String fieldName) {
@@ -125,4 +138,5 @@ public class Util {
         }
         return null;
     }
+
 }

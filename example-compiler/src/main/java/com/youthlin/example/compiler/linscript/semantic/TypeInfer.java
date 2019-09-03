@@ -72,6 +72,9 @@ public class TypeInfer extends YourLangParserBaseListener {
             if (literal.STRING_LITERAL() != null) {
                 type = PrimitiveType.STRING;
             }
+            if (literal.NULL_LITERAL() != null) {
+                type = NullType.INSTANCE;
+            }
             if (type == null) {
                 at.getErrorMap().put(primary, "暂不支持的字面量类型: " + literal.getText());
             }
@@ -96,7 +99,7 @@ public class TypeInfer extends YourLangParserBaseListener {
             }
             if (type == null) {
                 scope = currentScope;
-                while (!(scope instanceof Struct)) {
+                while (scope != null && !(scope instanceof Struct)) {
                     scope = scope.getParent();
                 }
                 // 字段和方法不能重名

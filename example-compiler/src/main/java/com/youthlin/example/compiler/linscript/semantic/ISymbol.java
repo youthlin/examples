@@ -20,6 +20,8 @@ public interface ISymbol {
         Constant,
         //语句标签
         Label,
+        //导入符号
+        Import,
     }
 
     Kind getKind();

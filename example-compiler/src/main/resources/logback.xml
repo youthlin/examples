@@ -7,7 +7,7 @@
         <encoder>
             <!-- https://logback.qos.ch/manual/layouts.html#coloring -->
             <pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-1.-1level) [%t] %cyan(%-40.40logger{39}) : %m%n
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-1.-1level) [%t] %cyan(%-40.40logger{39}:%L) : %m%n
             </pattern>
         </encoder>
     </appender>

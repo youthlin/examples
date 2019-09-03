@@ -4,13 +4,9 @@ options { tokenVocab=YourLangLexer; }
 
 yourLang    :   importPart*  body    exportPart? ;
 
-importPart  :   IMPORT  qualifiedName '=' STRING_LITERAL ';' ;
+importPart  :   IMPORT  STRING_LITERAL '->' original=IDENTIFIER (AS rename=IDENTIFIER)? ';' ;
+exportPart  :   EXPORT  IDENTIFIER (','IDENTIFIER)* ';' ;
 
-exportPart  :   EXPORT  qualifiedNameList ';' ;
-qualifiedName
-            :   IDENTIFIER ('.' IDENTIFIER)* ;
-qualifiedNameList
-            :   qualifiedName (',' qualifiedName)* ;
 
 body        :   bodyUnit+ ;
 bodyUnit    :   statement
@@ -42,7 +38,8 @@ forInit     :   localVariableDeclaration | expressionList ;
 
 catchClause :   CATCH '(' catchType IDENTIFIER ')' block;
 catchType   :   qualifiedName ('|' qualifiedName)* ;
-
+qualifiedName
+            :   IDENTIFIER ('.' IDENTIFIER)* ;
 finallyBlock:   FINALLY block ;
 switchLabel :   CASE ( constantExpression=expression | enumConstantName=IDENTIFIER ) ':' blockStatement*
             |   DEFAULT ':' blockStatement*
@@ -120,6 +117,8 @@ constantDeclarator
 
 methodDeclaration
             :   returnType IDENTIFIER formalParameters  (THROWS qualifiedNameList)?  methodBody;
+qualifiedNameList
+            :   qualifiedName (',' qualifiedName)* ;
 returnType
             :   typeType | VOID ;
 formalParameters

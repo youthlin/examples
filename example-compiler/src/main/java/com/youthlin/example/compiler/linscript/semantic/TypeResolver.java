@@ -2,10 +2,11 @@ package com.youthlin.example.compiler.linscript.semantic;
 
 import com.google.common.collect.Lists;
 import com.youthlin.example.compiler.linscript.YourLangParser;
-import com.youthlin.example.compiler.linscript.YourLangParserBaseListener;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 类型设置
@@ -13,11 +14,23 @@ import java.util.List;
  * @author : youthlin.chen @ 2019-09-01 17:17
  */
 @Slf4j
-public class TypeResolver extends YourLangParserBaseListener {
-    private AnnotatedTree at;
+public class TypeResolver extends BaseListener {
 
     public TypeResolver(AnnotatedTree tree) {
-        this.at = tree;
+        super(tree);
+    }
+
+    @Override
+    public void exitImportPart(YourLangParser.ImportPartContext ctx) {
+        for (ImportSymbol importSymbol : at.getImportSymbols()) {
+            for (Symbol exportSymbol : importSymbol.getImportAt().getExportSymbols()) {
+                if (Objects.equals(exportSymbol.getSymbolName(), importSymbol.getOriginal())) {
+                    importSymbol.setType(exportSymbol.getType());
+                    log.debug("导入的符号是{} 从文件{}导出 真实类型是 {}", importSymbol,
+                            importSymbol.getImportAt().getFile(), exportSymbol.getType());
+                }
+            }
+        }
     }
 
     /**
@@ -209,5 +222,37 @@ public class TypeResolver extends YourLangParserBaseListener {
         at.getTypeMap().put(ctx, functionType);
         log.debug("识别 lambda 类型为 {}", functionType);
     }
+
+    @Override
+    public void exitExportPart(YourLangParser.ExportPartContext ctx) {
+        IScope scope = at.getScope(ctx);
+        for (TerminalNode node : ctx.IDENTIFIER()) {
+            String exportName = node.getText();
+            List<ISymbol> list = Util.findSymbolOnScope(scope, exportName, Struct.class, Interface.class);
+            //可以导出结构、接口
+            if (list.isEmpty()) {
+                error(log, ctx, "Unknown symbol '" + exportName + "' on export, only Struct, Interface, Method can export");
+            } else if (list.size() > 1) {
+                error(log, ctx, "Find more than one symbol named " + exportName + ", export which one is confused: " + list);
+            } else {
+                ISymbol symbol = list.get(0);
+                IType type = symbol.getType();
+                log.info("导出符号 {} 的类型 {}", exportName, type);
+                at.getExportSymbols().add((Symbol) symbol);
+                for (AnnotatedTree exportTo : at.getExportTo()) {
+                    for (ImportSymbol importSymbol : exportTo.getImportSymbols()) {
+                        if (Objects.equals(importSymbol.getFile(), at.getFile())
+                                && Objects.equals(importSymbol.getOriginal(), exportName)) {
+                            importSymbol.setType(type);
+                            log.info("将引用本符号的符号 {} 设置为真实类型 {}", importSymbol, type);
+                        }
+                    }
+                }
+
+            }
+        }
+
+    }
+
 
 }
