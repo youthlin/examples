@@ -11,7 +11,8 @@ import java.io.IOException;
  */
 public class Test {
     public static void main(String[] args) throws IOException {
-        File file = new File(".", "example-compiler/src/main/yourscript/PrimitiveTypeTest.y");
+        //File file = new File(".", "example-compiler/src/main/yourscript/PrimitiveTypeTest.y");
+        File file = new File(".", "example-compiler/src/main/yourscript/test.y");
         File dir = new File(file.getParent(), "lib");
         System.out.println(file.getAbsolutePath());
         SemanticValidator semanticValidator = new SemanticValidator();

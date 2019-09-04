@@ -1,13 +1,14 @@
-import "Std.y" -> Std;
+import "std.y" -> System;
+import "std.y" -> String;
 int age = (10+1);
 var year = 2019;
 interface IRun{
     void run();
 }
 struct Animal implements IRun{
-    string name;
+    String name;
     int age;
-    string say(){
+    String say(){
         run();
         return "先跑一下再叫";
     }
@@ -27,5 +28,5 @@ dog.color = () -> {
     };
 };
 dog.run(1);
-Std.out.print("Hello, World");
+System.out.println("Hello, World");
 export Dog;

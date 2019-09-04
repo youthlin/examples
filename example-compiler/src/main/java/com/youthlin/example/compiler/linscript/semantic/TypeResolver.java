@@ -188,6 +188,10 @@ public class TypeResolver extends BaseListener {
         YourLangParser.FormalParametersContext parameters = ctx.formalParameters();
         List<IType> parameterType = toType(parameters.formalParameterList());
         method.setParameterType(parameterType);
+        if (method.getReturnType() == null) {
+            error(log, ctx, "Unknown return type");
+            return;
+        }
         method.done();
         log.info("设置 方法的返回和形参类型 方法 {} 全类型= {}", method, method.getType());
     }

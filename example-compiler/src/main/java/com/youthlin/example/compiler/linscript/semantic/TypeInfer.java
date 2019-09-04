@@ -74,11 +74,11 @@ public class TypeInfer extends YourLangParserBaseListener {
                 type = PrimitiveType.FLOAT;
             }
             if (literal.STRING_LITERAL() != null) {
-                List<ISymbol> list = Util.findSymbolOnScope(currentScope, "String", Struct.class);
+                List<ISymbol> list = Util.findSymbolOnScope(at.getFileScope(), "String", Struct.class);
                 if (list.size() == 1) {
                     type = (IType) list.get(0);
                 } else {
-                    list = Util.findSymbolOnScope(currentScope, "String", ImportSymbol.class);
+                    list = Util.findSymbolOnScope(at.getFileScope(), "String", ImportSymbol.class);
                     for (ISymbol symbol : list) {
                         if (symbol.getType() instanceof Struct) {
                             type = symbol.getType();
