@@ -31,7 +31,6 @@ lexer grammar YourLangLexer;
 AS:                 'as';
 EXPORT:             'export';
 FUNCTION:           'fun';
-STRING:             'string';
 STRUCT:             'struct';
 VAR:                'var';
 

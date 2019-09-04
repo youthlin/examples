@@ -58,7 +58,7 @@ typeType    :   ( qualifiedName | primitiveType | funType ) arrTypeSuffix* ;
 arrTypeSuffix
             :   '[' ']' ;
 primitiveType
-            :   BOOLEAN | INT | STRING ;
+            :   BOOLEAN | BYTE | CHAR | INT | FLOAT ;
 funType     :   FUNCTION returnType '(' typeList? ')' ;
 typeList    :   typeType (',' typeType)* ;
 
@@ -157,7 +157,7 @@ primary     :   '(' expression ')'
             |   literal
             |   IDENTIFIER
             ;
-literal     :   integerLiteral | floatLiteral | BOOL_LITERAL | STRING_LITERAL | NULL_LITERAL ;
+literal     :   integerLiteral | floatLiteral | BOOL_LITERAL | CHAR_LITERAL | STRING_LITERAL | NULL_LITERAL ;
 integerLiteral
             :   DECIMAL_LITERAL
             |   HEX_LITERAL

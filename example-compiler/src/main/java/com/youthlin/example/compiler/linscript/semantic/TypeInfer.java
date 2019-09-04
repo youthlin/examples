@@ -66,11 +66,14 @@ public class TypeInfer extends YourLangParserBaseListener {
             if (literal.integerLiteral() != null) {
                 type = PrimitiveType.INT;
             }
+            if (literal.CHAR_LITERAL() != null) {
+                type = PrimitiveType.CHAR;
+            }
             if (literal.floatLiteral() != null) {
                 type = PrimitiveType.FLOAT;
             }
             if (literal.STRING_LITERAL() != null) {
-                type = PrimitiveType.STRING;
+                type = Struct.STRING;
             }
             if (literal.NULL_LITERAL() != null) {
                 type = NullType.INSTANCE;

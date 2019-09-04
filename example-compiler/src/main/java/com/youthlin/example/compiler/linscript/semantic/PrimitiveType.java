@@ -1,21 +1,27 @@
 package com.youthlin.example.compiler.linscript.semantic;
 
+import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+
+import java.util.Map;
 
 /**
  * 基本类型
+ * boolean byte char int float
  *
  * @author : youthlin.chen @ 2019-08-31 23:02
  */
-@Data
 @AllArgsConstructor
-public class PrimitiveType implements IType {
-    public static final PrimitiveType BOOLEAN = new PrimitiveType("boolean");
-    public static final PrimitiveType INT = new PrimitiveType("int");
-    public static final PrimitiveType FLOAT = new PrimitiveType("float");
-    public static final PrimitiveType STRING = new PrimitiveType("string");
-
+public enum PrimitiveType implements IType {
+    //
+    BOOLEAN("boolean"),
+    BYTE("byte"),
+    CHAR("char"),
+    INT("int"),
+    FLOAT("float"),
+    ;
+    @Getter
     private String typeName;
 
     @Override
@@ -23,18 +29,16 @@ public class PrimitiveType implements IType {
         return typeName;
     }
 
-    public static PrimitiveType of(String name) {
-        switch (name) {
-            case "int":
-                return PrimitiveType.INT;
-            case "float":
-                return PrimitiveType.FLOAT;
-            case "boolean":
-                return PrimitiveType.BOOLEAN;
-            case "string":
-                return PrimitiveType.STRING;
-            default:
+    private static Map<String, PrimitiveType> map = Maps.newHashMap();
+
+    static {
+        for (PrimitiveType primitiveType : PrimitiveType.values()) {
+            map.put(primitiveType.getTypeName(), primitiveType);
         }
-        return null;
     }
+
+    public static PrimitiveType of(String name) {
+        return map.get(name);
+    }
+
 }

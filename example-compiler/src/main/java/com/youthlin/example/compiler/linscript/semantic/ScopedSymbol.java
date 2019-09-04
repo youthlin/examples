@@ -22,7 +22,9 @@ public abstract class ScopedSymbol extends Symbol implements IScope {
     public ScopedSymbol(String name, IScope parent) {
         super(name, parent);
         this.parent = parent;
-        parent.getChildScopes().add(this);
+        if (parent != null) {
+            parent.getChildScopes().add(this);
+        }
     }
 
     @Override

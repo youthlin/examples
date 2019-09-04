@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 public class Test {
     public static void main(String[] args) throws IOException {
-        File file = new File(".", "example-compiler/src/main/yourscript/test.y");
+        File file = new File(".", "example-compiler/src/main/yourscript/PrimitiveTypeTest.y");
         System.out.println(file.getAbsolutePath());
         YourLangLexer lexer = new YourLangLexer(CharStreams.fromPath(file.toPath()));
         YourLangParser parser = new YourLangParser(new CommonTokenStream(lexer));

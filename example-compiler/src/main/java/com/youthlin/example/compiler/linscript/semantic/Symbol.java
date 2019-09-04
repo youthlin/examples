@@ -20,7 +20,9 @@ public abstract class Symbol implements ISymbol {
     public Symbol(String symbolName, IScope scope) {
         this.symbolName = symbolName;
         this.scope = scope;
-        scope.getSymbols().add(this);
+        if (scope != null) {
+            scope.getSymbols().add(this);
+        }
     }
 
 }
