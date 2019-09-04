@@ -10,14 +10,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class GlobalScope extends BlockScope {
-    public GlobalScope() {
+public class FileScope extends BlockScope {
+    public FileScope(String name) {
         super(null);
-    }
-
-    @Override
-    public String getScopeName() {
-        return "Global";
+        setScopeName(name);
     }
 
     public String print() {

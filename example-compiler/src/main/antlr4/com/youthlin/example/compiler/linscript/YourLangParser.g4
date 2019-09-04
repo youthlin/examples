@@ -89,13 +89,14 @@ interfaceBody
 structBodyDeclaration
             :   ';'
             |   STATIC? block
+            |   constructor
             |   memberDeclaration
             ;
 memberDeclaration
             :   fieldDeclaration
             |   methodDeclaration
             ;
-
+constructor :   IDENTIFIER formalParameters  (THROWS qualifiedNameList)?  methodBody;
 interfaceBodyDeclaration
             :   interfaceMemberDeclaration
             |   ';'
@@ -116,7 +117,8 @@ constantDeclarator
             :   IDENTIFIER arrTypeSuffix* '=' variableInitializer ;
 
 methodDeclaration
-            :   returnType IDENTIFIER formalParameters  (THROWS qualifiedNameList)?  methodBody;
+            :   modifier? returnType IDENTIFIER formalParameters  (THROWS qualifiedNameList)?  methodBody;
+modifier    :   NATIVE ;
 qualifiedNameList
             :   qualifiedName (',' qualifiedName)* ;
 returnType

@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 @Getter
 @Setter
-public class Method extends ScopedSymbol {
+public class Method extends AbstractScopedSymbol {
     private IType returnType;
     private List<IType> parameterType;
 

@@ -1,5 +1,5 @@
-import "std/String.y" -> String;
-import "std/System.y" -> System;
+import "std.y" -> String;
+import "std.y" -> System;
 int i;
 int i0 = 0;
 boolean b;
@@ -18,3 +18,14 @@ String s;
 String s1 = "s1";
 System.out.println(s1);
 s = System.in.readLine();
+struct User{
+    User(){
+    }
+    //User1(String name){}
+    void User1(String name){}
+    void hello(){
+        System.out.println(this.toString());
+    }
+}
+User user = User();
+user.hello();

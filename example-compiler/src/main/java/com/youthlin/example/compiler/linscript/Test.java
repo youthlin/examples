@@ -1,9 +1,6 @@
 package com.youthlin.example.compiler.linscript;
 
-import com.youthlin.example.compiler.linscript.semantic.AnnotatedTree;
 import com.youthlin.example.compiler.linscript.semantic.SemanticValidator;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,14 +12,11 @@ import java.io.IOException;
 public class Test {
     public static void main(String[] args) throws IOException {
         File file = new File(".", "example-compiler/src/main/yourscript/PrimitiveTypeTest.y");
+        File dir = new File(file.getParent(), "lib");
         System.out.println(file.getAbsolutePath());
-        YourLangLexer lexer = new YourLangLexer(CharStreams.fromPath(file.toPath()));
-        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-        YourLangParser parser = new YourLangParser(tokenStream);
-        YourLangParser.YourLangContext context = parser.yourLang();
         SemanticValidator semanticValidator = new SemanticValidator();
-        AnnotatedTree at = semanticValidator.validate(context, file);
-        semanticValidator.validate2(at);
+        semanticValidator.validate(file, dir);
+
     }
 
 }

@@ -25,13 +25,17 @@ public class TypeResolver extends BaseListener {
         ImportSymbol importSymbol = (ImportSymbol) at.getSymbolMap().get(ctx);
         for (Symbol exportSymbol : importSymbol.getImportAt().getExportSymbols()) {
             if (Objects.equals(exportSymbol.getSymbolName(), importSymbol.getOriginal())) {
-                importSymbol.setType(exportSymbol.getType());
-                log.debug("导入的符号是{} 从文件{}导出 真实类型是 {}", importSymbol,
-                        importSymbol.getImportAt().getFile(), exportSymbol.getType());
+                IType realType = exportSymbol.getType();
+                importSymbol.setType(realType);
+                if (realType instanceof UnknownType) {
+                    error(log, ctx, "Unknown import symbol: " + importSymbol.getSymbolName());
+                } else {
+                    log.debug("导入的符号是{} 从文件{}导出 真实类型是 {}", importSymbol,
+                            importSymbol.getImportAt().getFile(), realType);
+                }
             }
         }
     }
-
 
     /**
      * funType 的形参有递归使用 typeType 所以要在 exit 时处理。
@@ -99,7 +103,7 @@ public class TypeResolver extends BaseListener {
             } else if (superType instanceof ImportSymbol && ((ImportSymbol) superType).getType() instanceof Struct) {
                 struct.setSuperStruct((Struct) ((ImportSymbol) superType).getType());
             } else {
-                at.getErrorMap().put(ctx, "should extends a struct");
+                error(log, ctx, "should extends a struct");
             }
         }
         if (interfaces != null) {

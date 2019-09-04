@@ -24,9 +24,10 @@ import java.util.stream.Collectors;
 @Setter
 public class AnnotatedTree {
     private File file;
+    private File stdLibDir;
     private ParseTree tree;
     private boolean typeResolved;
-    private GlobalScope globalScope = new GlobalScope();
+    private FileScope fileScope;
     private Map<ParserRuleContext, IType> typeMap = Maps.newHashMap();
     private Map<ParserRuleContext, IScope> scopeMap = Maps.newHashMap();
     private Map<ParserRuleContext, ISymbol> symbolMap = Maps.newHashMap();
@@ -39,6 +40,7 @@ public class AnnotatedTree {
     public AnnotatedTree(ParseTree parseTree, File file) {
         this.file = file;
         this.tree = parseTree;
+        fileScope = new FileScope(file.getName());
     }
 
     public String showError() {

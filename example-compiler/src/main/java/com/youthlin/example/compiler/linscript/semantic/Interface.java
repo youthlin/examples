@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class Interface extends ScopedSymbol implements IType {
+public class Interface extends AbstractScopedSymbol implements IType {
     private List<Interface> superInterfaces;
 
     public Interface(String name, IScope parent) {

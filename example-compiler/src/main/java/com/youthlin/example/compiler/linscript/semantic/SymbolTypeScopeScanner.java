@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 
 /**
@@ -45,7 +46,7 @@ public class SymbolTypeScopeScanner extends BaseListener {
 
     @Override
     public void enterYourLang(YourLangParser.YourLangContext ctx) {
-        pushScope(ctx, at.getGlobalScope());
+        pushScope(ctx, at.getFileScope());
     }
 
     @Override
@@ -56,15 +57,18 @@ public class SymbolTypeScopeScanner extends BaseListener {
         if (currentFile == null) {
             error(log, ctx, "Can not use import when not file mode");
         } else {
+            File stdLibDir = at.getStdLibDir();
             File importFile = new File(currentFile.getParent(), fileName);
+            if (!importFile.exists()) {
+                importFile = new File(stdLibDir, fileName);
+            }
             String path = importFile.getAbsolutePath();
             if (importFile.exists()) {
                 log.info("导入文件 {}", path);
                 try {
                     YourLangLexer lexer = new YourLangLexer(CharStreams.fromPath(importFile.toPath()));
                     YourLangParser parser = new YourLangParser(new CommonTokenStream(lexer));
-                    log.info(">>>开始处理文件 {}", path);
-                    AnnotatedTree importAt = validator.validate(parser.yourLang(), importFile);
+                    AnnotatedTree importAt = validator.validate1(parser.yourLang(), importFile, stdLibDir);
                     Util.setCurrentFile(at.getFile());
                     log.debug("导入文件 类型已处理? {}", importAt.isTypeResolved());
                     IScope scope = currentScope();
@@ -138,20 +142,66 @@ public class SymbolTypeScopeScanner extends BaseListener {
     public void enterInterfaceDeclaration(YourLangParser.InterfaceDeclarationContext ctx) {
         String interfaceName = ctx.IDENTIFIER().getText();
         log.debug("检查标识符 接口标识符 {}", interfaceName);
-        IScope currentScope = currentScope();
-        if (Util.hasSymbolOnScope(currentScope, interfaceName, Interface.class, Struct.class)) {
-            at.getErrorMap().put(ctx, "Duplicated interface/struct name '" + interfaceName
-                    + "' on scope: " + currentScope.getScopeName());
-        }
-        Interface anInterface = new Interface(interfaceName, currentScope);
-        pushScope(ctx, anInterface);
-        at.getTypeMap().put(ctx, anInterface);
-        at.getSymbolMap().put(ctx, anInterface);
+        addStructOrInterface(ctx, currentScope(), interfaceName, false);
     }
 
     @Override
     public void exitInterfaceDeclaration(YourLangParser.InterfaceDeclarationContext ctx) {
         popScope();
+    }
+
+    private void addStructOrInterface(ParserRuleContext ctx, IScope currentScope, String idName, boolean isStruct) {
+        if (Util.hasSymbolOnScope(currentScope, idName, Interface.class, Struct.class)) {
+            at.getErrorMap().put(ctx, "Duplicated interface/struct name '" + idName
+                    + "' on scope: " + currentScope.getScopeName());
+        }
+        AbstractScopedSymbol scopedSymbol;
+        if (isStruct) {
+            if (Objects.equals(at.getFile().getParentFile(), at.getStdLibDir())
+                    && Objects.equals(idName, Struct.ANY.getSymbolName())) {
+                scopedSymbol = Struct.ANY;
+                scopedSymbol.setParent(at.getFileScope());
+            } else {
+                scopedSymbol = new Struct(idName, currentScope);
+            }
+        } else {
+            scopedSymbol = new Interface(idName, currentScope);
+        }
+        pushScope(ctx, scopedSymbol);
+        at.getTypeMap().put(ctx, (IType) scopedSymbol);
+        at.getSymbolMap().put(ctx, scopedSymbol);
+    }
+
+    @Override
+    public void enterStructDeclaration(YourLangParser.StructDeclarationContext ctx) {
+        String structName = ctx.IDENTIFIER().getText();
+        log.debug("检查标识符 结构体 {}", structName);
+        addStructOrInterface(ctx, currentScope(), structName, true);
+    }
+
+    @Override
+    public void exitStructDeclaration(YourLangParser.StructDeclarationContext ctx) {
+        popScope();
+    }
+
+    @Override
+    public void enterConstructor(YourLangParser.ConstructorContext ctx) {
+        Struct struct = (Struct) currentScope();
+        String name = ctx.IDENTIFIER().getText();
+        if (Objects.equals(name, struct.getSymbolName())) {
+            Method construct = new Method(name, struct);
+            construct.setReturnType(struct);
+            pushScope(ctx, construct);
+        } else {
+            error(log, ctx, "Constructor must named struct name: " + struct.getSymbolName());
+        }
+    }
+
+    @Override
+    public void exitConstructor(YourLangParser.ConstructorContext ctx) {
+        if (at.getScope(ctx) instanceof Method) {
+            popScope();
+        }
     }
 
     @Override
@@ -165,26 +215,6 @@ public class SymbolTypeScopeScanner extends BaseListener {
         }
         Constant constant = new Constant(name, scope);
         at.getSymbolMap().put(ctx, constant);
-    }
-
-    @Override
-    public void enterStructDeclaration(YourLangParser.StructDeclarationContext ctx) {
-        String structName = ctx.IDENTIFIER().getText();
-        log.debug("检查标识符 结构体 {}", structName);
-        IScope currentScope = currentScope();
-        if (Util.hasSymbolOnScope(currentScope, structName, Interface.class, Struct.class)) {
-            at.getErrorMap().put(ctx, "Duplicated interface/struct name '" + structName
-                    + "' on scope: " + currentScope.getScopeName());
-        }
-        Struct struct = new Struct(structName, currentScope);
-        pushScope(ctx, struct);
-        at.getTypeMap().put(ctx, struct);
-        at.getSymbolMap().put(ctx, struct);
-    }
-
-    @Override
-    public void exitStructDeclaration(YourLangParser.StructDeclarationContext ctx) {
-        popScope();
     }
 
     @Override

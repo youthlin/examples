@@ -12,9 +12,14 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class Struct extends ScopedSymbol implements IType {
-    private Struct superStruct;
+public class Struct extends AbstractScopedSymbol implements IType {
+    static final Struct ANY = new Struct("Any", null);
+    /**
+     * 默认父类
+     */
+    private Struct superStruct = ANY;
     private List<Interface> superInterfaces;
+    private List<Method> constructors;
 
     public Struct(String name, IScope parent) {
         super(name, parent);
