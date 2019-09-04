@@ -96,6 +96,8 @@ public class TypeResolver extends BaseListener {
             IType superType = at.getTypeMap().get(superStruct);
             if (superType instanceof Struct) {
                 struct.setSuperStruct((Struct) superType);
+            } else if (superType instanceof ImportSymbol && ((ImportSymbol) superType).getType() instanceof Struct) {
+                struct.setSuperStruct((Struct) ((ImportSymbol) superType).getType());
             } else {
                 at.getErrorMap().put(ctx, "should extends a struct");
             }

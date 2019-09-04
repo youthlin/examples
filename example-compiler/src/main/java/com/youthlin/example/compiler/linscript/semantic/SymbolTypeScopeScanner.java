@@ -64,7 +64,7 @@ public class SymbolTypeScopeScanner extends BaseListener {
                     YourLangLexer lexer = new YourLangLexer(CharStreams.fromPath(importFile.toPath()));
                     YourLangParser parser = new YourLangParser(new CommonTokenStream(lexer));
                     log.info(">>>开始处理文件 {}", path);
-                    AnnotatedTree importAt = validator.validate2(parser.yourLang(), importFile);
+                    AnnotatedTree importAt = validator.validate(parser.yourLang(), importFile);
                     Util.setCurrentFile(at.getFile());
                     log.debug("导入文件 类型已处理? {}", importAt.isTypeResolved());
                     IScope scope = currentScope();

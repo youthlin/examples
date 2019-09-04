@@ -1,3 +1,4 @@
+import "String.y" -> String;
 int i;
 int i0 = 0;
 boolean b;
@@ -14,6 +15,3 @@ char c;
 char c1 = 'c';
 String s;
 String s1 = "s1";
-struct String{
-
-}

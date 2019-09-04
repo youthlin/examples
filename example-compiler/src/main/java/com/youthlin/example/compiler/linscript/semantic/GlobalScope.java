@@ -13,8 +13,6 @@ import lombok.Setter;
 public class GlobalScope extends BlockScope {
     public GlobalScope() {
         super(null);
-        getSymbols().add(Struct.ANY);
-        getSymbols().add(Struct.STRING);
     }
 
     @Override

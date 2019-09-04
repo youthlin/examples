@@ -17,10 +17,11 @@ public class Test {
         File file = new File(".", "example-compiler/src/main/yourscript/PrimitiveTypeTest.y");
         System.out.println(file.getAbsolutePath());
         YourLangLexer lexer = new YourLangLexer(CharStreams.fromPath(file.toPath()));
-        YourLangParser parser = new YourLangParser(new CommonTokenStream(lexer));
+        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+        YourLangParser parser = new YourLangParser(tokenStream);
         YourLangParser.YourLangContext context = parser.yourLang();
         SemanticValidator semanticValidator = new SemanticValidator();
-        AnnotatedTree at = semanticValidator.validate2(context, file);
+        AnnotatedTree at = semanticValidator.validate(context, file);
         semanticValidator.validate2(at);
     }
 

@@ -20,7 +20,7 @@ public class SemanticValidator {
     private Map<File, AnnotatedTree> fileAnnotatedTreeMap = Maps.newHashMap();
     private Set<AnnotatedTree> validated = Sets.newHashSet();
 
-    public AnnotatedTree validate2(YourLangParser.YourLangContext context, File file) {
+    public AnnotatedTree validate(YourLangParser.YourLangContext context, File file) {
         AnnotatedTree processed = fileAnnotatedTreeMap.get(file);
         if (processed != null) {
             return processed;
