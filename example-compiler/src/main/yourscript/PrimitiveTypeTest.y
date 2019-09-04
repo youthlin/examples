@@ -1,4 +1,5 @@
-import "String.y" -> String;
+import "std/String.y" -> String;
+import "std/System.y" -> System;
 int i;
 int i0 = 0;
 boolean b;
@@ -15,3 +16,5 @@ char c;
 char c1 = 'c';
 String s;
 String s1 = "s1";
+System.out.println(s1);
+s = System.in.readLine();

@@ -47,7 +47,7 @@ public class Util {
         }
         for (ISymbol symbol : struct.getSymbols()) {
             if (Objects.equals(symbol.getSymbolName(), fieldName)
-                    && (symbol instanceof Variable) || symbol instanceof Constant) {
+                    && ((symbol instanceof Variable) || symbol instanceof Constant)) {
                 return (Symbol) symbol;
             }
         }
@@ -74,7 +74,7 @@ public class Util {
         }
         for (ISymbol symbol : itfs.getSymbols()) {
             if (Objects.equals(symbol.getSymbolName(), fieldName)
-                    && (symbol instanceof Variable) || symbol instanceof Constant) {
+                    && ((symbol instanceof Variable) || symbol instanceof Constant)) {
                 return (Symbol) symbol;
             }
         }
