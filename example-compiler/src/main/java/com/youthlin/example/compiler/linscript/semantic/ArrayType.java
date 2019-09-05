@@ -15,11 +15,17 @@ import java.util.Map;
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ArrayType implements IType {
-    private IType elementType;
     private static final Map<IType, ArrayType> cache = Maps.newHashMap();
+    public static final ArrayType CHAR_ARRAY = buildFromElementType(PrimitiveType.CHAR);
+    private IType elementType;
 
     public static ArrayType buildFromElementType(IType elementType) {
-        return cache.computeIfAbsent(elementType, ArrayType::new);
+        ArrayType type = cache.get(elementType);
+        if (type == null) {
+            type = new ArrayType(elementType);
+            cache.put(elementType, type);
+        }
+        return type;
     }
 
     @Override

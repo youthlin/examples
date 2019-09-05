@@ -15,6 +15,7 @@ import java.util.Objects;
 @Getter
 @Setter
 public class Method extends AbstractScopedSymbol {
+    private boolean isNative;
     private IType returnType;
     private List<IType> parameterType;
 

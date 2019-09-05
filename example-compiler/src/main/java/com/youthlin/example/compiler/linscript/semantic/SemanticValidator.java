@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.youthlin.example.compiler.linscript.YourLangLexer;
 import com.youthlin.example.compiler.linscript.YourLangParser;
+import com.youthlin.example.compiler.linscript.runtime.Runner;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -42,6 +43,9 @@ public class SemanticValidator {
         }
         AnnotatedTree at = validate1(context, file, stdLibDir);
         validate2(at);
+        Runner runner = new Runner(at);
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(runner, at.getTree());
     }
 
     AnnotatedTree validate1(YourLangParser.YourLangContext context, File file, File stdLibDir) {

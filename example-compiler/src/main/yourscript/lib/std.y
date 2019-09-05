@@ -11,16 +11,16 @@ struct String extends Any{
 }
 
 struct Printer extends Any{
-    void println(Any any);
+    native void println(Any any);
 }
 
 struct Reader extends Any{
-    String readLine();
+    native String readLine();
 }
 
 interface System{
-    Printer out = null;
-    Reader in = null;
+    Reader in = Reader();
+    Printer out = Printer();
 }
 
 

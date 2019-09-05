@@ -12,6 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class Symbol implements ISymbol {
+    private long addr;
     private String symbolName;
     @JsonIgnore
     private IScope scope;

@@ -192,6 +192,12 @@ public class TypeResolver extends BaseListener {
             error(log, ctx, "Unknown return type");
             return;
         }
+        if (ctx.modifier() != null) {
+            if (ctx.modifier().NATIVE() != null) {
+                method.setNative(true);
+            }
+        }
+
         method.done();
         log.info("设置 方法的返回和形参类型 方法 {} 全类型= {}", method, method.getType());
     }

@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -74,18 +73,7 @@ public class TypeInfer extends YourLangParserBaseListener {
                 type = PrimitiveType.FLOAT;
             }
             if (literal.STRING_LITERAL() != null) {
-                List<ISymbol> list = Util.findSymbolOnScope(at.getFileScope(), "String", Struct.class);
-                if (list.size() == 1) {
-                    type = (IType) list.get(0);
-                } else {
-                    list = Util.findSymbolOnScope(at.getFileScope(), "String", ImportSymbol.class);
-                    for (ISymbol symbol : list) {
-                        if (symbol.getType() instanceof Struct) {
-                            type = symbol.getType();
-                            break;
-                        }
-                    }
-                }
+                type = ArrayType.CHAR_ARRAY;
             }
             if (literal.NULL_LITERAL() != null) {
                 type = NullType.INSTANCE;
