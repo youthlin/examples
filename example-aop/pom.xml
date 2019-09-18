@@ -10,6 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>example-aop</artifactId>
+    <properties>
+        <spring.version>4.3.24.RELEASE</spring.version>
+    </properties>
 
     <dependencies>
         <!-- test -->
