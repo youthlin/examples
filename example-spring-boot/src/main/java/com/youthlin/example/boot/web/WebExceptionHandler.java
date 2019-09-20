@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 /**
  * @author : youthlin.chen @ 2019-09-18 22:42
  */
-@RestControllerAdvice
 @Slf4j
+@RestControllerAdvice
 public class WebExceptionHandler {
     @ExceptionHandler(Throwable.class)
     public Response handlerThrowable(Throwable t) {
@@ -26,7 +26,6 @@ public class WebExceptionHandler {
      */
     @ExceptionHandler(BindException.class)
     public Response handleMethodArgumentNotValidException(BindException e) {
-        log.error(e.getMessage(), e);
         return new Response().setCode(1)
                 .setMsg(e.getBindingResult()
                         .getFieldErrors()
