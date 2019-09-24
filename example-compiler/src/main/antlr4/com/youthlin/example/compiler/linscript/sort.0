@@ -1,4 +1,4 @@
-fun void(any[]) sort = (input) {
+fun void(any[]) sort = void(input) {
     int len = input.length;
     for (int i = 0; i < len; i++ ){
         for (int j = i + 1; j < len; j++ ){
@@ -9,77 +9,5 @@ fun void(any[]) sort = (input) {
             }
         }
     }
-}
+};
 export sort;
-
-/*
-script─importPart─importStmt─import
-     │                     ├─lib
-     │                     ├─=
-     │                     ├─"sort.0"
-     │                     └─;
-     └─body─statement─varDecStmt─varDeclare─var
-          │                    │          └─varDecs─varDec─x
-          │                    │                         ├─=
-          │                    │                         └─varInit─{
-          │                    │                                 ├─expList─exp─primary─literal─integerLiteral─5
-          │                    │                                 │       ├─,
-          │                    │                                 │       ├─exp─primary─literal─integerLiteral─8
-          │                    │                                 │       ├─,
-          │                    │                                 │       ├─exp─primary─literal─integerLiteral─4
-          │                    │                                 │       ├─,
-          │                    │                                 │       ├─exp─primary─literal─integerLiteral─7
-          │                    │                                 │       ├─,
-          │                    │                                 │       └─exp─primary─literal─integerLiteral─3
-          │                    │                                 └─}
-          │                    └─;
-          ├─statement─exp─exp─exp─primary─lib
-          │         │   │   ├─.
-          │         │   │   └─sort
-          │         │   ├─(
-          │         │   ├─expList─exp─primary─x
-          │         │   └─)
-          │         └─;
-          ├─statement─exp─exp─primary─print
-          │         │   ├─(
-          │         │   ├─expList─exp─primary─x
-          │         │   └─)
-          │         └─;
-          ├─statement─varDecStmt─varDeclare─var
-          │                    │          └─varDecs─varDec─f
-          │                    │                         ├─=
-          │                    │                         └─varInit─exp─funExp─(
-          │                    │                                            ├─argList─typedArg─argType─argType─primaryType─any
-          │                    │                                            │       │        │       ├─[
-          │                    │                                            │       │        │       └─]
-          │                    │                                            │       │        └─input
-          │                    │                                            │       ├─,
-          │                    │                                            │       └─typedArg─argType─funType─fun
-          │                    │                                            │                │               ├─returnType─void
-          │                    │                                            │                │               ├─(
-          │                    │                                            │                │               ├─argTypeList─argType─argType─primaryType─any
-          │                    │                                            │                │               │                   ├─[
-          │                    │                                            │                │               │                   └─]
-          │                    │                                            │                │               └─)
-          │                    │                                            │                └─sortFun
-          │                    │                                            ├─)
-          │                    │                                            ├─:
-          │                    │                                            ├─returnType─void
-          │                    │                                            └─block─{
-          │                    │                                                  ├─statement─exp─exp─primary─sortFun
-          │                    │                                                  │         │   ├─(
-          │                    │                                                  │         │   ├─expList─exp─primary─input
-          │                    │                                                  │         │   └─)
-          │                    │                                                  │         └─;
-          │                    │                                                  └─}
-          │                    └─;
-          └─statement─exp─exp─primary─f
-                    │   ├─(
-                    │   ├─expList─exp─primary─x
-                    │   │       ├─,
-                    │   │       └─exp─exp─primary─lib
-                    │   │           ├─.
-                    │   │           └─sort
-                    │   └─)
-                    └─;
-*/

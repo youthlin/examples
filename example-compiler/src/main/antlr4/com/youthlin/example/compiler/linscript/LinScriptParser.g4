@@ -102,7 +102,7 @@ primary     :   '(' exp ')'
             |   IDENTIFIER
             ;
 // 函数表达式
-funExp      :   '(' argList? ')' (':'returnType)? block ;
+funExp      :   returnType? '(' argList? ')' block ;
 argList     :   typedArg (',' typedArg)* ;
 typedArg    :   type=argType? IDENTIFIER ;
 
