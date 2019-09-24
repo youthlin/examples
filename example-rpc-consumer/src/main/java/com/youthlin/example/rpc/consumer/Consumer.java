@@ -6,14 +6,10 @@ import com.youthlin.ioc.context.ClasspathContext;
 import com.youthlin.ioc.context.Context;
 import com.youthlin.rpc.annotation.Rpc;
 import com.youthlin.rpc.core.RpcFuture;
-import com.youthlin.rpc.util.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.ProxyGenerator;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -54,7 +50,7 @@ public class Consumer {
         LOGGER.info("{}", consumer.helloService.getClass());
         LOGGER.info("{}", consumer.helloService.equals(consumer.helloService));
 
-        consumer.printClassFile();
+        //consumer.printClassFile();
     }
 
     private String sayHello(String name) {
@@ -92,7 +88,7 @@ public class Consumer {
             }).start();
         }
     }
-
+    /*//jdk9+已移除sun.misc.ProxyGenerator -> java.lang.reflect.ProxyGenerator 包可见
     private void printClassFile() {
         byte[] classFile = ProxyGenerator.generateProxyClass("$Proxy2", helloService.getClass().getInterfaces());
         FileOutputStream out = null;
@@ -114,4 +110,5 @@ public class Consumer {
             NetUtil.close(out);
         }
     }
+    */
 }
