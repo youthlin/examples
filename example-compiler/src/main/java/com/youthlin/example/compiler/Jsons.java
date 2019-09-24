@@ -32,7 +32,7 @@ public class Jsons {
         }
     }
 
-    public static <T> T fromJson(String json, TypeReference type) {
+    public static <T> T fromJson(String json, TypeReference<T> type) {
         try {
             return MAPPER.readValue(json, type);
         } catch (IOException e) {
