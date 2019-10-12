@@ -16,5 +16,5 @@ public class ConfigBean {
     @NotNull(message = "航司不能改为空")
     @Pattern(regexp = "[A-Z0-9]{2}(,A-Z0-9]{2})*", message = "航司格式应为二字码，多个用英文逗号分隔")
     private String carrier;
-
+    private boolean support;
 }
