@@ -32,6 +32,7 @@
         <module>example-kafka</module>
         <module>example-compiler</module>
         <module>example-spring-boot</module>
+        <module>example-javafx</module>
     </modules>
 
     <properties>
