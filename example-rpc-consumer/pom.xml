@@ -13,6 +13,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.youthlin.demo</groupId>
             <artifactId>example-rpc-api</artifactId>
         </dependency>

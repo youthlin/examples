@@ -1,7 +1,7 @@
 package com.youthlin.example.otp;
 
+import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import kotlin.text.Charsets;
 
 import java.io.File;
 import java.io.IOException;
