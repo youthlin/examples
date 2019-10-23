@@ -45,5 +45,6 @@ public class App extends GameApplication {
     @Override
     protected void initUI() {
         FXGL.addVarText(510, 10, "score");
+
     }
 }

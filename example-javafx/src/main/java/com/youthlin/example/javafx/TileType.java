@@ -1,6 +1,9 @@
 package com.youthlin.example.javafx;
 
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
+
+import java.util.Random;
 
 /**
  * @author youthlin.chen
@@ -9,14 +12,18 @@ import com.almasb.fxgl.dsl.FXGL;
 public enum TileType {
     // 方块形状
     L(0, 0, 40, 0, 40, 40, 80, 40, 80, 80, 0, 80),
-    Z(0, 0, 0, 80, 80, 40, 120, 40, 120, 80, 40, 80, 40, 40, 0, 40),
+    Z(0, 0, 80, 0, 80, 40, 120, 40, 120, 80, 40, 80, 40, 40, 0, 40),
     I(0, 0, 40, 0, 40, 160, 0, 160),
-    T(0, 0, 120, 0, 120, 40, 80, 40, 80, 80, 40, 80, 40, 40, 40, 0),
+    T(0, 0, 120, 0, 120, 40, 80, 40, 80, 80, 40, 80, 40, 40, 0, 40),
     O(0, 0, 80, 0, 80, 80, 0, 80);
     final double[] points;
 
     TileType(double... points) {
         this.points = points;
+    }
+
+    static {
+        FXGLMath.setRandom(new Random(System.currentTimeMillis()));
     }
 
     public static TileType randomType() {
