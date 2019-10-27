@@ -28,7 +28,6 @@
         <module>example-spring-cloud/eureka-server</module>
         <module>example-concurrent</module>
         <module>example-misc</module>
-        <module>example-kilim</module>
         <module>example-kafka</module>
         <module>example-compiler</module>
         <module>example-spring-boot</module>
