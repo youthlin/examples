@@ -24,6 +24,14 @@
             background-color: rgba(255, 255, 255, .7);
         }
 
+        .no-margin {
+            margin: 0;
+        }
+
+        .margin-top {
+            margin-top: 25px;
+        }
+
         .carousel-inner > .item > img {
             width: 100%;
         }
@@ -107,7 +115,7 @@
     <div id="detail">
         <div class="container">
             <h3>详情</h3>
-            <div class="panel panel-default">
+            <div class="panel panel-default no-margin">
                 <div class="panel-heading">
                     <h3 class="panel-title">单价</h3>
                 </div>
@@ -126,9 +134,8 @@
                             <th>单价</th>
                             <td>
                                 <div class="pull-left">
-                                    148 元 / 20 斤 / 箱<br>
-                                    &nbsp;&nbsp;95 元 / 10 斤 / 箱<br>
-                                    (非偏远地区包邮)
+                                    120 元 / 20 斤 / 箱 + 邮费<br>
+                                    &nbsp;&nbsp;75 元 / 10 斤 / 箱 + 邮费<br>
                                 </div>
                             </td>
                         </tr>
@@ -136,6 +143,8 @@
                     </table>
                 </div>
                 <div class="panel-footer text-center">
+                    <a class="btn btn-default" data-toggle="collapse" href="#collapseExpress"
+                       aria-expanded="false" aria-controls="collapseExpress">查看邮费 </a>
                     <a href="#buy" type="button" class="btn btn-primary nav-to" data-href="#buy">立即购买</a>
                     <div class="wx-notice">
                         ↑↑↑微信内置浏览器显示页面不完整，请点击<strong>原网页</strong>后在下一页底部点击<strong>访问原网页</strong>；
@@ -143,8 +152,64 @@
                     </div>
                 </div>
             </div>
+            <div class="collapse" id="collapseExpress">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered table-striped no-margin">
+                        <thead>
+                        <tr>
+                            <th>寄达地</th>
+                            <th>10斤</th>
+                            <th>20斤</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th>江西、广东、江苏、浙江、上海、福建、安徽、湖南、湖北</th>
+                            <td>10</td>
+                            <td>16</td>
+                        </tr>
+                        <tr>
+                            <th>天津、河南、河北、山东、广西、海南</th>
+                            <td>16</td>
+                            <td>26</td>
+                        </tr>
+                        <tr>
+                            <th>北京、山西</th>
+                            <td>18</td>
+                            <td>31</td>
+                        </tr>
+                        <tr>
+                            <th>四川、重庆、云南、贵州</th>
+                            <td>21</td>
+                            <td>35</td>
+                        </tr>
+                        <tr>
+                            <th>陕西、甘肃、宁夏、内蒙古、黑龙江、吉林、辽宁</th>
+                            <td>24</td>
+                            <td>46</td>
+                        </tr>
+                        <tr>
+                            <th>新疆、西藏、青海</th>
+                            <td>60</td>
+                            <td>100</td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-center" style="padding: 0">
+                                <a href="https://weidian.com/?userid=1271341380" target="_blank"
+                                   class="btn btn-primary" style="display: block">微店购买</a>
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <a class="btn btn-default btn-sm" data-toggle="collapse" href="#collapseExpress"
+                   aria-expanded="false" aria-controls="collapseExpress"
+                   style="display: inline-block; width: 100%;">收起邮费表</a>
+            </div>
 
-            <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+            <div id="carousel-example-generic" class="carousel slide margin-top" data-ride="carousel">
 
                 <ol class="carousel-indicators">
                     <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
