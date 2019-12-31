@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        /* grid http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html */
+        /* flex http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html*/
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: auto;
+            min-height: 100%;
+            display: grid;
+            grid-template-rows: 75px auto 75px;
+            grid-template-columns: 70% 30%;
+        }
+
+        #site-header {
+            grid-column: 1 / 3;
+            background-color: bisque;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        #site-main {
+            background-color: aqua;
+        }
+
+        #site-aside {
+            background-color: azure;
+        }
+
+        #site-footer {
+            grid-column: 1 / 3;
+            background-color: cadetblue;
+            display: flex;
+            align-items: center;
+        }
+
+        #site-aside .wrap {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 75px;
+            padding: 1rem;
+        }
+
+        #site-aside .card {
+            border: 1px solid #abc;
+            border-radius: .5rem;
+            padding: .5rem;
+            margin-bottom: 1rem;
+        }
+
+        ol, ul {
+            padding-left: 1rem;
+        }
+
+        li {
+            margin-left: 1rem;
+        }
+
+        .inline li {
+            display: inline-block;
+            margin: 0;
+        }
+
+        .no-list-style li {
+            list-style-type: none;
+        }
+
+        #site-main article {
+            background-color: aliceblue;
+            padding: 1rem;
+        }
+
+        #site-main article:nth-of-type(even) {
+            background-color: aquamarine;
+        }
+    </style>
+</head>
+<body>
+
+<header id="site-header">
+    <h1 id="site-title">Title</h1>
+    <nav id="page-nav">
+        <ul class="inline">
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main id="site-main">
+    <article>
+        <header>
+            <h2>Article Title</h2>
+            <span>Author</span>
+            <span>Date</span>
+        </header>
+        <div>
+            <p>Lorem markdownum amnem tibi fugiunt corporibus posse, noxque est dixit obscurum
+                virgineus qui pigre postquam. Et curis, videndi
+                tantum, solum in patris sollicito mihi refluum non tuetur nempe: inbutam ilia
+                lecto. Saevamque amantes: ab nacta arboribus: o ab dixit et saepe Noemonaque
+                mixta. Arne reliquit matri liquerunt dixerat quantumque volant annua pariter,
+                ait terra pro desint tum.</p>
+            <p>
+                Iovis suis, Cerastae ignem iam aliis tum mille postquam transferre missus
+                geminos securus. Desunt decidit resolvite radicibus pius, conditus est quo gravi
+                illa manu quaeque fluctus. Locuturum est
+                deteriora simulat donec musco malo, et precaris
+                pelagi sermone, idem amissoque praestent subnectite. Habebam nec ales flexi
+                timendos longe vocavit nec? Est monti clausa primis auxilium eadem subsequitur
+                Alba, antro iussit iubet pectora credimus, inpubesque facto renovamine, laqueis.
+            </p>
+            <p>
+                Bimembres quodque! Memini pars fecerat? Sed inter non si secura undae saliunt
+                erat inulta fusus dedit gravior et dare. Ille regnorum Pygmaeae poplitibus
+                sistunt, Cyllenius infantem haerens eunti cumque, Trachinius. Apis qua nebulae
+                putat fons natura sumus brevi siquis
+                et potest montis et movente in nocte inpune coniectum femineo lumina?
+            </p>
+            <ol>
+                <li>Parte lateo</li>
+                <li>Vulnus vires pariterque</li>
+                <li>Me linguae mediam ingenium natum</li>
+            </ol>
+        </div>
+        <footer>
+            <span>Tag</span>
+            <span>Tag</span>
+        </footer>
+    </article>
+    <article>
+        <header>
+            <h2>Article Title</h2>
+            <span>Author</span>
+            <span>Date</span>
+        </header>
+        <div>
+            <p>Lorem markdownum amnem tibi fugiunt corporibus posse, noxque est dixit obscurum
+                virgineus qui pigre postquam. Et curis, videndi
+                tantum, solum in patris sollicito mihi refluum non tuetur nempe: inbutam ilia
+                lecto. Saevamque amantes: ab nacta arboribus: o ab dixit et saepe Noemonaque
+                mixta. Arne reliquit matri liquerunt dixerat quantumque volant annua pariter,
+                ait terra pro desint tum.</p>
+            <ul>
+                <li>Parte lateo</li>
+                <li>Vulnus vires pariterque</li>
+                <li>Me linguae mediam ingenium natum</li>
+            </ul>
+            <p>Lorem markdownum amnem tibi fugiunt corporibus posse, noxque est dixit obscurum
+                virgineus qui pigre postquam. Et curis, videndi
+                tantum, solum in patris sollicito mihi refluum non tuetur nempe: inbutam ilia
+                lecto. Saevamque amantes: ab nacta arboribus: o ab dixit et saepe Noemonaque
+                mixta. Arne reliquit matri liquerunt dixerat quantumque volant annua pariter,
+                ait terra pro desint tum.</p>
+        </div>
+        <footer>
+            <span>Tag</span>
+            <span>Tag</span>
+        </footer>
+    </article>
+    <article>
+        <header>
+            <h2>Article Title</h2>
+            <span>Author</span>
+            <span>Date</span>
+        </header>
+        <div>
+            <p>Lorem markdownum amnem tibi fugiunt corporibus posse, noxque est dixit obscurum
+                virgineus qui pigre postquam. Et curis, videndi
+                tantum, solum in patris sollicito mihi refluum non tuetur nempe: inbutam ilia
+                lecto. Saevamque amantes: ab nacta arboribus: o ab dixit et saepe Noemonaque
+                mixta. Arne reliquit matri liquerunt dixerat quantumque volant annua pariter,
+                ait terra pro desint tum.</p>
+            <p>
+                Iovis suis, Cerastae ignem iam aliis tum mille postquam transferre missus
+                geminos securus. Desunt decidit resolvite radicibus pius, conditus est quo gravi
+                illa manu quaeque fluctus. Locuturum est
+                deteriora simulat donec musco malo, et precaris
+                pelagi sermone, idem amissoque praestent subnectite. Habebam nec ales flexi
+                timendos longe vocavit nec? Est monti clausa primis auxilium eadem subsequitur
+                Alba, antro iussit iubet pectora credimus, inpubesque facto renovamine, laqueis.
+            </p>
+            <p>
+                Bimembres quodque! Memini pars fecerat? Sed inter non si secura undae saliunt
+                erat inulta fusus dedit gravior et dare. Ille regnorum Pygmaeae poplitibus
+                sistunt, Cyllenius infantem haerens eunti cumque, Trachinius. Apis qua nebulae
+                putat fons natura sumus brevi siquis
+                et potest montis et movente in nocte inpune coniectum femineo lumina?
+            </p>
+            <ol>
+                <li>Parte lateo</li>
+                <li>Vulnus vires pariterque</li>
+                <li>Me linguae mediam ingenium natum</li>
+            </ol>
+        </div>
+        <footer>
+            <span>Tag</span>
+            <span>Tag</span>
+        </footer>
+    </article>
+</main>
+
+<aside id="site-aside">
+    <div class="wrap">
+
+        <section class="card">
+            <header>Card Title 1</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 2</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 3</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 4</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 5</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 6</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+    </div>
+</aside>
+
+<footer id="site-footer">
+    <p>&copy;2019 youthlin.com</p>
+    <ul class="no-list-style inline">
+        <li>Link 1</li>
+        <li>Link 2</li>
+        <li>Link 3</li>
+    </ul>
+</footer>
+
+</body>
+</html>
