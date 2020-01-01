@@ -60,6 +60,11 @@
             background-color: aqua;
         }
 
+        .content {
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+        }
+
         #site-aside {
             background-color: azure;
         }
@@ -73,9 +78,14 @@
         #site-aside .wrap {
             position: -webkit-sticky;
             position: sticky;
-            top: 75px;
+            bottom: 0;
             padding: 1rem;
         }
+
+        /* 问题: main 长度大于 aside.wrap, 怎样使得：
+        当 Card Title 8 刚显示时(此时 aside 位置记为 a),
+        再滚动仍然保持 a, (Card Title 8 还是挨着视口底部)
+        当 footer 显示时才把 aside 推开 */
 
         #site-aside .card {
             border: 1px solid #abc;
@@ -115,7 +125,7 @@
 <body>
 
 <header id="site-header">
-    <h1 id="site-title">Title</h1>
+    <h1 id="site-title">Site Title</h1>
     <nav id="page-nav">
         <ul class="inline">
             <li><a href="#">Link</a></li>
@@ -132,7 +142,7 @@
             <span>Author</span>
             <span>Date</span>
         </header>
-        <div>
+        <div class="content">
             <p>Lorem markdownum amnem tibi fugiunt corporibus posse, noxque est dixit obscurum
                 virgineus qui pigre postquam. Et curis, videndi
                 tantum, solum in patris sollicito mihi refluum non tuetur nempe: inbutam ilia
@@ -172,7 +182,7 @@
             <span>Author</span>
             <span>Date</span>
         </header>
-        <div>
+        <div class="content">
             <p>Lorem markdownum amnem tibi fugiunt corporibus posse, noxque est dixit obscurum
                 virgineus qui pigre postquam. Et curis, videndi
                 tantum, solum in patris sollicito mihi refluum non tuetur nempe: inbutam ilia
@@ -202,7 +212,7 @@
             <span>Author</span>
             <span>Date</span>
         </header>
-        <div>
+        <div class="content">
             <p>Lorem markdownum amnem tibi fugiunt corporibus posse, noxque est dixit obscurum
                 virgineus qui pigre postquam. Et curis, videndi
                 tantum, solum in patris sollicito mihi refluum non tuetur nempe: inbutam ilia
@@ -239,55 +249,73 @@
 </main>
 
 <aside id="site-aside">
-    <div class="wrap">
-        <section class="card">
-            <header>Card Title 1</header>
-            <ul class="no-list-style">
-                <li>Item 1</li>
-                <li>Item 2</li>
-                <li>Item 3</li>
-            </ul>
-        </section>
-        <section class="card">
-            <header>Card Title 2</header>
-            <ul class="no-list-style">
-                <li>Item 1</li>
-                <li>Item 2</li>
-                <li>Item 3</li>
-            </ul>
-        </section>
-        <section class="card">
-            <header>Card Title 3</header>
-            <ul class="no-list-style">
-                <li>Item 1</li>
-                <li>Item 2</li>
-                <li>Item 3</li>
-            </ul>
-        </section>
-        <section class="card">
-            <header>Card Title 4</header>
-            <ul class="no-list-style">
-                <li>Item 1</li>
-                <li>Item 2</li>
-                <li>Item 3</li>
-            </ul>
-        </section>
-        <section class="card">
-            <header>Card Title 5</header>
-            <ul class="no-list-style">
-                <li>Item 1</li>
-                <li>Item 2</li>
-                <li>Item 3</li>
-            </ul>
-        </section>
-        <section class="card">
-            <header>Card Title 6</header>
-            <ul class="no-list-style">
-                <li>Item 1</li>
-                <li>Item 2</li>
-                <li>Item 3</li>
-            </ul>
-        </section>
+    <div>
+        <div class="wrap">
+            <section class="card">
+                <header>Card Title 1</header>
+                <ul class="no-list-style">
+                    <li>Item 1</li>
+                    <li>Item 2</li>
+                    <li>Item 3</li>
+                </ul>
+            </section>
+            <section class="card">
+                <header>Card Title 2</header>
+                <ul class="no-list-style">
+                    <li>Item 1</li>
+                    <li>Item 2</li>
+                    <li>Item 3</li>
+                </ul>
+            </section>
+            <section class="card">
+                <header>Card Title 3</header>
+                <ul class="no-list-style">
+                    <li>Item 1</li>
+                    <li>Item 2</li>
+                    <li>Item 3</li>
+                </ul>
+            </section>
+            <section class="card">
+                <header>Card Title 4</header>
+                <ul class="no-list-style">
+                    <li>Item 1</li>
+                    <li>Item 2</li>
+                    <li>Item 3</li>
+                </ul>
+            </section>
+            <section class="card">
+                <header>Card Title 5</header>
+                <ul class="no-list-style">
+                    <li>Item 1</li>
+                    <li>Item 2</li>
+                    <li>Item 3</li>
+                </ul>
+            </section>
+            <section class="card">
+                <header>Card Title 6</header>
+                <ul class="no-list-style">
+                    <li>Item 1</li>
+                    <li>Item 2</li>
+                    <li>Item 3</li>
+                </ul>
+            </section>
+            <section class="card">
+                <header>Card Title 7</header>
+                <ul class="no-list-style">
+                    <li>Item 1</li>
+                    <li>Item 2</li>
+                    <li>Item 3</li>
+                </ul>
+            </section>
+            <section class="card">
+                <header>Card Title 8</header>
+                <ul class="no-list-style">
+                    <li>Item 1</li>
+                    <li>Item 2</li>
+                    <li>Item 3</li>
+                </ul>
+            </section>
+        </div>
     </div>
 </aside>
 
