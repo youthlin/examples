@@ -69,23 +69,20 @@
             background-color: azure;
         }
 
+        #site-aside .sticky-bottom {
+            padding: 1rem;
+        }
+
         #site-footer {
             background-color: cadetblue;
             display: flex;
             align-items: center;
         }
 
-        #site-aside .wrap {
+        .sticky-bottom {
             position: -webkit-sticky;
             position: sticky;
-            bottom: 0;
-            padding: 1rem;
         }
-
-        /* 问题: main 长度大于 aside.wrap, 怎样使得：
-        当 Card Title 8 刚显示时(此时 aside 位置记为 a),
-        再滚动仍然保持 a, (Card Title 8 还是挨着视口底部)
-        当 footer 显示时才把 aside 推开 */
 
         #site-aside .card {
             border: 1px solid #abc;
@@ -249,73 +246,71 @@
 </main>
 
 <aside id="site-aside">
-    <div>
-        <div class="wrap">
-            <section class="card">
-                <header>Card Title 1</header>
-                <ul class="no-list-style">
-                    <li>Item 1</li>
-                    <li>Item 2</li>
-                    <li>Item 3</li>
-                </ul>
-            </section>
-            <section class="card">
-                <header>Card Title 2</header>
-                <ul class="no-list-style">
-                    <li>Item 1</li>
-                    <li>Item 2</li>
-                    <li>Item 3</li>
-                </ul>
-            </section>
-            <section class="card">
-                <header>Card Title 3</header>
-                <ul class="no-list-style">
-                    <li>Item 1</li>
-                    <li>Item 2</li>
-                    <li>Item 3</li>
-                </ul>
-            </section>
-            <section class="card">
-                <header>Card Title 4</header>
-                <ul class="no-list-style">
-                    <li>Item 1</li>
-                    <li>Item 2</li>
-                    <li>Item 3</li>
-                </ul>
-            </section>
-            <section class="card">
-                <header>Card Title 5</header>
-                <ul class="no-list-style">
-                    <li>Item 1</li>
-                    <li>Item 2</li>
-                    <li>Item 3</li>
-                </ul>
-            </section>
-            <section class="card">
-                <header>Card Title 6</header>
-                <ul class="no-list-style">
-                    <li>Item 1</li>
-                    <li>Item 2</li>
-                    <li>Item 3</li>
-                </ul>
-            </section>
-            <section class="card">
-                <header>Card Title 7</header>
-                <ul class="no-list-style">
-                    <li>Item 1</li>
-                    <li>Item 2</li>
-                    <li>Item 3</li>
-                </ul>
-            </section>
-            <section class="card">
-                <header>Card Title 8</header>
-                <ul class="no-list-style">
-                    <li>Item 1</li>
-                    <li>Item 2</li>
-                    <li>Item 3</li>
-                </ul>
-            </section>
-        </div>
+    <div class="sticky-bottom" data-bottom="-24">
+        <section class="card">
+            <header>Card Title 1</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 2</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 3</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 4</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 5</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 6</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 7</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
+        <section class="card">
+            <header>Card Title 8</header>
+            <ul class="no-list-style">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </section>
     </div>
 </aside>
 
@@ -327,6 +322,18 @@
         <li>Link 3</li>
     </ul>
 </footer>
+<script>
+    // 粘性布局之粘底效果（position sticky, bottom 0）https://www.imaegoo.com/2019/position-sticky-bottom/
+    function stickyBottom() {
+        let elements = document.querySelectorAll('.sticky-bottom');
+        for (let element of elements) {
+            let bottom = element.dataset.bottom || 0;
+            element.style.top = window.innerHeight - element.offsetHeight - bottom + 'px';
+        }
+    }
 
+    stickyBottom();
+    window.addEventListener('resize', stickyBottom);
+</script>
 </body>
 </html>
