@@ -67,9 +67,12 @@
 
         #site-aside {
             background-color: azure;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
         }
 
-        #site-aside .sticky-bottom {
+        #aside-wrap {
             padding: 1rem;
         }
 
@@ -78,11 +81,6 @@
             display: flex;
             align-items: center;
             padding: 1rem;
-        }
-
-        .sticky-bottom {
-            position: -webkit-sticky;
-            position: sticky;
         }
 
         #site-aside .card {
@@ -102,6 +100,18 @@
 
             #site-header {
                 grid-column: 1 / 3;
+            }
+
+            #aside-wrap {
+                position: -webkit-sticky;
+                position: sticky;
+                bottom: 0;
+                /* 当侧栏太短时 让高度和视口一致 目的是不让侧栏顶部留白 其实应该是 视口高度- header 的 75px  下面俩设置修正*/
+                min-height: 100vh;
+                /* 当侧栏太短时 高度是视口高度，修正为底部对齐视口 否则要滚动 75px 才开始粘住 这是侧栏顶部的 75px 就看不到了 */
+                padding-top: 91px;
+                /* 修正方法：向上提一个 header 高度 再设置内边距一个 header 高度，再加上原本的 1rem=16px 内边距 */
+                margin-top: -75px;
             }
 
             #site-footer {
@@ -247,7 +257,7 @@
 </main>
 
 <aside id="site-aside">
-    <div class="sticky-bottom" data-bottom="-24">
+    <div id="aside-wrap">
         <section class="card">
             <header>Card Title 1</header>
             <ul class="no-list-style">
@@ -323,18 +333,5 @@
         <li>Link 3</li>
     </ul>
 </footer>
-<script>
-    // 粘性布局之粘底效果（position sticky, bottom 0）https://www.imaegoo.com/2019/position-sticky-bottom/
-    function stickyBottom() {
-        let elements = document.querySelectorAll('.sticky-bottom');
-        for (let element of elements) {
-            let bottom = element.dataset.bottom || 0;
-            element.style.top = window.innerHeight - element.offsetHeight - bottom + 'px';
-        }
-    }
-
-    stickyBottom();
-    window.addEventListener('resize', stickyBottom);
-</script>
 </body>
 </html>
