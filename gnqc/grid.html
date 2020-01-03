@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <!--[if IE]>
+    <a style="display: block; height: 100%; width: 100%; color: #fff; background: rgba(0,0,0,.5); font-size: xx-large; position: fixed; padding-top: 50vh; text-align: center"
+       href="http://support.dmeng.net/upgrade-your-browser.html">继续浏览前请点击此处升级到现代浏览器</a>
+    <script>window.location.href = 'http://support.dmeng.net/upgrade-your-browser.html?referrer=' + encodeURIComponent(window.location.href);</script>
+    <![endif]-->
     <style>
         /* grid http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html */
         /* flex http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html*/
@@ -39,9 +44,6 @@
         body {
             height: auto;
             min-height: 100%;
-            display: grid;
-            /* 默认小屏幕 四行 header/main/aside/footer */
-            grid-template-rows: 75px auto auto 75px;
         }
 
         #site-header {
@@ -67,9 +69,6 @@
 
         #site-aside {
             background-color: azure;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
         }
 
         #aside-wrap {
@@ -93,18 +92,41 @@
         /* 大于等于 768px 的时候 */
         @media (min-width: 768px) {
             body {
-                /* 三行 header/main+aside/footer */
+                display: -ms-grid;
+                display: grid;
+                /* 三行两列 header/main+aside/footer */
+                -ms-grid-rows: 75px auto 75px;
+                -ms-grid-columns: 70% 30%;
                 grid-template-rows: 75px auto 75px;
                 grid-template-columns: 70% 30%;
             }
 
             #site-header {
+                -ms-grid-column-span: 2;
                 grid-column: 1 / 3;
+            }
+
+            #site-main {
+                -ms-grid-row: 2;
+                display: flex;
+                flex-direction: column;
+            }
+
+            #site-aside {
+                -ms-grid-row: 2;
+                -ms-grid-column: 2;
+                display: flex;
+                flex-direction: column;
+                /* why-element-with-positionsticky-doesnt-stick-to-the-bottom-of-parent */
+                /* https://stackoverflow.com/questions/54609208 */
+                /* 为了使项目粘在底部 应该底对齐*/
+                justify-content: flex-end;
             }
 
             #aside-wrap {
                 position: -webkit-sticky;
                 position: sticky;
+                /* edge 不支持 效果实际是顶部 */
                 bottom: 0;
                 /* 当侧栏太短时 让高度和视口一致 目的是不让侧栏顶部留白 其实应该是 视口高度- header 的 75px  下面俩设置修正*/
                 min-height: 100vh;
@@ -115,6 +137,8 @@
             }
 
             #site-footer {
+                -ms-grid-row: 3;
+                -ms-grid-column-span: 2;
                 grid-column: 1 / 3;
             }
         }
@@ -128,6 +152,13 @@
             background-color: aquamarine;
         }
 
+        @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+            /* IE10+ */
+            #site-aside {
+                /* IE 不支持 sticky 就没必要让边栏内容底对齐了 否则边栏头部会空白 */
+                display: block;
+            }
+        }
     </style>
 </head>
 <body>
