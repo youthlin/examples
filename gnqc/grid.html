@@ -10,6 +10,8 @@
        href="http://support.dmeng.net/upgrade-your-browser.html">继续浏览前请点击此处升级到现代浏览器</a>
     <script>window.location.href = 'http://support.dmeng.net/upgrade-your-browser.html?referrer=' + encodeURIComponent(window.location.href);</script>
     <![endif]-->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css">
     <style>
 
         /* grid http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html */
@@ -160,6 +162,32 @@
                 display: block;
             }
         }
+
+        pre {
+            max-height: 300px;
+            overflow: scroll;
+            /*ie,edge*/
+            -ms-overflow-style: none;
+            /*firefox*/
+            scrollbar-width: thin;
+        }
+
+        pre::-webkit-scrollbar {
+            /*chrome*/
+            display: none;
+        }
+
+        .hljs-ln-numbers {
+            color: #ccc;
+            border-right: 1px solid #ccc;
+            text-align: right;
+            padding-right: 5px !important;
+        }
+
+        .hljs-ln-code {
+            padding-left: 5px !important;
+        }
+
     </style>
 </head>
 <body>
@@ -198,6 +226,121 @@
                 timendos longe vocavit nec? Est monti clausa primis auxilium eadem subsequitur
                 Alba, antro iussit iubet pectora credimus, inpubesque facto renovamine, laqueis.
             </p>
+            <pre data-height="500px">
+package com.youthlin.demo.mvc.controller;
+
+import com.youthlin.demo.mvc.model.User;
+import com.youthlin.demo.mvc.service.UserService;
+import com.youthlin.ioc.annotation.Controller;
+import com.youthlin.mvc.annotation.ConvertWith;
+import com.youthlin.mvc.annotation.HttpMethod;
+import com.youthlin.mvc.annotation.RequestBody;
+import com.youthlin.mvc.annotation.URL;
+import com.youthlin.mvc.support.converter.Converter;
+import com.youthlin.mvc.view.jackson.JsonBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.Resource;
+import java.util.Map;
+
+/**
+ * 创建： youthlin.chen
+ * 时间： 2017-08-13 13:39.
+ */
+@Controller
+public class UserController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    @Resource
+    private UserService userService;
+
+    @URL(value = { "/", "/index" }, method = { HttpMethod.GET, HttpMethod.POST })
+    public String list(Map&lt;String, Object&gt; map) {
+        map.put("userList", userService.listUsers());
+        return "list";
+    }
+
+    @URL("home")
+    public String home() {
+        return "forward:/";
+    }
+
+    @URL(value = "/add", method = HttpMethod.GET)
+    public String addPage() {
+        return "add";
+    }
+
+    @URL(value = "/add", method = HttpMethod.POST)
+    public String addUser(User user, Map<&lt;String, Object&gt; map) {
+        if (user == null) {
+            map.put("error", "参数错误");
+            return "add";
+        }
+        if (user.getName() == null || user.getEmail() == null) {
+            map.put("error", "用户名及电子邮件是必填项");
+            return "add";
+        }
+        userService.saveUser(user);
+        return "redirect:/";
+    }
+
+    //region  折叠
+    @URL(value = "/edit", method = HttpMethod.GET)
+    public String editPage(Long id, Map&lt;String, Object&gt; map) {
+        User user = userService.findById(id);
+        if (user == null) {
+            map.put("error", "用户不存在");
+            return "edit";
+        }
+        map.put("user", user);
+        return "edit";
+    }
+
+    @URL(value = "/edit", method = HttpMethod.POST)
+    public String editUser(Long id, Map&lt;String, String&gt; map) {
+        User user = userService.findById(id);
+        if (user == null) {
+            map.put("error", "用户不存在");
+            return "edit";
+        }
+        String name = map.get("name");
+        String email = map.get("email");
+        String note = map.get("note");
+        if (name == null || email == null) {
+            map.put("error", "用户名及电子邮件是必填项");
+            return "add";
+        }
+        user.setName(name).setEmail(email).setNote(note);
+        userService.editUser(user);
+        return "redirect:/";
+    }
+
+    @URL("delete")
+    public String delete(Long id) {
+        if (userService.deleteById(id)) {
+            LOGGER.debug("删除成功 用户ID: {}", id);
+        } else {
+            LOGGER.debug("删除失败 用户ID:{}", id);
+        }
+        return "redirect:/";
+    }
+    //endregion
+
+    @URL("user")
+    @JsonBody
+    public Object test(@RequestBody User user, @ConvertWith(UserConverter.class) User user1) {
+        return new Object[] { user, user1 };
+    }
+
+    public static class UserConverter implements Converter&lt;User&gt; {
+        @Override
+        public User convert(String from) {
+            return new User().setEmail("xxx");
+        }
+    }
+}
+
+            </pre>
             <p>
                 Bimembres quodque! Memini pars fecerat? Sed inter non si secura undae saliunt
                 erat inulta fusus dedit gravior et dare. Ille regnorum Pygmaeae poplitibus
@@ -365,5 +508,20 @@
         <li>Link 3</li>
     </ul>
 </footer>
+<!--
+https://github.com/highlightjs/highlight.js
+https://github.com/wcoder/highlightjs-line-numbers.js
+-->
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlightjs-line-numbers.js@2.7.0/dist/highlightjs-line-numbers.min.js"></script>
+<script>
+    document.querySelectorAll('pre').forEach((block) => {
+        hljs.highlightBlock(block);
+        hljs.lineNumbersBlock(block);
+        if (block.dataset.height) {
+            block.style.maxHeight = block.dataset.height;
+        }
+    });
+</script>
 </body>
 </html>

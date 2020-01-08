@@ -33,6 +33,7 @@
         <module>example-spring-boot</module>
         <module>example-javafx</module>
         <module>example-actor</module>
+        <module>example-agent</module>
     </modules>
 
     <properties>
