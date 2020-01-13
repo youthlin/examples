@@ -186,7 +186,7 @@ class Saying_Comments extends WP_Widget {
         global $comments, $comment;
 
         extract($args); //将数组展开
-        $title = (!empty($instance['title'])) ? $instance['title'] : __('说说');
+        $title = (!empty($instance['title'])) ? $instance['title'] : __('博主动态');
         $title = apply_filters('widget_title', $title, $instance, $this->id_base);
         //$title = apply_filters('widget_title', empty($instance['title']) ? __('说说') : $instance['title']);
         $pageid = empty($instance['pagedid']) ? $instance['pageid'] : 0;
@@ -208,7 +208,7 @@ class Saying_Comments extends WP_Widget {
         $output = '';
         $output .= $args['before_widget'];
         if ($title) {
-            $title = $avatar . '<a href="' . get_permalink($pageid) . '">' . $title . '</a>' . $wbfollow . $gplus;
+            $title = $avatar . '<a href="' . get_permalink($pageid) . '">' . $title . '</a>';
             $output .= $args['before_title'] . $title . $args['after_title'];
         }
         //echo $pageid;//输出页面ID调试以查看pageid是否正确
