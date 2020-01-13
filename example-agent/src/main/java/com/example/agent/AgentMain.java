@@ -65,7 +65,7 @@ public class AgentMain {
         LOGGER.info("all loaded classes: {}", Arrays.asList(instrumentation.getAllLoadedClasses()));
         LOGGER.info("initiated classes: {}", Arrays.asList(instrumentation.getInitiatedClasses(Thread.currentThread().getContextClassLoader())));
         Arrays.stream(instrumentation.getAllLoadedClasses())
-                .filter(clazz -> AgentTransformer.TARGET_CLASS_NAME.equals(clazz.getName()))
+                .filter(clazz -> AgentTransformer.TARGET_CLASS_NAME_DOT.equals(clazz.getName()))
                 .findAny()
                 .ifPresent(clazz -> {
                     try {

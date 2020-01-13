@@ -21,13 +21,14 @@ import java.util.Objects;
  */
 public class AgentTransformer implements ClassFileTransformer {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentTransformer.class);
-    public static final String TARGET_CLASS_NAME = "com.youthlin.example.boot.App";
+    public static final String TARGET_CLASS_NAME_SLASH = "com/youthlin/example/boot/App";
+    public static final String TARGET_CLASS_NAME_DOT = "com.youthlin.example.boot.App";
 
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
             ProtectionDomain protectionDomain, byte[] classFileBuffer) throws IllegalClassFormatException {
-        className = className.replace("/", ".");
-        if (Objects.equals(TARGET_CLASS_NAME, className)) {
+        if (Objects.equals(TARGET_CLASS_NAME_SLASH, className)) {
+            className = className.replace("/", ".");
             LOGGER.info("transform... {}", className);
             try {
                 ClassPool pool = ClassPool.getDefault();
