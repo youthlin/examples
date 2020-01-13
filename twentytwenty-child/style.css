@@ -52,3 +52,20 @@ pre {
 .hljs tr:hover {
     background-color: #ddd;
 }
+
+.my_widget_recent_comments ul {
+    list-style: none;
+    margin: 0;
+}
+
+.my_widget_recent_comments .comment-avatar {
+    float: left;
+}
+
+.my_widget_recent_comments .comment-content {
+    margin-left: 60px;
+}
+
+.my_widget_recent_comments .line-2 {
+    font-size: smaller;
+}
