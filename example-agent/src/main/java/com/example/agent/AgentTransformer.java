@@ -1,9 +1,9 @@
 package com.example.agent;
 
+import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
-import javassist.CtNewMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,35 +21,33 @@ import java.util.Objects;
  */
 public class AgentTransformer implements ClassFileTransformer {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentTransformer.class);
+    public static final String TARGET_CLASS_NAME = "com.youthlin.example.boot.App";
 
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
             ProtectionDomain protectionDomain, byte[] classFileBuffer) throws IllegalClassFormatException {
         className = className.replace("/", ".");
-        if (Objects.equals("com.youthlin.example.boot.App", className)) {
+        if (Objects.equals(TARGET_CLASS_NAME, className)) {
             LOGGER.info("transform... {}", className);
             try {
-                CtClass ctClass = ClassPool.getDefault().get(className);
-                LOGGER.info("ctClass: {}", ctClass);
-                CtMethod sayHello = ctClass.getDeclaredMethod("sayHello",
-                        new CtClass[]{ClassPool.getDefault().get("java.lang.String")});
+                ClassPool pool = ClassPool.getDefault();
+                if (classBeingRedefined != null) {
+                    // https://www.jianshu.com/p/43424242846b
+                    pool.insertClassPath(new ClassClassPath(classBeingRedefined));
+                }
+                CtClass ctClass = pool.get(className);
+                CtMethod method = ctClass.getDeclaredMethod("sayHello",
+                        new CtClass[]{pool.get("java.lang.String")});
 
-                CtMethod originalMethod = CtNewMethod.copy(sayHello, "sayHello", ctClass, null);
-                originalMethod.setName("sayHello$gen");
-                ctClass.addMethod(originalMethod);
-
-                String sb = "{" +
-                        "System.out.println(\"Enter Method:" + sayHello.getLongName() + "\");\n" +
-                        "long start = System.currentTimeMillis();\n" +
-                        "String ret = sayHello$gen($$);\n" +
-                        "System.out.println(\"Exit Method. cost=\"+(System.currentTimeMillis()-start));\n" +
-                        "return ret;" +
-                        "}";
-                sayHello.setBody(sb);
-
+                // https://www.jianshu.com/p/1e2d970e3661
+                method.addLocalVariable("$_start", CtClass.longType);
+                method.insertBefore("$_start = System.currentTimeMillis();");
+                method.insertAfter("System.out.println(\"cost:\"+(System.currentTimeMillis()-$_start));");
 
                 byte[] bytes = ctClass.toBytecode();
-                Path path = Path.of(".", "App.class");
+                ctClass.detach();
+
+                Path path = Path.of("App.class");
                 LOGGER.info("Write to {}", path.toAbsolutePath());
                 Files.write(path, bytes, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
                 return bytes;
