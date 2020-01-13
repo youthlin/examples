@@ -129,3 +129,107 @@ class My_Widget_Recent_Comments extends WP_Widget_Recent_Comments {
 }
 
 register_widget('My_Widget_Recent_Comments');
+
+//说说
+
+/** http://nichen.info/add-mood-widget/
+ *  WP添加侧边栏“心情随笔”
+ *
+ *  http://www.nuodou.com/a/856.html
+ * WordPress自定义侧边栏小工具
+ * 2012年06月07日　Mr.诺豆
+ *
+ * 小工具接口
+ * http://codex.wordpress.org/zh-cn:%E5%B0%8F%E5%B7%A5%E5%85%B7%E6%8E%A5%E5%8F%A3/
+ */
+class Saying_Comments extends WP_Widget {
+    public function __construct() {
+        $widget_ops = array('classname' => 'widget_saying', 'description' => _('一个类似QQ空间“说说”的小工具。'));
+        parent::__construct(false, _('说说'), $widget_ops);
+    }
+
+    function form($instance) {
+        //title:标题	pageid:页面ID	listnum:显示数量	charnum:截取字长
+        $instance = wp_parse_args((array)$instance, array('title' => '说说', 'pageid' => 0, 'listnum' => 5, 'charnum' => 54));//默认值
+        $title = htmlspecialchars($instance['title']);
+        $pageid = htmlspecialchars($instance['pageid']);
+        $listnum = htmlspecialchars($instance['listnum']);
+        $charnum = htmlspecialchars($instance['charnum']);
+        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('title')
+            . '">标题:<input style="width:200px;" id="' . $this->get_field_id('title') . '" name="' . $this->get_field_name('title')
+            . '" type="text" value="' . $title . '" /></label></p>';
+        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('pageid')
+            . '">页面ID:<input style="width:200px;" id="' . $this->get_field_id('pageid')
+            . '" name="' . $this->get_field_name('pageid') . '" type="text" value="' . $pageid . '" /></label></p>';
+        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('listnum')
+            . '">显示条数:<input style="width:200px;" id="' . $this->get_field_id('listnum') . '" name="'
+            . $this->get_field_name('listnum') . '" type="text" value="' . $listnum . '" /></label></p>';
+        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('charnum')
+            . '">截取字长:<input style="width:200px" id="' . $this->get_field_id('charnum') . '" name="'
+            . $this->get_field_name('charnum') . '" type="text" value="' . $charnum . '" /></label></p>';
+    }
+
+    function update($new_instance, $old_instance) {
+        $instance = $old_instance;
+        $instance['title'] = strip_tags(stripslashes($new_instance['title']));
+        $instance['pageid'] = $new_instance['pageid'];
+        $instance['listnum'] = strip_tags(stripslashes($new_instance['listnum']));
+        $instance['charnum'] = strip_tags(stripslashes($new_instance['charnum']));
+        return $instance;
+
+    }
+    //$args是注册侧边栏的注册的几个变量
+    //$instance是小工具的设置数据
+    function widget($args, $instance) {
+        // http://nichen.info/add-mood-widget/
+        // @see WP_Widget_Recent_Comments
+        global $comments, $comment;
+
+        extract($args); //将数组展开
+        $title = (!empty($instance['title'])) ? $instance['title'] : __('说说');
+        $title = apply_filters('widget_title', $title, $instance, $this->id_base);
+        //$title = apply_filters('widget_title', empty($instance['title']) ? __('说说') : $instance['title']);
+        $pageid = empty($instance['pagedid']) ? $instance['pageid'] : 0;
+        $listnum = empty($instance['listnum']) ? 5 : $instance['listnum'];
+        $charnum = empty($instance['charnum']) ? 140 : $instance['charnum'];
+
+        $avatar = get_avatar(1, 60, '', '头像');
+        // http://codex.wordpress.org/Function_Reference/get_avatar
+
+        $argument = array(
+            'number' => $listnum,
+            'post_id' => $pageid,
+            'user_id' => '1',
+            'parent' => '0'
+        );
+
+        // http://codex.wordpress.org/zh-cn:函数参考/get_comments
+        $comments = get_comments($argument);
+        $output = '';
+        $output .= $args['before_widget'];
+        if ($title) {
+            $title = $avatar . '<a href="' . get_permalink($pageid) . '">' . $title . '</a>' . $wbfollow . $gplus;
+            $output .= $args['before_title'] . $title . $args['after_title'];
+        }
+        //echo $pageid;//输出页面ID调试以查看pageid是否正确
+        $output .= '<ul id="saying">';
+        if ($comments) {
+            foreach ((array)$comments as $comment) {
+                $output .= '<li class="saying">'
+                    . '<span><a href="' . esc_url(get_comment_link($comment->comment_ID))
+                    . '" title="' . htmlentities(strip_tags($comment->comment_content)) . '">'
+                    . convert_smilies(mb_strimwidth(strip_tags($comment->comment_content), 0, $charnum, '[...]'))
+                    // http://blog.wpjam.com/function_reference/convert_smilies/
+                    . '</a></span><br />'
+                    . '<span>' . get_comment_date('m月d日H:i ', $comment->comment_ID) . '</span></li>';
+            }
+        }
+        $output .= '</ul>';
+        $output .= $args['after_widget'];
+
+        echo $output;
+    }
+}
+
+register_widget('Saying_Comments');
+//end---------------------------------------------------
