@@ -1,4 +1,5 @@
 <?php
+//region 样式与脚本
 add_action('wp_enqueue_scripts', 'my_theme_enqueue_styles');
 function my_theme_enqueue_styles() {
     $theme_version = wp_get_theme()->get('Version');
@@ -21,18 +22,14 @@ function my_theme_enqueue_script_footer() {
         'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js');
     wp_enqueue_script('highlight-js-linenumber',
         'https://cdn.jsdelivr.net/npm/highlightjs-line-numbers.js@2.7.0/dist/highlightjs-line-numbers.min.js');
-
-    wp_add_inline_script('highlight-js-linenumber', 'document.querySelectorAll("pre").forEach((block) => {
-        hljs.highlightBlock(block);
-        hljs.lineNumbersBlock(block);
-        if (block.dataset.height) {
-            block.style.maxHeight = block.dataset.height;
-        }
-    });'
-    );
+    // 在 highlight 之后
+    wp_enqueue_script('twentytwenty-child-js', get_stylesheet_directory_uri() . '/index.js',
+        array(), wp_get_theme()->get('Version'), true);
 }
 
-//wordpress版权信息代码
+//endregion
+
+//region wordpress版权信息代码
 function add_copyright($content) {
     if (is_single() or is_feed()) {
         $content .= "<hr />";
@@ -48,9 +45,9 @@ function add_copyright($content) {
 
 add_filter('the_content', 'add_copyright');
 
-//end----------------------------------------------------------
+//endregion----------------------------------------------------------
 
-
+//region 近期评论
 class My_Widget_Recent_Comments extends WP_Widget_Recent_Comments {
     public function __construct() {
         $widget_ops = array(
@@ -148,8 +145,9 @@ class My_Widget_Recent_Comments extends WP_Widget_Recent_Comments {
 }
 
 register_widget('My_Widget_Recent_Comments');
+//endregion
 
-//说说
+//region 博主动态
 
 /** http://nichen.info/add-mood-widget/
  *  WP添加侧边栏“心情随笔”
@@ -251,4 +249,78 @@ class Saying_Comments extends WP_Widget {
 }
 
 register_widget('Saying_Comments');
-//end---------------------------------------------------
+//endregion---------------------------------------------------
+
+//region 表情
+// 系统表情指向主题表情(修改表情代码_代码1/4)
+add_filter('smilies_src', 'custom_smilies_src', 1, 20);
+function custom_smilies_src($img_src, $img, $siteurl) {
+    return get_stylesheet_directory_uri() . '/images/smilies/' . $img;
+}
+
+// 表情代码转换图片(修改表情代码_代码2/4)
+if (!isset($wpsmiliestrans)) {
+    $wpsmiliestrans = array(
+        '[/疑问]' => 'icon_question.gif',
+        '[/调皮]' => 'icon_razz.gif',
+        '[/难过]' => 'icon_sad.gif',
+        '[/愤怒]' => 'icon_smile.gif',
+        '[/可爱]' => 'icon_redface.gif',
+        '[/坏笑]' => 'icon_biggrin.gif',
+        '[/惊讶]' => 'icon_surprised.gif',
+        '[/发呆]' => 'icon_eek.gif',
+        '[/撇嘴]' => 'icon_confused.gif',
+        '[/大兵]' => 'icon_cool.gif',
+        '[/偷笑]' => 'icon_lol.gif',
+        '[/得意]' => 'icon_mad.gif',
+        '[/白眼]' => 'icon_rolleyes.gif',
+        '[/鼓掌]' => 'icon_wink.gif',
+        '[/亲亲]' => 'icon_neutral.gif',
+        '[/流泪]' => 'icon_cry.gif',
+        '[/流汗]' => 'icon_arrow.gif',
+        '[/吓到]' => 'icon_exclaim.gif',
+        '[/抠鼻]' => 'icon_evil.gif',
+        '[/呲牙]' => 'icon_mrgreen.gif',
+        ':?:' => 'icon_question.gif',
+        ':razz:' => 'icon_razz.gif',
+        ':sad:' => 'icon_sad.gif',
+        ':evil:' => 'icon_smile.gif',
+        ':!:' => 'icon_redface.gif',
+        ':smile:' => 'icon_biggrin.gif',
+        ':oops:' => 'icon_surprised.gif',
+        ':grin:' => 'icon_eek.gif',
+        ':eek:' => 'icon_confused.gif',
+        ':shock:' => 'icon_cool.gif',
+        ':???:' => 'icon_lol.gif',
+        ':cool:' => 'icon_mad.gif',
+        ':lol:' => 'icon_rolleyes.gif',
+        ':mad:' => 'icon_wink.gif',
+        ':twisted:' => 'icon_neutral.gif',
+        ':roll:' => 'icon_cry.gif',
+        ':wink:' => 'icon_arrow.gif',
+        ':idea:' => 'icon_exclaim.gif',
+        ':arrow:' => 'icon_evil.gif',
+        ':neutral:' => 'icon_mrgreen.gif',
+        ':cry:' => 'icon_eek.gif',
+        ':mrgreen:' => 'icon_razz.gif',
+    );
+}
+// 3/4 输出表情到评论框
+function lin_get_smilies() {
+    global $wpsmiliestrans;
+    $wpsmilies = array_unique($wpsmiliestrans);
+    $output = "\n";
+    foreach ($wpsmilies as $alt => $src_path) {
+        $output .= '<img title="' . $alt . '" alt="' . $alt . '" class="wp-smiley my-smiley" src="'
+            . get_stylesheet_directory_uri() . '/images/smilies/' . $src_path . "\">\n";
+    }
+    return $output;
+}
+
+add_filter('comment_form_defaults', 'lin_output_smilies_to_comment_form');
+function lin_output_smilies_to_comment_form($default) {
+    $default['comment_field'] .= '<p class="comment-form-smilies">' . lin_get_smilies() . '</p>';
+    return $default;
+}
+// 4/4: 在 js 中实现点击图片插入表情到评论框
+//endregion

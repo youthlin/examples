@@ -20,6 +20,8 @@ This theme, like WordPress, is licensed under the GPL.
 Use it to make something cool, have fun, and share what you've learned
 with others.
 */
+
+/* region 代码高亮 */
 pre {
     max-height: 500px;
     overflow: scroll;
@@ -53,6 +55,9 @@ pre {
     background-color: #ddd;
 }
 
+/* endregion 代码高亮 */
+
+/* region 小工具 */
 .widget ul {
     list-style: none;
     margin: 0;
@@ -74,4 +79,15 @@ pre {
     float: left;
     border-radius: 30px;
     margin-right: 1rem;
+}
+
+/* endregion 小工具 */
+
+/* region 评论框去掉底边距放表情 */
+p.comment-form-comment {
+    margin-bottom: 0;
+}
+
+.my-smiley {
+    cursor: pointer;
 }
