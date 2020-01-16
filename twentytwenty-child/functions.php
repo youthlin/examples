@@ -36,7 +36,7 @@ function add_copyright($content) {
         $content .= '<div class="copyright" style="border: 1px solid;font-size: smaller;background-color: beige;border-radius: 9px">
 					<div style="border-left-color: green;border-left-style: solid;border-left-width: 5px;margin: 1%;padding: 1%;">
 					<h5 style="margin:0;"><small>声明</small></h5><ul style="margin:0">
-					<li class="copyright-li">本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" title="CC BY-NC-SA 4.0" target="_blank">署名-非商业性使用-相同方式共享 4.0 国际</a>进行许可。除非特别注明，<a href="https://youthlin.com" target="_blank"><strong>霖博客</strong></a>文章均为原创。</li>
+					<li class="copyright-li">本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" title="CC BY-NC-SA 4.0" target="_blank">署名-非商业性使用-相同方式共享 4.0 国际</a>许可协议进行许可。除非特别注明，<a href="https://youthlin.com" target="_blank"><strong>霖博客</strong></a>文章均为原创。</li>
 					<li class="copyright-li">转载请保留本文(<a href="' . wp_get_shortlink(get_the_ID()) . '">《' . get_the_title() . '》</a>)链接地址 :  <u>' . wp_get_shortlink(get_the_ID()) . '</u></li>
 					<li class="copyright-li">订阅本站：<a title="霖博客的RSS源" href="https://youthlin.com/feed/" rel="nofollow">http://youthlin.com/feed/</a></li></ul></div></div>';
     }
@@ -322,5 +322,17 @@ function lin_output_smilies_to_comment_form($default) {
     $default['comment_field'] .= '<p class="comment-form-smilies">' . lin_get_smilies() . '</p>';
     return $default;
 }
+
 // 4/4: 在 js 中实现点击图片插入表情到评论框
 //endregion
+
+// 评论页面不要收录
+if (is_single() || is_page()) {
+    if (function_exists('get_query_var')) {
+        $cpage = intval(get_query_var('cpage'));
+        $commentPage = intval(get_query_var('comment-page'));
+    }
+    if (!empty($cpage) || !empty($commentPage)) {
+        echo '<meta name="robots" content="noindex, nofollow"/>' . "\n";
+    }
+}
