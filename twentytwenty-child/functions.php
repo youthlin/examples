@@ -326,13 +326,17 @@ function lin_output_smilies_to_comment_form($default) {
 // 4/4: 在 js 中实现点击图片插入表情到评论框
 //endregion
 
-// 评论页面不要收录
-if (is_single() || is_page()) {
-    if (function_exists('get_query_var')) {
-        $cpage = intval(get_query_var('cpage'));
-        $commentPage = intval(get_query_var('comment-page'));
-    }
-    if (!empty($cpage) || !empty($commentPage)) {
-        echo '<meta name="robots" content="noindex, nofollow"/>' . "\n";
+function lin_header() {
+    // 评论页面不要收录
+    if (is_single() || is_page()) {
+        if (function_exists('get_query_var')) {
+            $cpage = intval(get_query_var('cpage'));
+            $commentPage = intval(get_query_var('comment-page'));
+        }
+        if (!empty($cpage) || !empty($commentPage)) {
+            echo '<meta name="robots" content="noindex, nofollow"/>' . "\n";
+        }
     }
 }
+
+add_action('wp_head', 'lin_header');
