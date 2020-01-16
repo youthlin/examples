@@ -24,15 +24,6 @@ const parseHTML = function (html) {
     return doc;
 };
 
-// https://github.com/nefe/You-Dont-Need-jQuery/blob/master/README.zh-CN.md#2.3
-function getOffset(el) {
-    const box = el.getBoundingClientRect();
-    return {
-        top: box.top + window.pageYOffset - document.documentElement.clientTop,
-        left: box.left + window.pageXOffset - document.documentElement.clientLeft
-    };
-}
-
 //endregion util
 
 // 代码高亮
@@ -74,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // 评论 ajax 翻页
 const list = document.getElementById('comment-nav-list');
 const comments = document.getElementById('comments');
+const respond = document.getElementById('respond');
 const loading = document.getElementById('comment-loading');
 const cancelReply = document.getElementById('cancel-comment-reply-link');
 if (list !== null) {
@@ -86,7 +78,7 @@ if (list !== null) {
             }
             loading.style.display = 'flex';
             list.innerHTML = '';
-            window.scrollTo(getOffset(comments));
+            comments.scrollIntoView(true);
             const href = target.href;
             ajax({url: href})
                 .then(response => {
@@ -124,3 +116,58 @@ document.oncopy = function () {
         bodyElement.removeChild(tmp);
     }, 0);
 };
+
+// region 上下滑动
+const goTop = document.getElementById('svg-go-top');
+const goBottom = document.getElementById('svg-go-bottom');
+const goComments = document.getElementById('svg-go-comments');
+const goReply = document.getElementById('svg-go-reply');
+let flag;
+
+function clearFlag() {
+    if (flag) {
+        clearInterval(flag);
+        flag = 0;
+    }
+}
+
+goTop.addEventListener('click', function () {
+    clearFlag();
+    window.scrollTo(0, 0);
+});
+goTop.addEventListener('mouseover', function () {
+    if (!flag) {
+        flag = setInterval(function () {
+            // https://zh.javascript.info/size-and-scroll-window#window-scroll
+            window.scrollBy(0, -10);
+        }, 10);
+    }
+});
+goTop.addEventListener('mouseout', function () {
+    clearFlag();
+});
+goBottom.addEventListener('click', function () {
+    clearFlag();
+    document.getElementById('site-footer').scrollIntoView(false);
+});
+goBottom.addEventListener('mouseover', function () {
+    if (!flag) {
+        flag = setInterval(function () {
+            window.scrollBy(0, 10);
+        }, 10);
+    }
+});
+goBottom.addEventListener('mouseout', function () {
+    clearFlag();
+});
+if (goComments != null && comments != null) {
+    goComments.addEventListener('click', function () {
+        comments.scrollIntoView(true);
+    });
+}
+if (goReply != null && respond != null) {
+    goReply.addEventListener('click', function () {
+        respond.scrollIntoView(true);
+    });
+}
+// endregion 上下滑动

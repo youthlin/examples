@@ -326,7 +326,7 @@ function lin_output_smilies_to_comment_form($default) {
 // 4/4: 在 js 中实现点击图片插入表情到评论框
 //endregion
 
-function lin_header() {
+function lin_head() {
     // 评论页面不要收录
     if (is_single() || is_page()) {
         if (function_exists('get_query_var')) {
@@ -339,4 +339,40 @@ function lin_header() {
     }
 }
 
-add_action('wp_head', 'lin_header');
+add_action('wp_head', 'lin_head');
+function lin_footer() {
+    $hasComments = false;
+    $commentsOpen = false;
+    if ((is_single() || is_page()) && (comments_open() || get_comments_number()) && !post_password_required()) {
+        $hasComments = true;
+        if (comments_open()) {
+            $commentsOpen = true;
+        }
+    }
+    ?>
+    <div id="svg-nav">
+        <svg id="svg-go-top" aria-label="到页面顶部">
+            <path d="M3 25 L15 15 L27 25" fill="none" stroke="#ccc" stroke-width="3"/>
+        </svg>
+        <svg id="svg-go-comments" aria-label="到评论列表"
+             style="visibility: <?php echo $hasComments ? 'visible' : 'hidden'; ?>">
+            <g fill="none" stroke="#ccc" stroke-width="3">
+                <circle r="1.5" cx="2.5" cy="7" fill="#ccc" stroke-width="0"/>
+                <path d="M7 7 L29 7"/>
+                <circle r="1.5" cx="2.5" cy="15" fill="#ccc" stroke-width="0"/>
+                <path d="M7 15 L29 15"/>
+                <circle r="1.5" cx="2.5" cy="23" fill="#ccc" stroke-width="0"/>
+                <path d="M7 23 L29 23"/>
+            </g>
+        </svg>
+        <svg id="svg-go-reply" aria-label="到评论表单" style="display: <?php echo $commentsOpen ? 'block' : 'none'; ?>">
+            <path fill="none" stroke="#ccc" stroke-width="3" d="M3 3 L27 3 L27 19 L24 19 L15 27 L19 19 L3 19 Z"/>
+        </svg>
+        <svg id="svg-go-bottom" aria-label="到页面底部">
+            <path d="M3 5 L15 15 L27 5" fill="none" stroke="#ccc" stroke-width="3"/>
+        </svg>
+    </div>
+    <?php
+}
+
+add_action('wp_footer', 'lin_footer');

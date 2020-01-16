@@ -2,7 +2,7 @@
 Theme Name: Twenty Twenty Child
 Template: twentytwenty
 Text Domain:  twentytwentychild
-Version: 0.7
+Version: 0.8
 Requires at least: 4.7
 Requires PHP: 5.2.4
 Description: 2020
@@ -103,4 +103,18 @@ p.comment-form-comment {
 
 .comment-nav-links-after {
     padding-top: 3.5rem;
+}
+
+#svg-nav {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+}
+
+#svg-nav svg {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
 }
