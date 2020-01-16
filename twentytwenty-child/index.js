@@ -76,27 +76,29 @@ const list = document.getElementById('comment-nav-list');
 const comments = document.getElementById('comments');
 const loading = document.getElementById('comment-loading');
 const cancelReply = document.getElementById('cancel-comment-reply-link');
-list.addEventListener('click', function (e) {
-    const target = e.target;
-    if (target.nodeName.toLowerCase() === 'a' && target.parentElement.parentElement === list) {
-        e.preventDefault();
-        if (cancelReply.style.display !== 'none') {
-            cancelReply.click();
+if (list !== null) {
+    list.addEventListener('click', function (e) {
+        const target = e.target;
+        if (target.nodeName.toLowerCase() === 'a' && target.parentElement.parentElement === list) {
+            e.preventDefault();
+            if (cancelReply.style.display !== 'none') {
+                cancelReply.click();
+            }
+            loading.style.display = 'flex';
+            list.innerHTML = '';
+            window.scrollTo(getOffset(comments));
+            const href = target.href;
+            ajax({url: href})
+                .then(response => {
+                    const parsedHtml = parseHTML(response);
+                    list.innerHTML = parsedHtml.getElementById('comment-nav-list').innerHTML;
+                    loading.style.display = 'none';
+                    window.history.pushState(null, parsedHtml.title, href);
+                })
+                .catch(err => {
+                    console.log('error: ' + err);
+                    window.location = href;
+                });
         }
-        loading.style.display = 'flex';
-        list.innerHTML = '';
-        window.scrollTo(getOffset(comments));
-        const href = target.href;
-        ajax({url: href})
-            .then(response => {
-                const parsedHtml = parseHTML(response);
-                list.innerHTML = parsedHtml.getElementById('comment-nav-list').innerHTML;
-                loading.style.display = 'none';
-                window.history.pushState(null, parsedHtml.title, href);
-            })
-            .catch(err => {
-                console.log('error: ' + err);
-                window.location = href;
-            });
-    }
-});
+    });
+}
