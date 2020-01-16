@@ -91,3 +91,16 @@ p.comment-form-comment {
 .my-smiley {
     cursor: pointer;
 }
+
+#comment-loading {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: #cdcdcd;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.comment-nav-links-after {
+    padding-top: 3.5rem;
+}
