@@ -229,7 +229,7 @@ class Saying_Comments extends WP_Widget {
             $output .= $args['before_title'] . $title . $args['after_title'];
         }
         //echo $pageid;//输出页面ID调试以查看pageid是否正确
-        $output .= '<ul id="saying">';
+        $output .= '<ul id="saying" style="clear: both;">';
         if ($comments) {
             foreach ((array)$comments as $comment) {
                 $output .= '<li class="saying">'
