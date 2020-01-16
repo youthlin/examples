@@ -102,3 +102,25 @@ if (list !== null) {
         }
     });
 }
+
+document.oncopy = function () {
+    let link = document.querySelector('link[rel=shortlink]');
+    if (link === null) {
+        link = document.location.href;
+    } else {
+        link = link.href;
+    }
+    let selection = window.getSelection();
+    let text = "<br><br>//来源: <a href='" + link + "'>" + link + "</a>";
+    text = selection + text;
+    let tmp = document.createElement('div');
+    tmp.style.left = '-99999px';
+    tmp.style.position = 'absolute';
+    const bodyElement = document.getElementsByTagName('body')[0];
+    bodyElement.appendChild(tmp);
+    tmp.innerHTML = text;
+    selection.selectAllChildren(tmp);
+    window.setTimeout(function () {
+        bodyElement.removeChild(tmp);
+    }, 0);
+};
