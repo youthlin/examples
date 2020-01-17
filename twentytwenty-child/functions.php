@@ -1,7 +1,21 @@
 <?php
 //region 样式与脚本
-add_action('wp_enqueue_scripts', 'my_theme_enqueue_styles');
-function my_theme_enqueue_styles() {
+add_action('wp_head', 'lin_wp_head');
+function lin_wp_head() {
+    // 评论页面不要收录
+    if (is_single() || is_page()) {
+        if (function_exists('get_query_var')) {
+            $cpage = intval(get_query_var('cpage'));
+            $commentPage = intval(get_query_var('comment-page'));
+        }
+        if (!empty($cpage) || !empty($commentPage)) {
+            echo '<meta name="robots" content="noindex, nofollow"/>' . "\n";
+        }
+    }
+}
+
+add_action('wp_enqueue_scripts', 'lin_enqueue_styles');
+function lin_enqueue_styles() {
     $theme_version = wp_get_theme()->get('Version');
     $parent_style = 'twentytwenty-style';
 
@@ -16,8 +30,8 @@ function my_theme_enqueue_styles() {
         'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css');
 }
 
-add_action('wp_footer', 'my_theme_enqueue_script_footer');
-function my_theme_enqueue_script_footer() {
+add_action('wp_footer', 'lin_wp_footer');
+function lin_wp_footer() {
     wp_enqueue_script('highlight-js-main',
         'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js');
     wp_enqueue_script('highlight-js-linenumber',
@@ -25,6 +39,48 @@ function my_theme_enqueue_script_footer() {
     // 在 highlight 之后
     wp_enqueue_script('twentytwenty-child-js', get_stylesheet_directory_uri() . '/index.js',
         array(), wp_get_theme()->get('Version'), true);
+    lin_top_bottom_nav();
+    define_comment_reply_url();
+}
+
+function lin_top_bottom_nav() {
+    $hasComments = false;
+    $commentsOpen = false;
+    if ((is_single() || is_page()) && (comments_open() || get_comments_number()) && !post_password_required()) {
+        $hasComments = true;
+        if (comments_open()) {
+            $commentsOpen = true;
+        }
+    }
+    ?>
+    <div id="svg-nav">
+        <svg id="svg-go-top" aria-label="到页面顶部">
+            <path d="M3 25 L15 15 L27 25" fill="none" stroke="#ccc" stroke-width="3"/>
+        </svg>
+        <?php if ($hasComments) { ?>
+            <svg id="svg-go-comments" aria-label="到评论列表">
+                <g fill="none" stroke="#ccc" stroke-width="3">
+                    <circle r="1.5" cx="2.5" cy="7" fill="#ccc" stroke-width="0"/>
+                    <path d="M7 7 L29 7"/>
+                    <circle r="1.5" cx="2.5" cy="15" fill="#ccc" stroke-width="0"/>
+                    <path d="M7 15 L29 15"/>
+                    <circle r="1.5" cx="2.5" cy="23" fill="#ccc" stroke-width="0"/>
+                    <path d="M7 23 L29 23"/>
+                </g>
+            </svg>
+        <?php } else {
+            echo "<svg></svg>\n";// 用空的占个高度
+        }
+        if ($commentsOpen) { ?>
+            <svg id="svg-go-reply" aria-label="到评论表单">
+                <path fill="none" stroke="#ccc" stroke-width="3" d="M3 3 L27 3 L27 19 L24 19 L15 27 L19 19 L3 19 Z"/>
+            </svg>
+        <?php } ?>
+        <svg id="svg-go-bottom" aria-label="到页面底部">
+            <path d="M3 5 L15 15 L27 5" fill="none" stroke="#ccc" stroke-width="3"/>
+        </svg>
+    </div>
+    <?php
 }
 
 //endregion
@@ -326,53 +382,153 @@ function lin_output_smilies_to_comment_form($default) {
 // 4/4: 在 js 中实现点击图片插入表情到评论框
 //endregion
 
-function lin_head() {
-    // 评论页面不要收录
-    if (is_single() || is_page()) {
-        if (function_exists('get_query_var')) {
-            $cpage = intval(get_query_var('cpage'));
-            $commentPage = intval(get_query_var('comment-page'));
-        }
-        if (!empty($cpage) || !empty($commentPage)) {
-            echo '<meta name="robots" content="noindex, nofollow"/>' . "\n";
-        }
-    }
+//region comment ajax
+function define_comment_reply_url() {
+    wp_localize_script('comment-reply', 'commentReply', array('url' => admin_url('admin-ajax.php')));
 }
 
-add_action('wp_head', 'lin_head');
-function lin_footer() {
-    $hasComments = false;
-    $commentsOpen = false;
-    if ((is_single() || is_page()) && (comments_open() || get_comments_number()) && !post_password_required()) {
-        $hasComments = true;
-        if (comments_open()) {
-            $commentsOpen = true;
-        }
+// wp_ajax_nopriv_{action} 用于登录用户 wp_ajax_{action} 用于未登录用户
+add_action('wp_ajax_nopriv_lin_ajax_comment', 'lin_ajax_comment');
+add_action('wp_ajax_lin_ajax_comment', 'lin_ajax_comment');
+function lin_ajax_comment() {
+    $comment = wp_handle_comment_submission(wp_unslash($_POST));
+    if (is_wp_error($comment)) {
+        header('HTTP/1.0 500 Internal Server Error');
+        header('Content-Type: text/plain;charset=UTF-8');
+        echo $comment->get_error_message();
+        exit;
     }
+    $user = wp_get_current_user();
+    $cookies_consent = (isset($_POST['wp-comment-cookies-consent']));
+    do_action('set_comment_cookies', $comment, $user, $cookies_consent);
+
+    $comment_depth = 1;
+    $comment_parent = $comment->comment_parent;
+    while ($comment_parent) {
+        $comment_depth++;
+        $parent_comment = get_comment($comment_parent);
+        $comment_parent = $parent_comment->comment_parent;
+    }
+
+    // 设置在 $GLOBALS 里 就可以用评论相关的函数了 如 comment_class() comment_text()
+    $GLOBALS['comment'] = $comment;
+    $GLOBALS['comment_depth'] = $comment_depth;
     ?>
-    <div id="svg-nav">
-        <svg id="svg-go-top" aria-label="到页面顶部">
-            <path d="M3 25 L15 15 L27 25" fill="none" stroke="#ccc" stroke-width="3"/>
-        </svg>
-        <svg id="svg-go-comments" aria-label="到评论列表"
-             style="visibility: <?php echo $hasComments ? 'visible' : 'hidden'; ?>">
-            <g fill="none" stroke="#ccc" stroke-width="3">
-                <circle r="1.5" cx="2.5" cy="7" fill="#ccc" stroke-width="0"/>
-                <path d="M7 7 L29 7"/>
-                <circle r="1.5" cx="2.5" cy="15" fill="#ccc" stroke-width="0"/>
-                <path d="M7 15 L29 15"/>
-                <circle r="1.5" cx="2.5" cy="23" fill="#ccc" stroke-width="0"/>
-                <path d="M7 23 L29 23"/>
-            </g>
-        </svg>
-        <svg id="svg-go-reply" aria-label="到评论表单" style="display: <?php echo $commentsOpen ? 'block' : 'none'; ?>">
-            <path fill="none" stroke="#ccc" stroke-width="3" d="M3 3 L27 3 L27 19 L24 19 L15 27 L19 19 L3 19 Z"/>
-        </svg>
-        <svg id="svg-go-bottom" aria-label="到页面底部">
-            <path d="M3 5 L15 15 L27 5" fill="none" stroke="#ccc" stroke-width="3"/>
-        </svg>
+    <div id="comment-<?php comment_ID(); ?>" <?php comment_class(); ?>>
+        <article id="div-comment-<?php comment_ID(); ?>" class="comment-body">
+            <footer class="comment-meta">
+                <div class="comment-author vcard">
+                    <?php
+                    $comment_author_url = get_comment_author_url($comment);
+                    $comment_author = get_comment_author($comment);
+                    $avatar = get_avatar($comment, 120);
+                    if (empty($comment_author_url)) {
+                        echo wp_kses_post($avatar);
+                    } else {
+                        printf('<a href="%s" rel="external nofollow" class="url">', $comment_author_url);
+                        echo wp_kses_post($avatar);
+                    }
+
+                    printf(
+                        '<span class="fn">%1$s</span><span class="screen-reader-text says">%2$s</span>',
+                        esc_html($comment_author),
+                        __('says:', 'twentytwenty')
+                    );
+
+                    if (!empty($comment_author_url)) {
+                        echo '</a>';
+                    }
+                    ?>
+                </div>
+                <div class="comment-metadata">
+                    <a href="<?php echo esc_url(get_comment_link($comment)); ?>">
+                        <?php
+                        /* Translators: 1 = comment date, 2 = comment time */
+                        $comment_timestamp = sprintf(__('%1$s at %2$s', 'twentytwenty'), get_comment_date('', $comment), get_comment_time());
+                        ?>
+                        <time datetime="<?php comment_time('c'); ?>"
+                              title="<?php echo esc_attr($comment_timestamp); ?>">
+                            <?php echo esc_html($comment_timestamp); ?>
+                        </time>
+                    </a>
+                    <?php
+                    if (get_edit_comment_link()) {
+                        echo ' <span aria-hidden="true">&bull;</span> <a class="comment-edit-link" href="' . esc_url(get_edit_comment_link()) . '">' . __('Edit', 'twentytwenty') . '</a>';
+                    }
+                    ?>
+                </div><!-- .comment-metadata -->
+            </footer>
+            <div class="comment-content entry-content">
+                <?php
+                comment_text();
+                if ('0' === $comment->comment_approved) {
+                    ?>
+                    <p class="comment-awaiting-moderation"><?php _e('Your comment is awaiting moderation.', 'twentytwenty'); ?></p>
+                    <?php
+                }
+                ?>
+            </div>
+            <footer class="comment-footer-meta">
+                <?php
+                $comment_reply_link = get_comment_reply_link(array(
+                    'add_below' => 'div-comment',
+                    'depth' => $comment_depth,
+                    'max_depth' => get_option('thread_comments_depth'),
+                    'before' => '<span class="comment-reply">',
+                    'after' => '</span>',
+                ));
+                if ($comment_reply_link) {
+                    echo $comment_reply_link;
+                }
+                if (twentytwenty_is_comment_by_post_author($comment)) {
+                    echo '<span class="by-post-author">' . __('By Post Author', 'twentytwenty') . '</span>';
+                }
+                ?>
+            </footer>
+        </article>
     </div>
-    <?php
+    <?php die();
 }
 
-add_action('wp_footer', 'lin_footer');
+add_action('wp_ajax_nopriv_lin_list_comment', 'lin_ajax_comment_list');
+add_action('wp_ajax_lin_list_comment', 'lin_ajax_comment_list');
+function lin_ajax_comment_list() {
+    //todo ?action=lin_list_comment&post_id=1&cpage=1
+    global $wp_query, $post, $comments;
+    $wp_query->is_singular = true;
+    $post = $_GET['post_id'];
+    $page = $_GET['cpage'];
+    $comments = get_comments(array('post_id' => $post, 'order' => 'ASC'));
+    ?>
+    <div class="comment-nav-wrap" id="comment-nav-wrap-top">
+        <nav class="nav-links comment-nav-links">
+            <?php paginate_comments_links(array('current' => $page)); ?>
+        </nav>
+    </div>
+    <div id="comment-nav-list">
+        <?php
+        wp_list_comments(
+            array(
+                'walker' => new TwentyTwenty_Walker_Comment(),
+                'avatar_size' => 120,
+                'page' => $page,
+                'per_page' => get_option('comments_per_page'),
+                'style' => 'div',
+                'order' => get_option('comment_order')
+            ),
+            $comments
+        );
+        ?>
+    </div>
+    <div class="comment-nav-wrap" id="comment-nav-wrap-bottom">
+        <nav class="nav-links comment-nav-links">
+            <?php paginate_comments_links(); ?>
+        </nav>
+    </div>
+    <!--
+        <?php echo (new Exception)->getTraceAsString(); ?>
+        -->
+    <?php
+    die;
+}
+//endregion comment ajax

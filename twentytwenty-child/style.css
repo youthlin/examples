@@ -101,7 +101,7 @@ p.comment-form-comment {
     justify-content: center;
 }
 
-.comment-nav-links-after {
+#comment-nav-wrap-bottom {
     padding-top: 3.5rem;
 }
 
@@ -117,4 +117,9 @@ p.comment-form-comment {
     width: 30px;
     height: 30px;
     cursor: pointer;
+}
+
+.comment-awaiting-moderation {
+    font-style: italic;
+    border: 1px solid #cd2653;
 }

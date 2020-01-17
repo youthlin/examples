@@ -59,10 +59,12 @@ if ($comments) {
             <div id="comment-loading">
                 <img alt="Loading" src="<?php echo home_url() . '/wp-includes/images/wpspin.gif'; ?>"> Loading...
             </div>
-            <div id="comment-nav-list">
-                <nav class="nav-links comment-nav-links comment-nav-links-before">
+            <div class="comment-nav-wrap" id="comment-nav-wrap-top">
+                <nav class="nav-links comment-nav-links">
                     <?php paginate_comments_links(); ?>
                 </nav>
+            </div>
+            <div id="comment-nav-list">
                 <?php
                 wp_list_comments(
                     array(
@@ -72,7 +74,9 @@ if ($comments) {
                     )
                 );
                 ?>
-                <nav class="nav-links comment-nav-links comment-nav-links-after">
+            </div>
+            <div class="comment-nav-wrap" id="comment-nav-wrap-bottom">
+                <nav class="nav-links comment-nav-links">
                     <?php paginate_comments_links(); ?>
                 </nav>
             </div>

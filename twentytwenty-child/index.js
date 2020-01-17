@@ -63,27 +63,32 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // 评论 ajax 翻页
-const list = document.getElementById('comment-nav-list');
-const comments = document.getElementById('comments');
-const respond = document.getElementById('respond');
-const loading = document.getElementById('comment-loading');
-const cancelReply = document.getElementById('cancel-comment-reply-link');
-if (list !== null) {
-    list.addEventListener('click', function (e) {
+const commentList = document.getElementById('comment-nav-list');//评论列表wrap
+const comments = document.getElementById('comments');//评论区域锚点
+const respond = document.getElementById('respond');//回复
+const loading = document.getElementById('comment-loading');//加载中
+const cancelReply = document.getElementById('cancel-comment-reply-link');//取消回复
+const commentNavWraps = document.querySelectorAll('.comment-nav-wrap');//评论分页
+const topNav = document.getElementById('comment-nav-wrap-top');//评论分页-上
+const bottomNav = document.getElementById('comment-nav-wrap-bottom');//评论分页-下
+if (commentList !== null && commentNavWraps !== null) {
+    commentNavWraps.forEach(wrap => wrap.addEventListener('click', function (e) {
         const target = e.target;
-        if (target.nodeName.toLowerCase() === 'a' && target.parentElement.parentElement === list) {
+        if (target.nodeName.toLowerCase() === 'a') {
             e.preventDefault();
             if (cancelReply.style.display !== 'none') {
                 cancelReply.click();
             }
             loading.style.display = 'flex';
-            list.innerHTML = '';
+            commentList.innerHTML = '';
             comments.scrollIntoView(true);
             const href = target.href;
             ajax({url: href})
                 .then(response => {
                     const parsedHtml = parseHTML(response);
-                    list.innerHTML = parsedHtml.getElementById('comment-nav-list').innerHTML;
+                    topNav.innerHTML = parsedHtml.getElementById('comment-nav-wrap-top').innerHTML;
+                    bottomNav.innerHTML = parsedHtml.getElementById('comment-nav-wrap-bottom').innerHTML;
+                    commentList.innerHTML = parsedHtml.getElementById('comment-nav-list').innerHTML;
                     loading.style.display = 'none';
                     window.history.pushState(null, parsedHtml.title, href);
                 })
@@ -92,7 +97,7 @@ if (list !== null) {
                     window.location = href;
                 });
         }
-    });
+    }));
 }
 
 document.oncopy = function () {
@@ -171,3 +176,46 @@ if (goReply != null && respond != null) {
     });
 }
 // endregion 上下滑动
+
+// region ajax comment
+const commentForm = document.getElementById('commentform');//评论表单
+const comment = document.getElementById('comment');//输入框
+if (commentForm != null) {
+    let lastCommentTime = Date.now();
+
+    function tooFast() {
+        return Date.now() - lastCommentTime < 2000;
+    }
+
+    commentForm.onsubmit = function (e) {
+        e.preventDefault();
+        if (tooFast()) {
+            return false;
+        }
+        lastCommentTime = Date.now();
+        let formData = new FormData(commentForm);
+        formData.append('action', 'lin_ajax_comment');
+        ajax({
+            url: commentReply.url,
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            const parsed = parseHTML(response);
+            const newComment = parsed.body.children[0];
+            if (respond.parentElement.classList.contains('comment')) {
+                // 回复
+                respond.insertAdjacentElement('beforebegin', newComment);
+                cancelReply.click();
+            } else {
+                // 不是回复
+                commentList.appendChild(newComment);
+            }
+            comment.value = '';
+        }).catch(err => {
+            console.log('err: ' + err);
+            alert('抱歉 出错了 请尝试刷新页面');
+        });
+        return false;
+    }
+}
+// endregion ajax comment
