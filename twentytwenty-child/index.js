@@ -80,7 +80,9 @@ if (commentList !== null && commentNavWraps !== null) {
                 cancelReply.click();
             }
             loading.style.display = 'flex';
+            topNav.innerHTML = '';
             commentList.innerHTML = '';
+            bottomNav.innerHTML = '';
             comments.scrollIntoView(true);
             const href = target.href;
             ajax({url: href})
