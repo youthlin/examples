@@ -40,7 +40,7 @@ function lin_wp_footer() {
     wp_enqueue_script('twentytwenty-child-js', get_stylesheet_directory_uri() . '/index.js',
         array(), wp_get_theme()->get('Version'), true);
     lin_top_bottom_nav();
-    define_comment_reply_url();
+    define_ajax_url();
 }
 
 function lin_top_bottom_nav() {
@@ -383,8 +383,8 @@ function lin_output_smilies_to_comment_form($default) {
 //endregion
 
 //region comment ajax
-function define_comment_reply_url() {
-    wp_localize_script('comment-reply', 'commentReply', array('url' => admin_url('admin-ajax.php')));
+function define_ajax_url() {
+    wp_localize_script('comment-reply', 'lin_ajax', array('url' => admin_url('admin-ajax.php')));
 }
 
 // wp_ajax_nopriv_{action} 用于登录用户 wp_ajax_{action} 用于未登录用户
@@ -492,17 +492,25 @@ function lin_ajax_comment() {
 
 add_action('wp_ajax_nopriv_lin_list_comment', 'lin_ajax_comment_list');
 add_action('wp_ajax_lin_list_comment', 'lin_ajax_comment_list');
+// WordPress Ajax 评论分页/翻页 https://fatesinger.com/286
 function lin_ajax_comment_list() {
-    //todo ?action=lin_list_comment&post_id=1&cpage=1
-    global $wp_query, $post, $comments;
-    $wp_query->is_singular = true;
-    $post = $_GET['post_id'];
-    $page = $_GET['cpage'];
-    $comments = get_comments(array('post_id' => $post, 'order' => 'ASC'));
+    global $wp_query, $comments, $post;
+    $wp_query->is_singular = true;//paginate_comments_links 判断不是文章会直接返回
+    $postId = $_POST['p'];
+    $page = $_POST['c'];
+    $post = get_post($postId);//paginate_comments_links 里调用 get_permalink 需要用到这个全局变量
+    $order = '';
+    if (strtolower(get_option('comment_order')) == 'desc') {
+        // 竟然是反的 无语
+        $order = 'asc';
+    } else {
+        $order = 'desc';
+    }
+    $comments = get_comments(array('post_id' => $postId, 'order' => $order));
     ?>
     <div class="comment-nav-wrap" id="comment-nav-wrap-top">
         <nav class="nav-links comment-nav-links">
-            <?php paginate_comments_links(array('current' => $page)); ?>
+            <?php paginate_comments_links(array('total' => get_comment_pages_count($comments), 'current' => $page,)); ?>
         </nav>
     </div>
     <div id="comment-nav-list">
@@ -522,12 +530,9 @@ function lin_ajax_comment_list() {
     </div>
     <div class="comment-nav-wrap" id="comment-nav-wrap-bottom">
         <nav class="nav-links comment-nav-links">
-            <?php paginate_comments_links(); ?>
+            <?php paginate_comments_links(array('total' => get_comment_pages_count($comments), 'current' => $page)); ?>
         </nav>
     </div>
-    <!--
-        <?php echo (new Exception)->getTraceAsString(); ?>
-        -->
     <?php
     die;
 }

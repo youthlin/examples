@@ -87,7 +87,11 @@
                 bottomNav.innerHTML = '';
                 comments.scrollIntoView(true);
                 const href = target.href;
-                ajax({url: href})
+                const data = new FormData();
+                data.append('action', 'lin_list_comment');
+                data.append('p', loading.dataset.post);
+                data.append('c', href.match(/comment-page-([\d]*)/)[1]);
+                ajax({url: lin_ajax.url, method: 'POST', body: data})
                     .then(response => {
                         const parsedHtml = parseHTML(response);
                         topNav.innerHTML = parsedHtml.getElementById('comment-nav-wrap-top').innerHTML;
@@ -192,7 +196,6 @@
         }
 
         commentForm.addEventListener('submit', function (e) {
-            console.log('submit');
             e.preventDefault();
             if (tooFast()) {
                 return false;
@@ -204,7 +207,7 @@
             let formData = new FormData(commentForm);
             formData.append('action', 'lin_ajax_comment');
             ajax({
-                url: commentReply.url,
+                url: lin_ajax.url,
                 method: 'POST',
                 body: formData
             }).then(response => {

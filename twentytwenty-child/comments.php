@@ -56,7 +56,7 @@ if ($comments) {
         </div><!-- .comments-header -->
 
         <div class="comments-inner section-inner thin max-percentage">
-            <div id="comment-loading">
+            <div id="comment-loading" data-post="<?php echo $post->ID; ?>">
                 <img alt="Loading" src="<?php echo home_url() . '/wp-includes/images/wpspin.gif'; ?>"> Loading...
             </div>
             <div class="comment-nav-wrap" id="comment-nav-wrap-top">

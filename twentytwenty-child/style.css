@@ -2,7 +2,7 @@
 Theme Name: Twenty Twenty Child
 Template: twentytwenty
 Text Domain:  twentytwentychild
-Version: 0.10
+Version: 0.11
 Requires at least: 4.7
 Requires PHP: 5.2.4
 Description: 2020
@@ -122,4 +122,13 @@ p.comment-form-comment {
 .comment-awaiting-moderation {
     font-style: italic;
     border: 1px solid #cd2653;
+}
+
+nav.comment-nav-links {
+    display: flex;
+    justify-content: space-between;
+}
+
+nav.comment-nav-links * {
+    margin: 0;
 }
