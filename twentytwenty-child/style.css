@@ -2,7 +2,7 @@
 Theme Name: Twenty Twenty Child
 Template: twentytwenty
 Text Domain:  twentytwentychild
-Version: 0.16
+Version: 0.17
 Requires at least: 4.7
 Requires PHP: 5.2.4
 Description: 2020
@@ -152,14 +152,20 @@ li.archive-item:nth-of-type(odd) {
     background-color: #eee;
 }
 
-li.archive-item .date {
+li.archive-item span {
     font-family: monospace;
-    flex-shrink: 0;
     padding-right: 1rem;
+    flex: none; /* none = 0 0 auto = flex-grow 0=不自动增长到剩余空间 flex-shrink 0=不缩减宽度  flex-basis auto=原本宽度 */
 }
 
 li.archive-item a {
-    width: 100%;
+    flex: auto; /* auto = 1 1 auto */
+}
+
+@media (min-width: 1000px) {
+    li.archive-item span {
+        flex: 1 0 auto; /* 宽屏 自动增长宽度以使标题居中 */
+    }
 }
 
 /* endregion archive */
