@@ -240,7 +240,14 @@
                     return figCaption.innerText;
                 }
             }
-            return true;
+            const img = a.getElementsByTagName('img')[0];
+            if (img) {
+                if (img.alt) {
+                    return img.alt;
+                }
+                return decodeURIComponent(img.src.substr(img.src.lastIndexOf('/') + 1));
+            }
+            return '';
         },
         noScrollbars: true,
         async: true,
