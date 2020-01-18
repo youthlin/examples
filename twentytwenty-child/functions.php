@@ -573,11 +573,11 @@ function lin_comment_post_then_notify($comment_ID, $comment_approved, $commentda
 
             $message = '<div style="border: 1px dotted #ccc;padding: 16px;">
     <p style="border-bottom: 1px dashed #ccc;"><strong>' . trim($parent_comment->comment_author) . '</strong>，你好！</p>
-    <p>你曾在 <a href="#">' . $blogname . '</a>《<a href="' . get_permalink($comment->comment_post_ID) . '">' . get_the_title($comment->comment_post_ID) . '</a>》的留言有人回复你了！你的留言内容：</p>
+    <p>你曾在 <a href="' . get_option('home') . '">' . $blogname . '</a>《<a href="' . get_permalink($comment->comment_post_ID) . '">' . get_the_title($comment->comment_post_ID) . '</a>》的留言有人回复你了！你的留言内容：</p>
     <blockquote style="border: 1px solid #ccc;border-radius:10px;padding: 16px;">' . trim($parent_comment->comment_content) . '</blockquote>
     <p><strong>' . trim($comment->comment_author) . '</strong> 给你的回复：</p>
     <blockquote style="border: 1px solid #ccc;border-radius:10px;padding: 16px;">' . trim($comment->comment_content) . '</blockquote>
-    <p>你可以 <a href="' . htmlspecialchars(get_comment_link($parent_id)) . '">点此查看回复</a></p>
+    <p>你可以 <a href="' . htmlspecialchars(get_comment_link($comment_ID)) . '">点此查看回复</a></p>
     <p>欢迎再度光临 <a href="' . get_option('home') . '">' . $blogname . '</a></p>
     <p style="border-top: 1px dashed #ccc;margin: 0;">
         <small>注 1: 你之所以收到此邮件，是因为你在评论该文章时勾选了<em>有人回复时邮件通知我</em><br>
