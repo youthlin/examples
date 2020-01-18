@@ -2,7 +2,7 @@
 Theme Name: Twenty Twenty Child
 Template: twentytwenty
 Text Domain:  twentytwentychild
-Version: 0.13
+Version: 0.15
 Requires at least: 4.7
 Requires PHP: 5.2.4
 Description: 2020
@@ -83,7 +83,7 @@ pre {
 
 /* endregion 小工具 */
 
-/* region 评论框去掉底边距放表情 */
+/* region 评论区域 */
 p.comment-form-comment {
     margin-bottom: 0;
 }
@@ -105,20 +105,6 @@ p.comment-form-comment {
     padding-top: 3.5rem;
 }
 
-#svg-nav {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-}
-
-#svg-nav svg {
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-}
-
 .comment-awaiting-moderation {
     font-style: italic;
     border: 1px solid #cd2653;
@@ -133,9 +119,29 @@ nav.comment-nav-links * {
     margin: 0;
 }
 
+/* endregion 评论区域 */
+
+/* region 导航 */
+#svg-nav {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+}
+
+#svg-nav svg {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+/* endregion 导航 */
+
+/* region archive */
 li.archive-item {
     margin: 0;
-    padding: 1% 0 0 1%;
+    padding: 1rem;
     list-style: none;
     width: 100% !important;
     max-width: 100% !important;
@@ -151,3 +157,9 @@ li.archive-item .date {
     flex-shrink: 0;
     padding-right: 1rem;
 }
+
+li.archive-item a {
+    width: 100%;
+}
+
+/* endregion archive */

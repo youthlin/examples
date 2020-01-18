@@ -35,6 +35,11 @@
                 }
 
                 wp_get_archives(array('type' => 'postbypost'));
+
+                // 恢复 $post 变量
+                if (have_posts()) {
+                    the_post();
+                }
                 ?>
             </div>
         </article>
