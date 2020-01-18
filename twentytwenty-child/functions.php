@@ -540,4 +540,72 @@ function lin_ajax_comment_list() {
     <?php
     die;
 }
+
 //endregion comment ajax
+
+// region 评论回复邮件通知
+add_filter('preprocess_comment', 'lin_comment_notify_add_notify_meta');
+// 如果勾选了邮件通知则放在评论 meta 里
+function lin_comment_notify_add_notify_meta($commentdata) {
+    if (!isset($commentdata['comment_meta'])) {
+        $commentdata['comment_meta'] = array();
+    }
+    if (isset($_POST['wp-comment-notify-when-reply']) && $_POST['wp-comment-notify-when-reply'] == 'yes') {
+        $commentdata['comment_meta']['notify_when_reply'] = 'yes';
+    }
+    return $commentdata;
+}
+
+add_action('comment_post', 'lin_comment_post_then_notify', 10, 3);
+// 当有新评论时
+function lin_comment_post_then_notify($comment_ID, $comment_approved, $commentdata) {
+    $comment = get_comment($comment_ID);
+    $parent_id = $comment->comment_parent ? $comment->comment_parent : '';
+    if ($comment_approved == '1' && $parent_id) {
+        // 评论通过了审核，有父评论(是回复，不是顶级评论) 才需要发邮件给被回复人
+        $parent_comment = get_comment($parent_id);
+        $should_notify = get_comment_meta($parent_id, 'notify_when_reply', true);
+        if ('yes' == $should_notify && $parent_comment->comment_approved == '1') {
+            // 被回复人勾选了邮件通知
+            $blogname = get_option("blogname");
+            $subject = "您在 [ $blogname ] 的留言有了回复";
+            $to = trim($parent_comment->comment_author_email);
+
+            $message = '<div style="border: 1px dotted #ccc;padding: 16px;">
+    <p style="border-bottom: 1px dashed #ccc;"><strong>' . trim($parent_comment->comment_author) . '</strong>，你好！</p>
+    <p>你曾在 <a href="#">' . $blogname . '</a>《<a href="' . get_permalink($comment->comment_post_ID) . '">' . get_the_title($comment->comment_post_ID) . '</a>》的留言有人回复你了！你的留言内容：</p>
+    <blockquote style="border: 1px solid #ccc;border-radius:10px;padding: 16px;">' . trim($parent_comment->comment_content) . '</blockquote>
+    <p><strong>' . trim($comment->comment_author) . '</strong> 给你的回复：</p>
+    <blockquote style="border: 1px solid #ccc;border-radius:10px;padding: 16px;">' . trim($comment->comment_content) . '</blockquote>
+    <p>你可以 <a href="' . htmlspecialchars(get_comment_link($parent_id)) . '">点此查看回复</a></p>
+    <p>欢迎再度光临 <a href="' . get_option('home') . '">' . $blogname . '</a></p>
+    <p style="border-top: 1px dashed #ccc;margin: 0;">
+        <small>注 1: 你之所以收到此邮件，是因为你在评论该文章时勾选了<em>有人回复时邮件通知我</em><br>
+            注 2: 此邮件由系统自动发送，请勿回复</small>
+    </p>
+</div>';
+            $wp_email = 'no-reply@' . preg_replace('#^www\.#', '', strtolower($_SERVER['SERVER_NAME']));
+            $from = "From: $blogname <$wp_email>";
+            $admin_email = get_bloginfo('admin_email');
+            $bcc = "BCC: $blogname <$admin_email>";
+            $headers = "$from\n$bcc\nContent-Type: text/html; charset=" . get_option('blog_charset') . "\n";
+
+            wp_mail($to, $subject, $message, $headers);
+        }
+    }
+}
+
+add_filter('comment_form_submit_field', 'lin_add_notify_when_reply_checkbox', 10, 2);
+// 评论表单 在提交按钮前加个勾选框 默认选中
+function lin_add_notify_when_reply_checkbox($submit_field, $args) {
+    $checkbox = sprintf(
+        '<p class="comment-form-notify-when-reply">%s %s</p>',
+        '<input id="wp-comment-notify-when-reply" name="wp-comment-notify-when-reply" type="checkbox" checked value="yes" />',
+        sprintf(
+            '<label for="wp-comment-notify-when-reply">%s</label>',
+            __('有人回复时邮件通知我')
+        )
+    );
+    return $checkbox . $submit_field;
+}
+// endregion 评论回复邮件通知
