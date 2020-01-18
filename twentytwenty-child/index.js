@@ -231,6 +231,19 @@
     }
     // endregion ajax comment
 
-    baguetteBox.run('.entry-content');
+    baguetteBox.run('.entry-content', {
+        captions: function (a) {
+            const parent = a.parentElement;
+            if (parent.tagName.toLocaleLowerCase() === 'figure') {
+                const figCaption = parent.getElementsByTagName('figcaption')[0];
+                if (figCaption) {
+                    return figCaption.innerText;
+                }
+            }
+            return true;
+        },
+        noScrollbars: true,
+        async: true,
+    });
 
 })();
