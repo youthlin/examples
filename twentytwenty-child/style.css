@@ -2,7 +2,7 @@
 Theme Name: Twenty Twenty Child
 Template: twentytwenty
 Text Domain:  twentytwentychild
-Version: 0.12
+Version: 0.13
 Requires at least: 4.7
 Requires PHP: 5.2.4
 Description: 2020
@@ -131,4 +131,14 @@ nav.comment-nav-links {
 
 nav.comment-nav-links * {
     margin: 0;
+}
+
+li.archive-item {
+    margin: 0;
+    padding: 1% 0 0 1%;
+    list-style: none;
+}
+
+.archive-item .date {
+    font-family: monospace;
 }
