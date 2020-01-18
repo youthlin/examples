@@ -137,6 +137,7 @@ li.archive-item {
     margin: 0;
     padding: 1% 0 0 1%;
     list-style: none;
+    max-width: 100% !important;
 }
 
 .archive-item .date {
