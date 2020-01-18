@@ -28,15 +28,19 @@ function lin_enqueue_styles() {
 
     wp_enqueue_style('highlight-style',
         'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css');
+    wp_enqueue_style('baguetteBox-style',
+        'https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.css');
 }
 
 add_action('wp_footer', 'lin_wp_footer');
 function lin_wp_footer() {
+    wp_enqueue_script('baguetteBox-js',
+        'https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.js');
     wp_enqueue_script('highlight-js-main',
         'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js');
     wp_enqueue_script('highlight-js-linenumber',
         'https://cdn.jsdelivr.net/npm/highlightjs-line-numbers.js@2.7.0/dist/highlightjs-line-numbers.min.js');
-    // 在 highlight 之后
+    // 在 baguetteBox, highlight 之后
     wp_enqueue_script('twentytwenty-child-js', get_stylesheet_directory_uri() . '/index.js',
         array(), wp_get_theme()->get('Version'), true);
     lin_top_bottom_nav();

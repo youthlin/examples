@@ -230,4 +230,7 @@
         });
     }
     // endregion ajax comment
+
+    baguetteBox.run('.entry-content');
+
 })();
