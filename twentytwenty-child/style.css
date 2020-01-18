@@ -138,8 +138,11 @@ li.archive-item {
     padding: 1% 0 0 1%;
     list-style: none;
     max-width: 100% !important;
+    display: flex;
 }
 
 .archive-item .date {
     font-family: monospace;
+    flex-shrink: 0;
+    padding-right: 1rem;
 }
