@@ -137,11 +137,16 @@ li.archive-item {
     margin: 0;
     padding: 1% 0 0 1%;
     list-style: none;
+    width: 100% !important;
     max-width: 100% !important;
     display: flex;
 }
 
-.archive-item .date {
+li.archive-item:nth-of-type(odd) {
+    background-color: #eee;
+}
+
+li.archive-item .date {
     font-family: monospace;
     flex-shrink: 0;
     padding-right: 1rem;
