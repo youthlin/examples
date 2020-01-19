@@ -314,8 +314,9 @@
             noScrollbars: true,
             async: true,
         });
+
         document.querySelectorAll('a[rel~=external],a[rel~=friend],a[rel~=noreferrer]')
             .forEach(a => a.target = '_blank');
-    });
 
+    });
 })();
