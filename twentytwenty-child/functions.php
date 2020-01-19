@@ -631,7 +631,12 @@ add_filter('comment_reply_link_args', 'lin_add_notify_text_after_replay_link', 1
 // 接收邮件通知则在回复按钮后显示
 function lin_add_notify_text_after_replay_link($args, $comment, $post) {
     if (notify_when_reply($comment->comment_ID)) {
-        $args['after'] .= '<span class="notify-when-reply">' . __('回复时对方会收到邮件通知') . '</span>';
+        $note = __('回复时对方会收到邮件通知');
+        $after = '<span class="notify-when-reply" title="' . $note . '"><svg aria-hidden="true" style="width:30px; height:20px;">
+    <path fill="none" stroke="#000" stroke-width="1"  d="M0 0 L30 0 L30 20 L0 20 Z"/>
+    <path fill="none" stroke="#000" stroke-width="1" stroke-dasharray="1" d="M0 0 L15 10 L30 0"/>
+</svg><span class="screen-reader-text">' . $note . '</span></span>';
+        $args['after'] .= $after;
     }
     return $args;
 }
