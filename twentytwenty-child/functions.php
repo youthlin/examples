@@ -640,4 +640,26 @@ function lin_add_notify_text_after_replay_link($args, $comment, $post) {
     }
     return $args;
 }
+
+add_filter('manage_edit-comments_columns', 'lin_manage_edit_comments_columns');
+// 后台评论页面添加一列
+function lin_manage_edit_comments_columns($columns) {
+    $columns['notify'] = __('邮件通知');
+    return $columns;
+}
+
+add_action('manage_comments_custom_column', 'lin_comments_column_notify', 10, 2);
+// 新加的列的逻辑 显示是否接收邮件通知
+function lin_comments_column_notify($column_name, $comment_ID) {
+    if ($column_name == 'notify') {
+        $comment = get_comment($comment_ID);
+        if (notify_when_reply($comment->comment_parent)) {
+            $parent_comment = get_comment($comment->comment_parent);
+            echo sprintf(__('<span>已邮件通知 <strong>%s</strong></span><br>'), $parent_comment->comment_author);
+        }
+        if (notify_when_reply($comment_ID)) {
+            echo '<span>' . __('被回复时接收邮件通知') . '</span>';
+        }
+    }
+}
 // endregion 评论回复邮件通知
