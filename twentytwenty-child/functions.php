@@ -544,6 +544,10 @@ function lin_ajax_comment_list() {
 //endregion comment ajax
 
 // region 评论回复邮件通知
+function notify_when_reply($commentId) {
+    return 'yes' == get_comment_meta($commentId, 'notify_when_reply', true);
+}
+
 add_filter('preprocess_comment', 'lin_comment_notify_add_notify_meta');
 // 如果勾选了邮件通知则放在评论 meta 里
 function lin_comment_notify_add_notify_meta($commentdata) {
@@ -564,8 +568,7 @@ function lin_comment_post_then_notify($comment_ID, $comment_approved, $commentda
     if ($comment_approved == '1' && $parent_id) {
         // 评论通过了审核，有父评论(是回复，不是顶级评论) 才需要发邮件给被回复人
         $parent_comment = get_comment($parent_id);
-        $should_notify = get_comment_meta($parent_id, 'notify_when_reply', true);
-        if ('yes' == $should_notify && $parent_comment->comment_approved == '1') {
+        if (notify_when_reply($parent_id) && $parent_comment->comment_approved == '1') {
             // 被回复人勾选了邮件通知
             $blogname = get_option("blogname");
             $subject = "您在 [ $blogname ] 的留言有了回复";
@@ -607,5 +610,22 @@ function lin_add_notify_when_reply_checkbox($submit_field, $args) {
         )
     );
     return $checkbox . $submit_field;
+}
+
+add_filter('comment_form_submit_button', 'lin_add_comment_submit_loading', 10, 2);
+// 评论提交中
+function lin_add_comment_submit_loading($submit_button, $args) {
+    $submit_button .= '<span id="comment-submit-loading"><img alt="Loading" src="'
+        . home_url() . '/wp-includes/images/wpspin.gif">' . __('提交中') . '</span>';
+    return $submit_button;
+}
+
+add_filter('comment_reply_link_args', 'lin_add_notify_text_after_replay_link', 10, 3);
+// 接收邮件通知则在回复按钮后显示
+function lin_add_notify_text_after_replay_link($args, $comment, $post) {
+    if (notify_when_reply($comment->comment_ID)) {
+        $args['after'] .= '<span class="notify-when-reply">' . __('回复时对方会收到邮件通知') . '</span>';
+    }
+    return $args;
 }
 // endregion 评论回复邮件通知

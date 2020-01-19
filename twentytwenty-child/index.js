@@ -188,6 +188,8 @@
     // region ajax comment
     const commentForm = document.getElementById('commentform');//评论表单
     const comment = document.getElementById('comment');//输入框
+    const submit = document.getElementById('submit');//提交按钮
+    const commentSubmitLoading = document.getElementById('comment-submit-loading');//提交中
     if (commentForm != null) {
         let lastCommentTime = Date.now();
 
@@ -206,6 +208,9 @@
             }
             let formData = new FormData(commentForm);
             formData.append('action', 'lin_ajax_comment');
+            commentSubmitLoading.style.display = 'flex';
+            comment.disabled = true;
+            submit.disabled = true;
             ajax({
                 url: lin_ajax.url,
                 method: 'POST',
@@ -225,6 +230,10 @@
                 comment.value = '';
             }).catch(xhr => {
                 alert('抱歉 出错了 请尝试刷新页面.\n' + parseHTML(xhr.responseText).documentElement.innerText);
+            }).finally(() => {
+                comment.disabled = false;
+                submit.disabled = false;
+                commentSubmitLoading.style.display = 'none';
             });
             return false;
         });

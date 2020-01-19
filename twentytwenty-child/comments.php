@@ -57,7 +57,7 @@ if ($comments) {
 
         <div class="comments-inner section-inner thin max-percentage">
             <div id="comment-loading" data-post="<?php echo $post->ID; ?>">
-                <img alt="Loading" src="<?php echo home_url() . '/wp-includes/images/wpspin.gif'; ?>"> Loading...
+                <img alt="Loading" src="<?php echo home_url() . '/wp-includes/images/wpspin.gif'; ?>"> <?php __('加载中...'); ?>
             </div>
             <div class="comment-nav-wrap" id="comment-nav-wrap-top">
                 <nav class="nav-links comment-nav-links">
