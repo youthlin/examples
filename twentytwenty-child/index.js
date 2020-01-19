@@ -7,7 +7,7 @@
     // https://juejin.im/post/5a77f5115188257a6426775c
     const ajax = function (options) {
         let {url, method = 'GET', body} = options;
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             let request = new XMLHttpRequest();
             request.open(method, url);
             request.send(body);
@@ -66,9 +66,26 @@
             if (block.dataset.height) {
                 block.style.maxHeight = block.dataset.height;
             }
+            const action = document.createElement('a');
+            action.innerHTML = '宽屏模式';
+            action.classList.add('hljs-action');
+            action.style.textAlign = 'right';
+            action.style.marginBottom = '0';
+            action.style.backgroundColor = '#dcd7ca';
+            on(action, 'click', () => {
+                if (block.style.maxWidth !== '100vw') {
+                    block.style.maxWidth = '100vw';
+                    action.innerHTML = '还原';
+                } else {
+                    action.innerHTML = '宽屏模式';
+                    block.style.maxWidth = null;
+                }
+            });
+            block.style.marginTop = '0';
+            block.insertAdjacentElement('beforebegin', action);
         });
         // 点击评论框表情插入表情文字到评论框
-        document.querySelectorAll('.my-smiley').forEach(smiley => on(smiley, 'click', function () {
+        document.querySelectorAll('.my-smiley').forEach(smiley => on(smiley, 'click', () => {
             const input = id('comment');
             // 两边必须要有空格才会转换为表情
             const text = ' ' + smiley.alt + ' ';
@@ -107,7 +124,7 @@
         const topNav = id('comment-nav-wrap-top');//评论分页-上
         const bottomNav = id('comment-nav-wrap-bottom');//评论分页-下
         if (commentList !== null && commentNavWraps !== null) {
-            commentNavWraps.forEach(wrap => on(wrap, 'click', function (e) {
+            commentNavWraps.forEach(wrap => on(wrap, 'click', e => {
                 const target = e.target;
                 if (target.nodeName.toLowerCase() === 'a') {
                     e.preventDefault();
@@ -158,7 +175,7 @@
             bodyElement.appendChild(tmp);
             tmp.innerHTML = text;
             selection.selectAllChildren(tmp);
-            window.setTimeout(function () {
+            window.setTimeout(() => {
                 bodyElement.removeChild(tmp);
             }, 0);
         };
@@ -178,44 +195,44 @@
             }
         }
 
-        on(goTop, 'click', function () {
+        on(goTop, 'click', () => {
             window.scrollTo(0, 0);
             clearFlag();
         });
-        on(goTop, 'mouseover', function () {
+        on(goTop, 'mouseover', () => {
             if (!flag) {
-                flag = setInterval(function () {
+                flag = setInterval(() => {
                     // https://zh.javascript.info/size-and-scroll-window#window-scroll
                     window.scrollBy(0, -10);
                 }, 10);
             }
         });
-        on(goTop, 'mouseout', function () {
+        on(goTop, 'mouseout', () => {
             clearFlag();
         });
-        on(goBottom, 'click', function () {
+        on(goBottom, 'click', () => {
             clearFlag();
             setTimeout(() => {
                 id('site-footer').scrollIntoView(false);
             }, 10);
         });
-        on(goBottom, 'mouseover', function () {
+        on(goBottom, 'mouseover', () => {
             if (!flag) {
-                flag = setInterval(function () {
+                flag = setInterval(() => {
                     window.scrollBy(0, 10);
                 }, 10);
             }
         });
-        on(goBottom, 'mouseout', function () {
+        on(goBottom, 'mouseout', () => {
             clearFlag();
         });
         if (goComments != null && comments != null) {
-            on(goComments, 'click', function () {
+            on(goComments, 'click', () => {
                 comments.scrollIntoView(true);
             });
         }
         if (goReply != null && respond != null) {
-            on(goReply, 'click', function () {
+            on(goReply, 'click', () => {
                 respond.scrollIntoView(true);
             });
         }
@@ -233,7 +250,7 @@
                 return Date.now() - lastCommentTime < 2000;
             }
 
-            on(commentForm, 'submit', function (e) {
+            on(commentForm, 'submit', e => {
                 e.preventDefault();
                 if (tooFast()) {
                     return false;

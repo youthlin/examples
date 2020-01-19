@@ -2,7 +2,7 @@
 Theme Name: Twenty Twenty Child
 Template: twentytwenty
 Text Domain:  twentytwentychild
-Version: 0.18
+Version: 0.19
 Requires at least: 4.7
 Requires PHP: 5.2.4
 Description: 2020
@@ -29,6 +29,16 @@ pre {
     -ms-overflow-style: none;
     /*firefox*/
     scrollbar-width: thin;
+}
+
+.hljs-action {
+    display: none;
+}
+
+@media (min-width: 580px) {
+    .hljs-action {
+        display: block;
+    }
 }
 
 .hljs table, .hljs td {
