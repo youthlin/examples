@@ -662,4 +662,12 @@ function lin_comments_column_notify($column_name, $comment_ID) {
         }
     }
 }
+
+add_filter('comment_row_actions', 'lin_add_nop_action_notify', 10, 2);
+function lin_add_nop_action_notify($actions, $comment) {
+    if (notify_when_reply($comment->comment_ID)) {
+        $actions['notify'] = '<span style="color: #000" title="' . __('被回复时接收邮件通知') . '">' . __('可通知') . '</span>';
+    }
+    return $actions;
+}
 // endregion 评论回复邮件通知
