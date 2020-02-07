@@ -20,6 +20,15 @@
             top: 0;
             background-color: #afe;
         }
+
+        .wide-content-virtual {
+            content: ' ';
+            position: -webkit-sticky;
+            position: sticky;
+            bottom: 0;
+            background-color: #afe;
+            height: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -420,5 +429,29 @@
         </tbody>
     </table>
 </section>
+<section>
+        <pre class="wide-content">
+var wrap_gif_drag = nybbleFormulaDomain + 5;
+var tunnelingParse = rpm_rootkit;
+screenshot.bar_time = xmpPcb + gigahertzNvramCd.offline(restore, input, ddrScroll) * gifInterlaced.avatar_cad(35, system);var clean = file(quicktimeLinuxReal + pram_jfs_swappable - 555399, pad(controller_broadband - name_pad_leaf));
+uml_pitch = barComputerByte - raster_language;
+        </pre>
+</section>
+<script>
+    document.querySelectorAll('.wide-content').forEach(e => {
+        let bar = document.createElement('input');
+        bar.classList.add('wide-content-virtual');
+        bar.type = 'range';
+        bar.value = 0;
+        bar.style.width = e.clientWidth + 'px';
+        bar.onchange = v => {
+            e.scrollTo(v.target.value * e.scrollWidth / 100, e.scrollHeight);
+        };
+        e.addEventListener('scroll', () => {
+            bar.value = e.scrollLeft / e.scrollWidth * 100;
+        });
+        e.insertAdjacentElement('afterend', bar);
+    });
+</script>
 </body>
 </html>
