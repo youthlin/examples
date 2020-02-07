@@ -34,6 +34,7 @@
         <module>example-javafx</module>
         <module>example-actor</module>
         <module>example-agent</module>
+        <module>plugin</module>
     </modules>
 
     <properties>
