@@ -75,10 +75,16 @@
             on(action, 'click', () => {
                 if (block.style.maxWidth !== '100vw') {
                     block.style.maxWidth = '100vw';
+                    block.style.width = '100vw';
+                    block.style.position = 'relative';
+                    block.style.left = '-' + block.getBoundingClientRect().x + 'px';
                     action.innerHTML = '还原';
                 } else {
                     action.innerHTML = '宽屏模式';
                     block.style.maxWidth = null;
+                    block.style.width = null;
+                    block.style.position = null;
+                    block.style.left = null;
                 }
             });
             block.style.marginTop = '0';

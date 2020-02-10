@@ -22,11 +22,12 @@
         }
 
         .wide-content-virtual {
-            content: ' ';
             position: -webkit-sticky;
             position: sticky;
             bottom: 0;
-            background-color: #afe;
+            overflow-x: scroll;
+            color: #fff;
+            background-color: #fff;
             height: 1rem;
         }
     </style>
@@ -439,18 +440,16 @@ uml_pitch = barComputerByte - raster_language;
 </section>
 <script>
     document.querySelectorAll('.wide-content').forEach(e => {
-        let bar = document.createElement('input');
-        bar.classList.add('wide-content-virtual');
-        bar.type = 'range';
-        bar.value = 0;
-        bar.style.width = e.clientWidth + 'px';
-        bar.onchange = v => {
-            e.scrollTo(v.target.value * e.scrollWidth / 100, e.scrollHeight);
-        };
-        e.addEventListener('scroll', () => {
-            bar.value = e.scrollLeft / e.scrollWidth * 100;
+        const clone = document.createElement(e.tagName);
+        clone.innerText = e.innerText;
+        e.insertAdjacentElement('afterend', clone);
+        clone.classList.add('wide-content-virtual');
+        clone.addEventListener('scroll', () => {
+            e.scrollTo(clone.scrollLeft, e.scrollHeight);
         });
-        e.insertAdjacentElement('afterend', bar);
+        e.addEventListener('scroll', () => {
+            clone.scrollTo(e.scrollLeft, e.scrollHeight);
+        });
     });
 </script>
 </body>
