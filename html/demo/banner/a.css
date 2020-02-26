@@ -1,0 +1,95 @@
+*{
+	margin: 0;padding: 0;
+}
+#banner{
+	background: url("../img/banner.jpg") center no-repeat;
+	background-size: cover;
+}
+header#site-nav{
+	height: 100%;
+	
+}
+#site-nav nav ul li{
+	display: inline-block;
+	line-height: 40px;
+	margin: 0;
+	padding: 0;
+}
+#site-nav nav{
+	position: fixed;
+	width: 100%;
+	background: #ccc;
+	z-index: 3;
+}
+#site-nav nav a{
+	padding: 0 4px;
+	display: inline-block;
+	line-height: inherit;
+	text-decoration: none;
+}
+#site-nav nav a:hover{
+	background: rgba(0,0,0,0.1);
+	color: #4eb;
+}
+#banner #inner{
+	width: 50%;
+	position: absolute;
+	bottom: 5%;
+	left: 25%;
+	background: rgba(255,255,255,.6);
+}
+#banner #inner .content{
+	display: none;
+}
+#banner #inner .on{
+	display: block;
+}
+
+#buttons { 
+	position: absolute;
+	z-index: 2; 
+	bottom: 2%; 
+	left: 45%;
+}
+#buttons span { 
+	cursor: pointer; 
+	float: left; 
+	border: 1px solid #fff; 
+	width: 15px; 
+	height: 15px;  
+	background: #333; 
+	margin: 0 5px;
+}
+#buttons .on {  
+	background: orangered;
+}
+
+#banner .arrow {
+	display: none;
+	text-align: center;
+	font-size: 36px;
+	font-weight: bold;
+	width: 25%;
+	height: inherit;
+	line-height: inherit;
+	position: absolute;
+	z-index: 2;
+	bottom: 0;
+	color: #fff;
+	text-decoration: none;
+}
+#banner:hover .arrow{
+	display: block;
+	text-decoration: none;
+}
+#prev{
+	left: 0;
+	/* http://blog.csdn.net/renfufei/article/details/39339185 
+	   http://www.haotu.net/icon/201038/next 
+	*/
+	cursor: url('../img/prev.ico'),pointer;
+}
+#next{
+	cursor: url('../img/next.ico'),pointer;
+	right: 0;
+}

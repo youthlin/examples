@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="//apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script>
+		jQuery(document).ready(function($){
+			// 在此网站看到的全屏效果：http://hairproject.ch/fr/
+			//获取浏览器可视区域高度
+			$('#banner').height($(window).height());
+			//浏览器调整窗口时也调整高度
+			$(window).resize(function(){
+				$('#banner').height($(window).height());
+			})
+			//各变量
+			var banner = $('#banner');
+			var inner = $('#inner');
+			var buttons = $('#buttons span');
+			var prev = $('#prev');
+			var next = $('#next');
+			var index = 0;
+			var len = buttons.length;
+			var interval = 3000;
+			var timer;
+			//显示需要高亮的按钮，其他按钮不高亮
+			function showButton(){
+				buttons.eq(index).addClass('on').siblings().removeClass('on');
+				//http://www.w3school.com.cn/jquery/traversing_siblings.asp
+				//siblings()获取同胞元素，不包括自己
+			}
+
+			function animate(){
+				var img = inner.find('div').eq(index).attr('data-imgsrc');
+				//http://www.w3school.com.cn/jquery/attributes_attr.asp
+				//attr()获取属性
+				//console.log(img);
+				banner.fadeTo(500,0.5,function(){
+					banner.css('background-image','url('+img+')');
+					banner.css('opacity',0.5);
+					banner.fadeTo(500,1);
+				});
+				//http://www.w3school.com.cn/jquery/effect_fadeto.asp
+				//fadeTo() 方法将被选元素的不透明度逐渐地改变为指定的值。
+				inner.find('div').eq(index).addClass('on');
+				showButton();
+			}
+
+			next.bind('click',function(){
+				//http://www.w3school.com.cn/jquery/event_bind.asp
+				//bind() 方法为被选元素添加一个或多个事件处理程序，并规定事件发生时运行的函数。
+				if(banner.is(':animated'))return;
+				//http://www.w3school.com.cn/jquery/selector_animated.asp
+				//:animated 选择器选取当前的所有动画元素。
+				inner.find('div').eq(index).removeClass('on');
+				index++;
+				if(index>len-1)index=0;
+				animate();
+			})
+
+			prev.bind('click',function(){
+				if(banner.is(':animated'))return;
+				inner.find('div').eq(index).removeClass('on');
+				index--;
+				if(index<0)index=len-1;
+				animate();
+			})
+
+			buttons.each(function(){
+				$(this).bind('click',function(){
+					if(banner.is(':animated') || index == buttons.index(this))return;
+					inner.find('div').eq(index).removeClass('on');
+					//获取所点击元素的序号
+					//http://bbs.csdn.net/topics/340208277
+					index = buttons.index(this);
+					//console.log(index);
+					animate();
+				})
+			})
+
+			function play() {
+                timer = setTimeout(function () {
+                	//http://www.w3school.com.cn/jsref/met_win_settimeout.asp
+                	//setTimeout() 方法用于在指定的毫秒数后调用函数或计算表达式。
+                    next.trigger('click');
+                    //http://www.w3school.com.cn/jquery/event_trigger.asp
+                    //trigger() 方法触发被选元素的指定事件类型。
+                    play();
+                    //提示：setTimeout() 只执行 code 一次。如果要多次调用，请使用 setInterval() 或者让 code 自身再次调用 setTimeout()。
+                }, interval);
+            }
+            function stop() {
+                clearTimeout(timer);
+                //http://www.w3school.com.cn/jsref/met_win_cleartimeout.asp
+                //clearTimeout() 方法可取消由 setTimeout() 方法设置的 timeout。
+            }
+
+            inner.hover(stop,play);
+            //.hover(hoverIn,hoverOut)
+            play();
+		})
+	</script>
+	<link rel="stylesheet" href="a.css">
+</head>
+<body>
+	<header id="site-nav">
+		<nav>
+			<ul>
+				<li><a href="#">链接1</a></li>
+				<li><a href="#">链接2</a></li>
+				<li><a href="#">链接3</a></li>
+				<li><a href="#">链接4</a></li>
+			</ul>
+		</nav>
+	</header>
+	<div id="banner">
+			<div id="inner">
+				<div class="on content" data-imgsrc="../img/banner.jpg">
+					<h1><a href="#">1Lorem ipsum dolor sit amet, consectetur.</a></h1>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias doloribus praesentium officiis at similique, laborum nemo est amet consequatur, molestias quibusdam aliquam ab illum rerum quod. Similique vel nulla velit.</p></div>
+				<div class="content" data-imgsrc="../img/pic01.jpg">
+					<h1>2Lorem ipsum dolor sit amet, consectetur.</h1>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero quas maiores sit labore, molestias cupiditate nam recusandae rem nihil modi quo quos quasi iure tempore voluptatibus, optio dolores, quam ducimus.</p></div>
+				<div class="content" data-imgsrc="../img/pic02.jpg">
+					<h1>3Lorem ipsum dolor sit amet, consectetur.</h1>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque rerum non voluptates sit ducimus, ea blanditiis perferendis ratione assumenda corrupti recusandae laudantium repellendus nostrum voluptate cumque sapiente eum ipsum culpa.</p></div>
+				<div class="content" data-imgsrc="../img/pic03.jpg">
+					<h1>4Lorem ipsum dolor sit amet, consectetur.</h1>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere accusamus hic, porro possimus, in reprehenderit odio temporibus, aperiam quae accusantium iusto facilis. Voluptatum expedita, rerum tempore repellat ipsa officiis deserunt.</p></div>
+			</div>
+			<div id="buttons">
+				<span class="on"></span>
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+			<a href="javascript:;" class="arrow" id="prev">&nbsp;</a>
+			<a href="javascript:;" class="arrow" id="next">&nbsp;</a>
+	</div>
+	<div id="main-content">
+		<article>
+			Lorem ipsum dolor sit amet, consectetur adipisicing elit. Impedit magnam voluptatem vitae dolor ullam sint animi quaerat magni repellendus, illo quis aut exercitationem porro eius sunt quam. Nemo voluptates molestiae amet excepturi voluptas quam harum accusamus eum error, cumque laboriosam culpa, nihil porro fuga! Facilis cum ullam, impedit recusandae necessitatibus, itaque magnam dolore minus! Ad iusto omnis qui, tempora nihil soluta architecto odio, dicta voluptatibus atque non. Id quo, earum praesentium animi reiciendis ullam. Fugit, cupiditate saepe voluptatem amet rerum animi. Ab, mollitia rem fugiat et. Expedita explicabo quibusdam eos dolores tenetur, fuga possimus nam recusandae ad, quis nihil doloribus consectetur, ut nulla! Explicabo nihil itaque optio culpa commodi illum, ut iste dolorum odit, nemo natus facilis cumque saepe est perferendis ea blanditiis provident animi laborum harum architecto accusamus quaerat necessitatibus error. Aliquid nostrum deserunt, consequuntur non in, officiis corrupti iste saepe recusandae perferendis facilis aliquam qui eum, nemo. Maxime, inventore. Atque minus dolorum architecto harum, asperiores veniam eveniet delectus dignissimos provident esse consequatur quisquam praesentium dolores nesciunt, exercitationem nemo est veritatis expedita sapiente cum. Magni, at soluta dicta quod ipsa, corporis, distinctio earum atque necessitatibus voluptatibus vel. Illum aperiam facere non illo nulla architecto, quis numquam doloremque quaerat sunt?
+		</article>
+		<article>
+			Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima, autem quo facere suscipit illo sint corrupti nobis, eligendi officiis labore obcaecati molestias ex adipisci porro est aperiam accusamus assumenda quam maiores! Eius porro sed, veritatis officia placeat blanditiis perferendis! Beatae fugit illum magnam ducimus assumenda aliquid culpa numquam laboriosam praesentium dolorum impedit delectus, quo dolore ratione sit rerum obcaecati in itaque rem deserunt? Quod deserunt, labore magnam at? Velit vero dicta atque error. Repellendus doloribus sint aspernatur, fuga, rem fugiat natus id nobis. Illo perspiciatis aut quae nesciunt nihil excepturi sunt dolorem expedita esse maxime eum ratione soluta pariatur voluptatum libero, odio repellat veniam assumenda quas recusandae ducimus ad est quia, sapiente doloremque. Ratione rem magnam illo commodi numquam praesentium fugit impedit, animi consectetur, culpa earum nulla molestiae obcaecati! Repellat totam, necessitatibus assumenda molestias inventore tenetur velit rerum sequi ut officia, reiciendis iste similique quae cum quas quo excepturi? Alias rerum, unde consectetur, harum ipsa maiores accusantium hic, sapiente molestias a consequuntur maxime ipsum in. Labore aspernatur, deleniti adipisci velit eligendi magnam. Corrupti molestias sunt eaque, dignissimos odit soluta nostrum, alias unde aperiam nulla expedita earum nesciunt. Perferendis architecto dolor aut inventore labore corporis adipisci vel, consequuntur quae cum voluptatibus.
+		</article>
+		<article>
+			Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad provident quisquam ducimus illum, dolores hic porro molestias aperiam ipsa at repellendus explicabo nobis commodi placeat reprehenderit, quaerat sint omnis eligendi quibusdam dolor deleniti, aliquam laborum sapiente. Aspernatur, quidem ipsa amet eius! Asperiores quam assumenda omnis, atque officiis officia nostrum, repudiandae expedita nulla veniam voluptatum explicabo cupiditate excepturi blanditiis tenetur, nihil dolores aspernatur fugiat. Cum error fuga ea quis assumenda quasi quia nostrum officiis, quaerat libero distinctio provident architecto aliquid ut, et corrupti optio illum dicta similique incidunt? Optio nihil numquam animi error, eaque, eos, maxime sint illo corporis labore id ducimus. Voluptatibus quasi inventore expedita tempora similique deleniti dignissimos quidem beatae dolorum, laborum sit sint? Unde, laudantium officia numquam perferendis quas voluptates nihil qui dolor enim provident ea velit deserunt corporis culpa animi temporibus cupiditate consectetur nobis molestias quod totam illo. Labore maxime accusamus porro dolores quo temporibus quis ratione quas excepturi, quam, suscipit minima eius eaque dolorum itaque voluptas dolore error, quibusdam quos perferendis. Deserunt assumenda ullam eum voluptatem, voluptate beatae cum fugiat cumque? Dolore at odio magni atque saepe non perspiciatis nostrum repudiandae porro temporibus, ipsum dolorum, deserunt sapiente, culpa illo expedita amet repellendus neque quo totam beatae.
+		</article>
+		<article>
+			Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptas aliquid delectus tempora excepturi illum enim sequi numquam, impedit atque possimus iste, eum libero labore nesciunt in doloremque fugiat voluptatem voluptate, praesentium laborum, nisi maxime. Praesentium reprehenderit, ex, facilis quo ducimus ut dignissimos sunt aperiam quam neque, ab illum sequi. Hic quasi, quo repellendus perferendis maxime expedita deleniti explicabo voluptatum autem quae iure suscipit beatae distinctio nulla nostrum eveniet similique voluptatem asperiores dolorum. Mollitia tenetur temporibus officiis at voluptates aspernatur velit voluptatibus earum consequuntur ex aliquid quidem quas tempora sit eius ad autem debitis unde dicta, provident sint natus architecto. Delectus alias quam laboriosam dolores modi unde quo cumque quod nihil, cupiditate asperiores voluptate inventore ducimus rem quasi nisi, obcaecati sit odio autem ipsam consectetur. Dolor mollitia minima incidunt optio esse atque saepe distinctio veniam blanditiis nesciunt provident accusantium, sapiente eius aliquam labore expedita libero repudiandae, numquam maiores ea fugit excepturi. Saepe perspiciatis neque ab eos, quod vitae consequuntur porro, molestiae, vero delectus maiores incidunt corrupti nobis nihil itaque quasi dolore ut fugit deleniti tempore sapiente perferendis quaerat magnam provident totam? Quo non nesciunt quidem enim. In placeat id neque. Suscipit eligendi perspiciatis doloremque totam ex fugiat, illum molestias fugit, quibusdam.
+		</article>
+	</div>
+	<footer></footer>
+</body>
+</html>
