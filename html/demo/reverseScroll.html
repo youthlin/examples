@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>翻转滚动条</title>
+    <style>
+        .reverse {
+            transform: rotate(180deg);
+        }
+
+        .reverse-n {
+            transform: rotate(-180deg);
+        }
+
+        section {
+            overflow: scroll;
+            margin: 5px;
+            padding: 5px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            white-space: nowrap;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+<h2>正常滚动条</h2>
+<section>
+    <table>
+        <tr>
+            <td>表格单元格11</td>
+            <td>表格单元格12</td>
+            <td>表格单元格13</td>
+            <td>表格单元格14</td>
+            <td>表格单元格15</td>
+            <td>表格单元格16</td>
+            <td>表格单元格17</td>
+        </tr>
+        <tr>
+            <td>表格单元格21</td>
+            <td>表格单元格22</td>
+            <td>表格单元格23</td>
+            <td>表格单元格24</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+        </tr>
+        <tr>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+        </tr>
+        <tr>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+        </tr>
+    </table>
+</section>
+<h2>滚动条翻转</h2>
+<section class="reverse-n">
+    <table class="reverse">
+        <tr>
+            <td>表格单元格11</td>
+            <td>表格单元格12</td>
+            <td>表格单元格13</td>
+            <td>表格单元格14</td>
+            <td>表格单元格15</td>
+            <td>表格单元格16</td>
+            <td>表格单元格17</td>
+        </tr>
+        <tr>
+            <td>表格单元格21</td>
+            <td>表格单元格22</td>
+            <td>表格单元格23</td>
+            <td>表格单元格24</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+        </tr>
+        <tr>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+        </tr>
+        <tr>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+            <td>表格单元格</td>
+        </tr>
+    </table>
+</section>
+</body>
+</html>
