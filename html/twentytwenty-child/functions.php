@@ -35,7 +35,6 @@ function lin_enqueue_styles() {
 add_action('wp_footer', 'lin_wp_footer');
 function lin_wp_footer() {
     lin_top_bottom_nav();
-    define_ajax_url();
     wp_enqueue_script('baguetteBox-js',
         'https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.js');
     wp_enqueue_script('highlight-js-main',
@@ -46,6 +45,7 @@ function lin_wp_footer() {
     wp_enqueue_script('twentytwenty-child-js', get_stylesheet_directory_uri() . '/index.js',
         array(), wp_get_theme()->get('Version'), true);
     wp_enqueue_script('ta-js', 'http://tajs.qq.com/stats?sId=30683215', array(), null);
+    wp_script_add_data('ta-js', 'async', true);
     wp_enqueue_script('gtag', 'https://www.googletagmanager.com/gtag/js?id=UA-46211856-1', array(), null);
     wp_script_add_data('gtag', 'async', true);
     wp_add_inline_script('gtag', 'window.dataLayer = window.dataLayer || [];
@@ -394,8 +394,22 @@ function lin_output_smilies_to_comment_form($default) {
 //endregion
 
 //region comment ajax
-function define_ajax_url() {
-    wp_localize_script('comment-reply', 'lin_ajax', array('url' => admin_url('admin-ajax.php')));
+add_action('comment_form', 'lin_ajax_comment_nonce', 10, 1);
+function lin_ajax_comment_nonce($postId) {
+    wp_localize_script('comment-reply', 'lin_ajax', array(
+        'url' => admin_url('admin-ajax.php'),
+        'lin_comment_nonce' => wp_create_nonce('lin_comment_nonce_' . $postId)
+    ));
+}
+
+add_action('pre_comment_on_post', 'lin_ajax_comment_verify', 10, 1);
+function lin_ajax_comment_verify($postId) {
+    if (!wp_verify_nonce($_POST['lin_comment_nonce'], 'lin_comment_nonce_' . $postId)) {
+        header('HTTP/1.0 403 Forbidden');
+        header('Content-Type: text/plain;charset=UTF-8');
+        echo '403 Forbidden';
+        exit;
+    }
 }
 
 // wp_ajax_nopriv_{action} 用于登录用户 wp_ajax_{action} 用于未登录用户

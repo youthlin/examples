@@ -267,6 +267,7 @@
                 }
                 let formData = new FormData(commentForm);
                 formData.append('action', 'lin_ajax_comment');
+                formData.append('lin_comment_nonce', lin_ajax.lin_comment_nonce);
                 commentSubmitLoading.style.display = 'flex';
                 comment.disabled = true;
                 submit.disabled = true;
