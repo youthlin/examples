@@ -35,6 +35,7 @@
         <module>example-actor</module>
         <module>example-agent</module>
         <module>example-webdav</module>
+        <module>plugin</module>
     </modules>
 
     <properties>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>花花</title>
+    <style>
+        /*region main layout*/
+        html, body {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        #wrap {
+            min-height: 100%;
+            height: auto !important;
+            height: 100%;
+            margin: 0 auto -70px;
+        }
+
+        #end {
+            clear: both;
+            height: 70px;
+        }
+
+        #copyright {
+            height: 70px;
+            overflow: hidden;
+            text-align: center;
+            color: #c7c7c7;
+            background-color: rgba(255, 255, 255, .2);
+        }
+
+        #copyright p:first-child {
+            margin-top: 10px;
+        }
+
+        #copyright p:last-child {
+            margin-bottom: 0;
+        }
+
+        #copyright a {
+            color: #c7c7c7;
+            text-decoration: none;
+        }
+
+        #copyright a:hover {
+            text-decoration: underline;
+        }
+
+        /*endregion main layout*/
+        /*region login*/
+        #center {
+            padding: 2%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            text-align: center;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+            background: rgba(100, 150, 200, 0.4);
+            border: 1px solid rgba(30, 90, 35, .4);
+        }
+
+        /*endregion login*/
+        /*region ImageResolution*/
+        body.bing {
+            background: #fff url("https://cn.bing.com/ImageResolution.aspx?w=1920&h=1200") no-repeat;
+            background-size: cover;
+        }
+
+        @media screen and (max-width: 1366px) {
+            body.bing {
+                background-image: url('https://cn.bing.com/ImageResolution.aspx?w=1366');
+            }
+        }
+
+        @media screen and (max-width: 1024px) {
+            body.bing {
+                background-image: url('https://cn.bing.com/ImageResolution.aspx?w=1024');
+            }
+        }
+
+        @media screen and (max-width: 800px) {
+            body.bing {
+                background-image: url('https://cn.bing.com/ImageResolution.aspx?w=800');
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            body.bing {
+                background-image: url('https://cn.bing.com/ImageResolution.aspx?w=768');
+            }
+        }
+
+        @media screen and (max-width: 768px) and (orientation: portrait) {
+            body.bing {
+                background-image: url('https://cn.bing.com/ImageResolution.aspx?w=768&h=1280');
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            body.bing {
+                background-image: url('https://cn.bing.com/ImageResolution.aspx?w=480');
+            }
+        }
+
+        @media screen and (max-width: 480px) and (orientation: portrait) {
+            body.bing {
+                background-image: url('https://cn.bing.com/ImageResolution.aspx?w=480&h=800');
+            }
+        }
+
+        /*endregion ImageResolution*/
+
+    </style>
+</head>
+<body class="bing">
+
+<div id="wrap">
+    <div id="center">
+        <h1>纪念 第一次见面</h1>
+        <p><em>2018年02月20日 大年初五</em></p>
+        <div style="margin-top:10px;">
+            <strong id="days">需要启用 JavaScript</strong>
+        </div>
+    </div>
+    <div id="end"></div>
+</div>
+
+<footer>
+    <div id="copyright">
+        <p>&copy;2018 Since 2018-05-20</p>
+        <p><a href="/">YouthLin Chen</a></p>
+    </div>
+</footer>
+<script>
+    const msPerSecond = 1000;
+    const secondPerMin = 60;
+    const minPerHour = 60;
+    const hourPerDay = 24;
+    const dayPerMonth = 30;
+    const monPerYear = 12;
+
+    function getDuration(start) {
+        return format(new Date().getTime() - new Date(start).getTime());
+    }
+
+    function format(ms) {
+        if (ms < 0) {
+            return '还有 ' + format(-ms);
+        }
+        let second = Math.floor(ms / msPerSecond);
+        if (second < secondPerMin) {
+            return `${second} 秒`;
+        }
+        let min = Math.floor(second / secondPerMin);
+        second -= min * secondPerMin;
+        if (min < minPerHour) {
+            if (second === 0) {
+                return `${min} 分钟`;
+            }
+            return `${min} 分钟 ${second} 秒`;
+        }
+        let hour = Math.floor(min / minPerHour);
+        min -= hour * minPerHour;
+        if (hour < hourPerDay) {
+            if (min === 0) {
+                if (second === 0) {
+                    return `${hour} 小时`;
+                }
+                return `${hour} 小时零 ${second} 秒`;
+            }
+            if (second === 0) {
+                return `${hour} 小时 ${min} 分钟`;
+            }
+            return `${hour} 小时 ${min} 分钟 ${second} 秒`;
+        }
+        let day = Math.floor(hour / hourPerDay);
+        hour -= day * hourPerDay;
+        if (day < dayPerMonth) {
+            if (hour === 0) {
+                return `${day} 天`;
+            }
+            return `${day} 天 ${hour} 小时`;
+        }
+        let month = Math.floor(day / dayPerMonth);
+        day -= month * dayPerMonth;
+        if (month < monPerYear) {
+            if (day === 0) {
+                if (hour === 0) {
+                    return `${month} 个月`;
+                }
+                return `${month} 个月零 ${hour} 小时`;
+            }
+            if (hour === 0) {
+                return `${month} 个月 ${day} 天`;
+            }
+            return `${month} 个月 ${day} 天 ${hour} 小时`;
+        }
+        let year = Math.floor(month / monPerYear);
+        month -= year * monPerYear;
+        if (month === 0) {
+            if (day === 0) {
+                return `${year} 年`;
+            }
+            return `${year} 年零 ${day} 天`;
+        }
+        if (day === 0) {
+            return `${year} 年 ${month} 个月`;
+        }
+        return `${year} 年 ${month} 个月 ${day} 天`;
+    }
+
+    document.getElementById('days').innerText = getDuration('2018-02-20');
+</script>
+</body>
+</html>
+

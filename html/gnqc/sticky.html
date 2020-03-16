@@ -20,6 +20,16 @@
             top: 0;
             background-color: #afe;
         }
+
+        .wide-content-virtual {
+            position: -webkit-sticky;
+            position: sticky;
+            bottom: 0;
+            overflow-x: scroll;
+            color: #fff;
+            background-color: #fff;
+            height: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -420,5 +430,27 @@
         </tbody>
     </table>
 </section>
+<section>
+        <pre class="wide-content">
+var wrap_gif_drag = nybbleFormulaDomain + 5;
+var tunnelingParse = rpm_rootkit;
+screenshot.bar_time = xmpPcb + gigahertzNvramCd.offline(restore, input, ddrScroll) * gifInterlaced.avatar_cad(35, system);var clean = file(quicktimeLinuxReal + pram_jfs_swappable - 555399, pad(controller_broadband - name_pad_leaf));
+uml_pitch = barComputerByte - raster_language;
+        </pre>
+</section>
+<script>
+    document.querySelectorAll('.wide-content').forEach(e => {
+        const clone = document.createElement(e.tagName);
+        clone.innerText = e.innerText;
+        e.insertAdjacentElement('afterend', clone);
+        clone.classList.add('wide-content-virtual');
+        clone.addEventListener('scroll', () => {
+            e.scrollTo(clone.scrollLeft, e.scrollHeight);
+        });
+        e.addEventListener('scroll', () => {
+            clone.scrollTo(e.scrollLeft, e.scrollHeight);
+        });
+    });
+</script>
 </body>
 </html>

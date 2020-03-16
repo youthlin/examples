@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MarkDown Preview</title>
+    <script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/marked/0.3.6/marked.min.js"></script>
+    <script src="https://cdn.bootcss.com/highlight.js/9.9.0/highlight.min.js"></script>
+    <link href='https://cdn.maxiang.io/res-min/themes/marxico.css' rel='stylesheet'>
+    <style type="text/css">
+        html, body {
+            height: 100%;
+        }
+
+        #control {
+            position: fixed;
+            right: 2%;
+            top: 2%;
+        }
+
+        #content, #result {
+            width: 100%;
+            max-width: 100%;
+            min-width: 100%;
+            height: 50%;
+            max-height: 50%;
+            min-height: 50%;
+            padding: 1%;
+        }
+
+        #content {
+            resize: none;
+            font-family: "courier new", "monospace", serif;
+        }
+
+        textarea:focus {
+            box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+            border: 1px solid rgba(81, 203, 238, 1);
+        }
+
+        #result {
+            overflow-x: hidden;
+            overflow-y: auto;
+            float: right;
+        }
+
+        svg path,
+        svg rect {
+            fill: #FF6700;
+        }
+
+        @media screen and (min-width: 768px) {
+            #content, #result {
+                height: 100%;
+                max-height: 100%;
+                min-height: 100%;
+                width: 50%;
+                max-width: 50%;
+                min-width: 50%;
+            }
+        }
+
+        @media print {
+            .print-not-show {
+                display: none;
+            }
+
+            html, body {
+                height: auto;
+            }
+
+            #result {
+                overflow: auto;
+                height: auto;
+                min-height: auto;
+            }
+        }
+
+        .hljs{display:block;overflow-x:auto;padding:0.5em;background:#F0F0F0}.hljs,.hljs-subst{color:#444}.hljs-comment{color:#888888}.hljs-keyword,.hljs-attribute,.hljs-selector-tag,.hljs-meta-keyword,.hljs-doctag,.hljs-name{font-weight:bold}.hljs-type,.hljs-string,.hljs-number,.hljs-selector-id,.hljs-selector-class,.hljs-quote,.hljs-template-tag,.hljs-deletion{color:#880000}.hljs-title,.hljs-section{color:#880000;font-weight:bold}.hljs-regexp,.hljs-symbol,.hljs-variable,.hljs-template-variable,.hljs-link,.hljs-selector-attr,.hljs-selector-pseudo{color:#BC6060}.hljs-literal{color:#78A960}.hljs-built_in,.hljs-bullet,.hljs-code,.hljs-addition{color:#397300}.hljs-meta{color:#1f7199}.hljs-meta-string{color:#4d99bf}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}
+        pre code, pre.prettyprint code {
+            padding: 0 !important;
+        }
+    </style>
+</head>
+<body>
+<div style="height: 100%;">
+    <div id="control" class="print-not-show">
+        <div id="gif" title="Loading" style="display: none;float: left;">
+            <!-- https://codepen.io/aurer/pen/jEGbA/ -->
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"  x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                </rect>
+                <rect x="8" y="10" width="4" height="10" fill="#333"  opacity="0.2">
+                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                </rect>
+                <rect x="16" y="10" width="4" height="10" fill="#333"  opacity="0.2">
+                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                </rect>
+            </svg>
+        </div>
+        <button id="btn-clear">Clear</button>
+        <button id="btn-random">Random</button>
+    </div>
+    <div id="result"></div>
+    <textarea id="content" onkeyup="compile()" class="print-not-show" title="" autofocus># Markdown Preview
+>请在此处键入 `markdown` 内容
+右侧将会_自动_生成预览。
+
+```
+System.out.println("Please input markdown text here.");
+```
+[Markdown Syntax](http://daringfireball.net/projects/markdown/syntax)
+[Markdown 语法说明 (简体中文版)](http://wowubuntu.com/markdown/)
+
+支持扩展表格语法：
+
+| ab | ab |
+|----|----|
+| 12 | 34 |
+</textarea>
+</div>
+<script type="text/javascript">
+    const render = new marked.Renderer();
+    // id 重复问题、不支持中文 Id 问题 added on 2017-09-13 11:42
+    // https://github.com/chjj/marked/issues/879#issuecomment-297654193
+    let headings = [];
+    render.heading = function (text, level) {
+        var escapedText = text.toLowerCase();//.replace(/[^\w]+/g, '-');  // support CJK words
+        var duplicateIndex = headings.map(function (h) {
+            return h.text
+        }).indexOf(escapedText);
+        var duplicateText;
+        if (duplicateIndex === -1) {
+            headings.push({
+                text: escapedText,
+                count: 0
+            });
+        } else {
+            headings[duplicateIndex].count++;
+            duplicateText = escapedText + '-' + headings[duplicateIndex].count;
+        }
+        return '<h' + level + ' id="' + (duplicateText || escapedText) + '">' + text + '</h' + level + '>\n';
+    };
+    const $result = jQuery('#result');
+    let nowHtml = true;
+    marked.setOptions({
+        renderer: render,	//指定渲染器
+        gfm: true,			// GitHub 风格
+        tables: true,		//支持表格
+        breaks: true,		//回车换成br
+        highlight: function (code) {
+            return hljs.highlightAuto(code).value;
+        }
+    });
+
+    function compile() {
+        headings = [];
+        $result.html(marked(jQuery("#content").val()));
+        nowHtml = true;
+    }
+
+    jQuery(document).ready(function ($) {
+        // 同步滚动
+        var $divs = $('textarea#content, div#result');
+        var sync = function () {
+            var $other = $divs.not(this).off('scroll'), other = $other.get(0);
+            var percentage = this.scrollTop / (this.scrollHeight - this.offsetHeight);
+            other.scrollTop = percentage * (other.scrollHeight - other.offsetHeight);
+            setTimeout(function () {
+                $other.on('scroll', sync);
+            }, 200);
+        };
+        $divs.on('scroll', sync);
+
+        compile();//页面加载后编译一次
+
+        // 双击显示源码 added on 2017年2月19日16:00:15
+        $result.dblclick(function () {
+            if (nowHtml) {
+                $result.text($result.html());
+                nowHtml = false;
+            }
+            else {
+                $result.html($result.text());
+                nowHtml = true;
+            }
+        });
+        $('#btn-clear').click(function () {
+            $('#content').val('');
+            compile();
+        });
+        var $loading = $('#gif');
+        var $random = $('#btn-random');
+        $random.click(function () {
+            $random.attr('disabled', true);
+            $loading.show();
+            $.ajax({
+                url: 'random-markdown.php',
+                success: function (r) {
+                    $('#content').val(r);
+                    compile();
+                },
+                complete: function () {
+                    $random.attr('disabled', false);
+                    $loading.hide();
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>
+
+
