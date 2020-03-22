@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Proxy</title>
+</head>
+<body>
+<button id="btn">Click</button>
+<button id="xhr2">MyXhr</button>
+<script>
+    window.XMLHttpRequest = new Proxy(window.XMLHttpRequest, {
+        construct(OriginalXhr, argArray, newTarget) {
+            // 如果有子类继承我们的 Proxy，new 那个 子类时, newTarget 就是那个子类
+            // 应该使用 Reflect.construct 并传入 newTarget 才能让生成的实例的 this 指向正确的那个子类
+            const xhr = Reflect.construct(OriginalXhr, argArray, newTarget);
+            // 这样直接 new 的话，生成的实例 只能调用 XMLHttpRequest 的方法，不能调用子类的方法
+            // const xhr = new OriginalXhr(argArray);
+            return new Proxy(xhr, {
+                set(target, property, value, receiver) {
+                    console.log(`${typeof target} set ${property}`);
+                    target[property] = value;
+                    // 为什么不能用 receiver
+                    // Reflect.set(target, property, value, receiver);
+                    return true;
+                },
+                get(target, p, receiver) {
+                    console.log(`get ${p.toString()}`);
+                    const value = target[p];
+                    return (typeof value === 'function') ? value.bind(target) : value;
+                },
+                getOwnPropertyDescriptor(target, p) {
+                    console.log(`getOwnPropertyDescriptor. ${p.toString()}`);
+                    return Reflect.getOwnPropertyDescriptor(target, p);
+                }
+            });
+        }
+    });
+
+    class Xhr2 extends XMLHttpRequest {
+        constructor(name = 'Xhr2') {
+            super();
+            this.myName = name;
+        }
+
+        getMyName() {
+            return this.myName;
+        }
+    }
+
+    function get(xhr) {
+        return new Promise((resolve, reject) => {
+            xhr.open('GET', window.location.href);
+            xhr.onload = resolve;
+            xhr.onerror = reject;
+            xhr.send();
+        });
+    }
+
+    const btn = document.getElementById('btn');
+
+    btn.onclick = e => {
+        let xhr = new window.XMLHttpRequest();
+        get(xhr)
+            .then(() => console.dir(xhr))
+            .catch(e => console.log(e));
+    };
+
+    const btn2 = document.getElementById('xhr2');
+    btn2.onclick = e => {
+        const xhr = new Xhr2('HaMyXhr2');
+        get(xhr)
+            .then(() => console.dir(xhr))
+            .then(() => console.log(xhr.getMyName()))
+            .catch(e => console.log(e));
+    };
+</script>
+</body>
+</html>
