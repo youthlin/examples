@@ -1,8 +1,5 @@
 package com.youthlin.example.concurrent;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.util.Arrays;
 import java.util.concurrent.locks.LockSupport;
 
 /**
@@ -34,9 +31,7 @@ public class LockSupportTest {
             e.printStackTrace();
         }
 
-        ThreadInfo[] threadInfos = ManagementFactory.getThreadMXBean().dumpAllThreads(true, true);
-        Arrays.stream(threadInfos)
-                .forEach(System.out::println);
+        TestUtil.dump();
 
         LockSupport.unpark(thread);
 
