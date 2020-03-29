@@ -72,6 +72,7 @@
             action.style.textAlign = 'right';
             action.style.marginBottom = '0';
             action.style.backgroundColor = '#dcd7ca';
+            action.style.cursor = 'pointer';
             on(action, 'click', () => {
                 if (block.style.maxWidth !== '100vw') {
                     block.style.maxWidth = '100vw';
