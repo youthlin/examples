@@ -138,8 +138,7 @@ function lin_top_bottom_nav() {
 function add_copyright($content) {
     if (is_single() or is_feed()) {
         $content .= "<hr/>";
-        $content .= '<div class="copyright" style="border: 1px solid; font-size: smaller; border-left: 5px solid;">
-	<div style="padding: 1%;">
+        $content .= '<div class="copyright" style="border: 1px solid; font-size: smaller; border-left: 5px solid; padding: 1%;">
 		<h5 style="margin:0;"><small>声明</small></h5>
 		<ul style="margin:0">
     		<li class="copyright-li">本作品采用<a rel="license" 
@@ -151,9 +150,7 @@ function add_copyright($content) {
 		        <u>' . wp_get_shortlink(get_the_ID()) . '</u></li>
 			<li class="copyright-li">订阅本站：<a title="霖博客的 RSS 源" href="https://youthlin.com/feed/" 
 				    rel="nofollow">https://youthlin.com/feed/</a></li>
-		</ul>
-	</div>
-</div>';
+		</ul></div>';
     }
     return $content;
 }

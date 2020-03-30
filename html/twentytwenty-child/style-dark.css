@@ -3,13 +3,13 @@ html {
     --dark-bg: #181818;
     --dark-bg-second: #282828;
     --dark-bg-lighter: #383838;
-    --dark-color: rgba(255, 255, 255, .8);
-    --dark-color-lighter: rgba(255, 255, 255, .9);
+    --dark-fg: #999;
+    --dark-fg-lighter: #aaa;
 }
 
 body {
     background-color: var(--dark-bg);
-    color: var(--dark-color);
+    color: var(--dark-fg);
 }
 
 .search-modal-inner,
@@ -20,27 +20,36 @@ body {
 
 #site-header,
 .menu-modal-inner,
-.header-footer-group, body:not(.overlay-header) #site-header .toggle,
+.header-footer-group,
+body:not(.overlay-header) #site-header .toggle,
+.header-footer-group table caption,
 .menu-modal .toggle,
 #comment-loading,
-    /*input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="date"],
-    input[type="month"], input[type="time"], input[type="datetime"], input[type="datetime-local"],
-    input[type="week"], input[type="number"], input[type="search"], input[type="tel"], input[type="color"],*/
+caption, code, kbd, samp,
 input[type]:not([type=submit]),
 textarea,
 .header-footer-group input:not([type=submit]),
 .header-footer-group select,
 #site-footer {
     background-color: var(--dark-bg-second);
-    color: var(--dark-color);
+    color: var(--dark-fg);
 }
 
 .entry-title a {
-    color: var(--dark-color);
+    color: var(--dark-fg);
 }
 
 .entry-title a:hover {
-    color: var(--dark-color-lighter);
+    color: var(--dark-fg-lighter);
+}
+
+img {
+    opacity: .75;
+    transition: opacity .5s ease-in-out;
+}
+
+img:hover {
+    opacity: 1;
 }
 
 .hljs tr:nth-of-type(even) {
@@ -49,4 +58,8 @@ textarea,
 
 .hljs tr:hover {
     background-color: var(--dark-bg);
+}
+
+li.archive-item:nth-of-type(odd) {
+    background-color: var(--dark-bg-lighter);
 }
