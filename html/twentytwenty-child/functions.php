@@ -20,7 +20,10 @@ function lin_wp_head() {
         let theme = 'auto';
         if (window.localStorage) {
             // 看上次是否有保存
-            theme = localStorage.getItem('theme');
+            const saved = localStorage.getItem('theme');
+            if (saved !== null) {
+                theme = saved;
+            }
         }
         themeSwitch(theme);
     </script>
