@@ -1,0 +1,52 @@
+/* 深色模式 */
+html {
+    --dark-bg: #181818;
+    --dark-bg-second: #282828;
+    --dark-bg-lighter: #383838;
+    --dark-color: rgba(255, 255, 255, .8);
+    --dark-color-lighter: rgba(255, 255, 255, .9);
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: var(--dark-color);
+}
+
+.search-modal-inner,
+.singular .entry-header,
+.hljs-action {
+    background-color: var(--dark-bg-lighter);
+}
+
+#site-header,
+.menu-modal-inner,
+.header-footer-group, body:not(.overlay-header) #site-header .toggle,
+.menu-modal .toggle,
+#comment-loading,
+    /*input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="date"],
+    input[type="month"], input[type="time"], input[type="datetime"], input[type="datetime-local"],
+    input[type="week"], input[type="number"], input[type="search"], input[type="tel"], input[type="color"],*/
+input[type]:not([type=submit]),
+textarea,
+.header-footer-group input:not([type=submit]),
+.header-footer-group select,
+#site-footer {
+    background-color: var(--dark-bg-second);
+    color: var(--dark-color);
+}
+
+.entry-title a {
+    color: var(--dark-color);
+}
+
+.entry-title a:hover {
+    color: var(--dark-color-lighter);
+}
+
+.hljs tr:nth-of-type(even) {
+    background-color: var(--dark-bg-lighter);
+}
+
+.hljs tr:hover {
+    background-color: var(--dark-bg);
+}

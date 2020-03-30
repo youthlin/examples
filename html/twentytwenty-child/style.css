@@ -2,7 +2,7 @@
 Theme Name: Twenty Twenty Child
 Template: twentytwenty
 Text Domain:  twentytwentychild
-Version: 0.24
+Version: 0.25
 Requires at least: 4.7
 Requires PHP: 5.2.4
 Description: 2020
@@ -33,6 +33,10 @@ pre {
 
 .hljs-action {
     display: none;
+    text-align: right;
+    background-color: rgb(220, 215, 202);
+    cursor: pointer;
+    margin-bottom: 0;
 }
 
 @media (min-width: 580px) {
@@ -197,3 +201,27 @@ li.archive-item a {
 }
 
 /* endregion archive */
+
+/* region 主题切换*/
+#theme-switch {
+    display: flex;
+    opacity: .5;
+}
+
+#theme-switch:hover {
+    opacity: 1;
+}
+
+#theme-switch span {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+}
+
+#theme-switch span.active {
+    font-weight: bold;
+    border: 1px solid;
+}
+
+/* endregion 主题切换*/

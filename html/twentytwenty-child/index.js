@@ -69,10 +69,6 @@
             const action = document.createElement('a');
             action.innerHTML = '宽屏模式';
             action.classList.add('hljs-action');
-            action.style.textAlign = 'right';
-            action.style.marginBottom = '0';
-            action.style.backgroundColor = '#dcd7ca';
-            action.style.cursor = 'pointer';
             on(action, 'click', () => {
                 if (block.style.maxWidth !== '100vw') {
                     block.style.maxWidth = '100vw';
@@ -121,7 +117,7 @@
             rememberMe.checked = true;
         }
 
-        // 评论 ajax 翻页
+        // region 评论 ajax 翻页
         const commentList = id('comment-nav-list');//评论列表wrap
         const comments = id('comments');//评论区域锚点
         const respond = id('respond');//回复
@@ -164,6 +160,7 @@
                 }
             }));
         }
+        // endregion 评论 ajax 翻页
 
         document.oncopy = function () {
             let link = document.querySelector('link[rel=shortlink]');
@@ -325,6 +322,28 @@
 
         document.querySelectorAll('a[rel~=external],a[rel~=friend],a[rel~=noreferrer]')
             .forEach(a => a.target = '_blank');
+
+        /* region 主题切换*/
+        document.querySelector('.theme.' + theme).classList.add('active');
+        // 系统切换主题时得到通知
+        darkQuery.onchange = (e) => {
+            if (document.querySelector('.theme.auto').classList.contains('active')) {
+                // 如果是跟随系统 那就跟随系统~
+                themeSwitch('auto');
+            }
+        };
+        document.querySelectorAll('#theme-switch span')
+            .forEach(e => on(e, 'click', () => {
+                document.querySelectorAll('#theme-switch span')
+                    .forEach(e => e.classList.remove('active'));
+                e.classList.add('active');
+                if (window.localStorage) {
+                    // 每次切换 保存在浏览器本地
+                    localStorage.setItem('theme', e.dataset.theme);
+                }
+                themeSwitch(e.dataset.theme);
+            }));
+        /* endregion 主题切换*/
 
     });
 })();

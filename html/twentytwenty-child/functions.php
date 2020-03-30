@@ -2,6 +2,29 @@
 //region 样式与脚本
 add_action('wp_head', 'lin_wp_head');
 function lin_wp_head() {
+    ?>
+    <script>
+        const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function themeSwitch(theme) {
+            console.log(`theme=${theme},sys=${darkQuery.matches}`);
+            if (theme === 'dark' || (theme === 'auto' && darkQuery.matches)) {
+                document.getElementById('twentytwenty-child-dark-css').disabled = false;
+                document.getElementById('highlight-dark-css').disabled = false;
+            } else {
+                document.getElementById('twentytwenty-child-dark-css').disabled = 'disabled';
+                document.getElementById('highlight-dark-css').disabled = 'disabled';
+            }
+        }
+
+        let theme = 'auto';
+        if (window.localStorage) {
+            // 看上次是否有保存
+            theme = localStorage.getItem('theme');
+        }
+        themeSwitch(theme);
+    </script>
+    <?php
     // 评论页面不要收录
     if (is_single() || is_page()) {
         if (function_exists('get_query_var')) {
@@ -20,25 +43,27 @@ function lin_enqueue_styles() {
     $parent_style = 'twentytwenty-style';
 
     wp_enqueue_style($parent_style, get_template_directory_uri() . '/style.css');
-    wp_enqueue_style('twentytwenty-child-style',
-        get_stylesheet_directory_uri() . '/style.css',
-        array($parent_style),
-        $theme_version
-    );
+    wp_enqueue_style('twentytwenty-child', get_stylesheet_directory_uri() . '/style.css',
+        array($parent_style), $theme_version);
+    wp_enqueue_style('twentytwenty-child-dark', get_stylesheet_directory_uri() . '/style-dark.css',
+        array($parent_style), $theme_version);
 
-    wp_enqueue_style('highlight-style',
-        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/default.min.css');
-    wp_enqueue_style('baguetteBox-style',
+    wp_enqueue_style('highlight',
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/default.min.css');
+    wp_enqueue_style('highlight-dark',
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/a11y-dark.min.css');
+    wp_enqueue_style('baguetteBox',
         'https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.css');
 }
 
 add_action('wp_footer', 'lin_wp_footer');
 function lin_wp_footer() {
+    lin_theme_switch();
     lin_top_bottom_nav();
     wp_enqueue_script('baguetteBox-js',
         'https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.js');
     wp_enqueue_script('highlight-js-main',
-        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js');
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js');
     wp_enqueue_script('highlight-js-linenumber',
         'https://cdn.jsdelivr.net/npm/highlightjs-line-numbers.js@2.7.0/dist/highlightjs-line-numbers.min.js');
     // 在 baguetteBox, highlight 之后
@@ -52,6 +77,16 @@ function lin_wp_footer() {
 function gtag(){dataLayer.push(arguments);}
 gtag("js", new Date());
 gtag("config", "UA-46211856-1");');
+}
+
+function lin_theme_switch() {
+    ?>
+    <div id="theme-switch">
+        <span class="theme auto" data-theme="auto">跟随系统</span>
+        <span class="theme light" data-theme="light">浅色</span>
+        <span class="theme dark" data-theme="dark">深色</span>
+    </div>
+    <?php
 }
 
 function lin_top_bottom_nav() {
