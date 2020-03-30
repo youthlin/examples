@@ -22,7 +22,6 @@ body {
 .menu-modal-inner,
 .header-footer-group,
 body:not(.overlay-header) #site-header .toggle,
-.header-footer-group table caption,
 .menu-modal .toggle,
 #comment-loading,
 caption, code, kbd, samp,
@@ -35,12 +34,21 @@ textarea,
     color: var(--dark-fg);
 }
 
+.header-footer-group table caption {
+    background-color: var(--dark-bg-lighter);
+    color: var(--dark-fg);
+}
+
 .entry-title a {
     color: var(--dark-fg);
 }
 
 .entry-title a:hover {
     color: var(--dark-fg-lighter);
+}
+
+pre {
+    opacity: .8;
 }
 
 img {

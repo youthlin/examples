@@ -2,7 +2,7 @@
 Theme Name: Twenty Twenty Child
 Template: twentytwenty
 Text Domain:  twentytwentychild
-Version: 0.26
+Version: 0.27
 Requires at least: 4.7
 Requires PHP: 5.2.4
 Description: 2020
@@ -97,6 +97,10 @@ pre {
     float: left;
     border-radius: 30px;
     margin-right: 1rem;
+}
+
+.copyright-li {
+    margin-left: 1em;
 }
 
 /* endregion 小工具 */
