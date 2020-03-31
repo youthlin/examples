@@ -1,73 +1,109 @@
 /* 深色模式 */
+/* 深色下的背景和前景颜色定义 */
 html {
-    --dark-bg: #181818;
-    --dark-bg-second: #282828;
+    --dark-bg-darken: #181818;
+    --dark-bg-normal: #282828;
     --dark-bg-lighter: #383838;
     --dark-fg: #999;
     --dark-fg-lighter: #aaa;
 }
 
+/* 底色 最黑 */
 body {
-    background-color: var(--dark-bg);
+    background-color: var(--dark-bg-darken);
     color: var(--dark-fg);
 }
 
-.search-modal-inner,
+/* 亮黑：文章页面的标题、代码高亮的切换全屏按钮 */
 .singular .entry-header,
 .hljs-action {
     background-color: var(--dark-bg-lighter);
 }
 
+/* 正常黑色背景、浅色文字*/
+/* 导航条 */
 #site-header,
+    /* 搜索模态页面 */
+.search-modal-inner,
+    /* 小屏菜单m模态页面 */
 .menu-modal-inner,
+    /* 底部小工具 */
 .header-footer-group,
+    /* 搜索、菜单等 图标 */
 body:not(.overlay-header) #site-header .toggle,
-.menu-modal .toggle,
+    /* ajax 评论加载 loading */
 #comment-loading,
-caption, code, kbd, samp,
+    /* 行内代码 */
+code, kbd, samp,
+    /* 非提交的输入框 */
 input[type]:not([type=submit]),
+select,
+    /* 评论框 */
 textarea,
-.header-footer-group input:not([type=submit]),
-.header-footer-group select,
+    /* 底部 copyright 区域 */
 #site-footer {
-    background-color: var(--dark-bg-second);
+    background-color: var(--dark-bg-normal);
     color: var(--dark-fg);
 }
 
-.header-footer-group table caption {
+/* 亮黑背景、浅色文字：表头 */
+.header-footer-group table caption,
+caption {
     background-color: var(--dark-bg-lighter);
     color: var(--dark-fg);
 }
 
+/* 浅色文字：文章标题 */
 .entry-title a {
     color: var(--dark-fg);
 }
 
+/* 亮浅色文字：文章标题悬浮 */
 .entry-title a:hover {
     color: var(--dark-fg-lighter);
 }
 
+/* 透明度动画 */
+* {
+    transition: opacity .5s ease-in-out;
+}
+
+/* 半透明：阅读更多、提交按钮 */
+span.faux-button,
+input[type=submit] {
+    opacity: .5;
+}
+
+span.faux-button:hover,
+input[type=submit]:hover {
+    opacity: .8;
+}
+
+/* 代码高亮不透明度 */
 pre {
     opacity: .8;
 }
 
+/* 图片不透明度 */
 img {
     opacity: .75;
-    transition: opacity .5s ease-in-out;
 }
 
 img:hover {
     opacity: 1;
 }
 
+/* 代码高亮隔行背景色 */
 .hljs tr:nth-of-type(even) {
     background-color: var(--dark-bg-lighter);
 }
 
+/* 代码高亮悬浮行背景色 */
 .hljs tr:hover {
-    background-color: var(--dark-bg);
+    background-color: var(--dark-bg-darken);
 }
 
+/* 归档页面隔行背景色 */
 li.archive-item:nth-of-type(odd) {
     background-color: var(--dark-bg-lighter);
 }
