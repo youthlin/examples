@@ -1,25 +1,28 @@
 // 为了不与其他文件命名冲突 所以用匿名函数包起来
 (function () {
     // region util
-    const id = function (id, parent = document) {
+    const CLICK = 'click';
+    const id = function (id, parent) {
+        if (parent === undefined) {
+            parent = document;
+        }
         return parent.getElementById(id);
+    };
+    const $ = function (selector) {
+        return document.querySelector(selector);
+    };
+    const $$ = function (selectors) {
+        return document.querySelectorAll(selectors);
     };
     // https://juejin.im/post/5a77f5115188257a6426775c
     const ajax = function (options) {
         let {url, method = 'GET', body} = options;
         return new Promise((resolve, reject) => {
-            let request = new XMLHttpRequest();
+            const request = new XMLHttpRequest();
             request.open(method, url);
             request.send(body);
-            request.onreadystatechange = () => {
-                if (request.readyState === 4) {
-                    if (request.status >= 200 && request.status < 300) {
-                        resolve.call(undefined, request.responseText)
-                    } else if (request.status >= 400) {
-                        reject.call(undefined, request)
-                    }
-                }
-            }
+            request.onload = () => resolve(request.responseText);
+            request.onerror = () => reject(request);
         });
     };
     // http://youmightnotneedjquery.com/#parse_html
@@ -29,6 +32,9 @@
         return doc;
     };
     const on = function (element, type, callback, options) {
+        if (element === null || element === undefined) {
+            return;
+        }
         if (element.addEventListener) {
             element.addEventListener(type, callback, options);
         } else if (element.attachEvent) {
@@ -60,7 +66,7 @@
 
     ready(() => {
         // 代码高亮
-        document.querySelectorAll("pre").forEach(block => {
+        $$("pre").forEach(block => {
             hljs.highlightBlock(block);
             hljs.lineNumbersBlock(block);
             if (block.dataset.height) {
@@ -69,7 +75,7 @@
             const action = document.createElement('a');
             action.innerHTML = '宽屏模式';
             action.classList.add('hljs-action');
-            on(action, 'click', () => {
+            on(action, CLICK, () => {
                 if (block.style.maxWidth !== '100vw') {
                     block.style.maxWidth = '100vw';
                     block.style.width = '100vw';
@@ -87,30 +93,35 @@
             block.style.marginTop = '0';
             block.insertAdjacentElement('beforebegin', action);
         });
+
         // 点击评论框表情插入表情文字到评论框
-        document.querySelectorAll('.my-smiley').forEach(smiley => on(smiley, 'click', () => {
-            const input = id('comment');
-            // 两边必须要有空格才会转换为表情
-            const text = ' ' + smiley.alt + ' ';
-            if (document.selection) {
-                input.focus();
-                let sel = document.selection.createRange();
-                sel.text = text;
-                input.focus()
-            } else if (input.selectionStart || input.selectionStart === 0) {
-                let startPos = input.selectionStart;
-                let endPos = input.selectionEnd;
-                let cursorPos = endPos;
-                input.value = input.value.substring(0, startPos) + text + input.value.substring(endPos, input.value.length);
-                cursorPos += text.length;
-                input.focus();
-                input.selectionStart = cursorPos;
-                input.selectionEnd = cursorPos
-            } else {
-                input.value += text;
-                input.focus()
+        on($('.comment-form-smilies'), CLICK, e => {
+            if (e.target.tagName.toLowerCase() === 'img') {
+                const smiley = e.target;
+                const input = id('comment');
+                // 两边必须要有空格才会转换为表情
+                const text = ' ' + smiley.alt + ' ';
+                if (document.selection) {
+                    input.focus();
+                    let sel = document.selection.createRange();
+                    sel.text = text;
+                    input.focus()
+                } else if (input.selectionStart || input.selectionStart === 0) {
+                    let startPos = input.selectionStart;
+                    let endPos = input.selectionEnd;
+                    let cursorPos = endPos;
+                    input.value = input.value.substring(0, startPos) + text + input.value.substring(endPos, input.value.length);
+                    cursorPos += text.length;
+                    input.focus();
+                    input.selectionStart = cursorPos;
+                    input.selectionEnd = cursorPos
+                } else {
+                    input.value += text;
+                    input.focus()
+                }
             }
-        }));
+        });
+
         // 默认勾选记住我
         const rememberMe = id('wp-comment-cookies-consent');
         if (rememberMe != null) {
@@ -123,11 +134,11 @@
         const respond = id('respond');//回复
         const loading = id('comment-loading');//加载中
         const cancelReply = id('cancel-comment-reply-link');//取消回复
-        const commentNavWraps = document.querySelectorAll('.comment-nav-wrap');//评论分页
+        const commentNavWraps = $$('.comment-nav-wrap');//评论分页
         const topNav = id('comment-nav-wrap-top');//评论分页-上
         const bottomNav = id('comment-nav-wrap-bottom');//评论分页-下
         if (commentList !== null && commentNavWraps !== null) {
-            commentNavWraps.forEach(wrap => on(wrap, 'click', e => {
+            commentNavWraps.forEach(wrap => on(wrap, CLICK, e => {
                 const target = e.target;
                 if (target.nodeName.toLowerCase() === 'a') {
                     e.preventDefault();
@@ -163,7 +174,7 @@
         // endregion 评论 ajax 翻页
 
         document.oncopy = function () {
-            let link = document.querySelector('link[rel=shortlink]');
+            let link = $('link[rel=shortlink]');
             if (link === null) {
                 link = document.location.href;
             } else {
@@ -199,7 +210,7 @@
             }
         }
 
-        on(goTop, 'click', () => {
+        on(goTop, CLICK, () => {
             window.scrollTo(0, 0);
             clearFlag();
         });
@@ -214,7 +225,7 @@
         on(goTop, 'mouseout', () => {
             clearFlag();
         });
-        on(goBottom, 'click', () => {
+        on(goBottom, CLICK, () => {
             clearFlag();
             setTimeout(() => {
                 id('site-footer').scrollIntoView(false);
@@ -231,12 +242,12 @@
             clearFlag();
         });
         if (goComments != null && comments != null) {
-            on(goComments, 'click', () => {
+            on(goComments, CLICK, () => {
                 comments.scrollIntoView(true);
             });
         }
         if (goReply != null && respond != null) {
-            on(goReply, 'click', () => {
+            on(goReply, CLICK, () => {
                 respond.scrollIntoView(true);
             });
         }
@@ -320,21 +331,21 @@
             async: true,
         });
 
-        document.querySelectorAll('a[rel~=external],a[rel~=friend],a[rel~=noreferrer]')
+        $$('a[rel~=external],a[rel~=friend],a[rel~=noreferrer]')
             .forEach(a => a.target = '_blank');
 
         /* region 主题切换*/
-        document.querySelector('.theme.' + theme).classList.add('active');
+        $('.theme.' + theme).classList.add('active');
         // 系统切换主题时得到通知
         darkQuery.onchange = (e) => {
-            if (document.querySelector('.theme.auto').classList.contains('active')) {
+            if ($('.theme.auto').classList.contains('active')) {
                 // 如果是跟随系统 那就跟随系统~
                 themeSwitch('auto');
             }
         };
-        document.querySelectorAll('#theme-switch .theme')
-            .forEach(e => on(e, 'click', () => {
-                document.querySelectorAll('#theme-switch .theme')
+        $$('#theme-switch .theme')
+            .forEach(e => on(e, CLICK, () => {
+                $$('#theme-switch .theme')
                     .forEach(e => e.classList.remove('active'));
                 e.classList.add('active');
                 if (window.localStorage) {

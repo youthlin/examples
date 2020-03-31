@@ -360,56 +360,63 @@ register_widget('Saying_Comments');
 
 //region 表情
 // 系统表情指向主题表情(修改表情代码_代码1/4)
-add_filter('smilies_src', 'custom_smilies_src', 1, 20);
+add_filter('smilies_src', 'custom_smilies_src', 10, 3);
 function custom_smilies_src($img_src, $img, $siteurl) {
-    return get_stylesheet_directory_uri() . '/images/smilies/' . $img;
+    return get_stylesheet_directory_uri() . '/images/' . $img;
 }
 
 // 表情代码转换图片(修改表情代码_代码2/4)
 if (!isset($wpsmiliestrans)) {
     $wpsmiliestrans = array(
-        '[/疑问]' => 'icon_question.gif',
-        '[/调皮]' => 'icon_razz.gif',
-        '[/难过]' => 'icon_sad.gif',
-        '[/愤怒]' => 'icon_smile.gif',
-        '[/可爱]' => 'icon_redface.gif',
-        '[/坏笑]' => 'icon_biggrin.gif',
-        '[/惊讶]' => 'icon_surprised.gif',
-        '[/发呆]' => 'icon_eek.gif',
-        '[/撇嘴]' => 'icon_confused.gif',
-        '[/大兵]' => 'icon_cool.gif',
-        '[/偷笑]' => 'icon_lol.gif',
-        '[/得意]' => 'icon_mad.gif',
-        '[/白眼]' => 'icon_rolleyes.gif',
-        '[/鼓掌]' => 'icon_wink.gif',
-        '[/亲亲]' => 'icon_neutral.gif',
-        '[/流泪]' => 'icon_cry.gif',
-        '[/流汗]' => 'icon_arrow.gif',
-        '[/吓到]' => 'icon_exclaim.gif',
-        '[/抠鼻]' => 'icon_evil.gif',
-        '[/呲牙]' => 'icon_mrgreen.gif',
-        ':?:' => 'icon_question.gif',
-        ':razz:' => 'icon_razz.gif',
-        ':sad:' => 'icon_sad.gif',
-        ':evil:' => 'icon_smile.gif',
-        ':!:' => 'icon_redface.gif',
-        ':smile:' => 'icon_biggrin.gif',
-        ':oops:' => 'icon_surprised.gif',
-        ':grin:' => 'icon_eek.gif',
-        ':eek:' => 'icon_confused.gif',
-        ':shock:' => 'icon_cool.gif',
-        ':???:' => 'icon_lol.gif',
-        ':cool:' => 'icon_mad.gif',
-        ':lol:' => 'icon_rolleyes.gif',
-        ':mad:' => 'icon_wink.gif',
-        ':twisted:' => 'icon_neutral.gif',
-        ':roll:' => 'icon_cry.gif',
-        ':wink:' => 'icon_arrow.gif',
-        ':idea:' => 'icon_exclaim.gif',
-        ':arrow:' => 'icon_evil.gif',
-        ':neutral:' => 'icon_mrgreen.gif',
-        ':cry:' => 'icon_eek.gif',
-        ':mrgreen:' => 'icon_razz.gif',
+        /*
+       '[亲亲]' => 'QQ/亲亲.gif',
+       '[偷笑]' => 'QQ/偷笑.gif',
+       '[再见]' => 'QQ/再见.gif',
+       '[发呆]' => 'QQ/发呆.gif',
+       '[发怒]' => 'QQ/发怒.gif',
+       '[可怜]' => 'QQ/可怜.gif',
+       '[吓]' => 'QQ/吓.gif',
+       '[呲牙]' => 'QQ/呲牙.gif',
+       '[害羞]' => 'QQ/害羞.gif',
+       '[得意]' => 'QQ/得意.gif',
+       '[微笑]' => 'QQ/微笑.gif',
+       '[惊恐]' => 'QQ/惊恐.gif',
+       '[抠鼻]' => 'QQ/抠鼻.gif',
+       '[擦汗]' => 'QQ/擦汗.gif',
+       '[敲打]' => 'QQ/敲打.gif',
+       '[晕]' => 'QQ/晕.gif',
+       '[流汗]' => 'QQ/流汗.gif',
+       '[流泪]' => 'QQ/流泪.gif',
+       '[疑问]' => 'QQ/疑问.gif',
+       '[色]' => 'QQ/色.gif',
+       '[调皮]' => 'QQ/调皮.gif',
+       '[鄙视]' => 'QQ/鄙视.gif',
+       '[阴险]' => 'QQ/阴险.gif',
+       '[鼓掌]' => 'QQ/鼓掌.gif',
+       */
+        '[/鼓掌]' => 'smilies/鼓掌.gif',
+        '[/难过]' => 'smilies/难过.gif',
+        '[/调皮]' => 'smilies/调皮.gif',
+        '[/白眼]' => 'smilies/白眼.gif',
+        '[/疑问]' => 'smilies/疑问.gif',
+        '[/流泪]' => 'smilies/流泪.gif',
+        '[/流汗]' => 'smilies/流汗.gif',
+        '[/撇嘴]' => 'smilies/撇嘴.gif',
+        '[/抠鼻]' => 'smilies/抠鼻.gif',
+        '[/惊讶]' => 'smilies/惊讶.gif',
+        '[/微笑]' => 'smilies/微笑.gif',
+        '[/得意]' => 'smilies/得意.gif',
+        '[/大兵]' => 'smilies/大兵.gif',
+        '[/坏笑]' => 'smilies/坏笑.gif',
+        //'[/咒骂]' => 'smilies/咒骂.gif',
+        '[/呲牙]' => 'smilies/呲牙.gif',
+        '[/吓到]' => 'smilies/吓到.gif',
+        '[/可爱]' => 'smilies/可爱.gif',
+        '[/发怒]' => 'smilies/发怒.gif',
+        '[/发呆]' => 'smilies/发呆.gif',
+        '[/偷笑]' => 'smilies/偷笑.gif',
+        '[/亲亲]' => 'smilies/亲亲.gif',
+
     );
 }
 // 3/4 输出表情到评论框
@@ -419,7 +426,7 @@ function lin_get_smilies() {
     $output = "\n";
     foreach ($wpsmilies as $alt => $src_path) {
         $output .= '<img title="' . $alt . '" alt="' . $alt . '" class="wp-smiley my-smiley" src="'
-            . get_stylesheet_directory_uri() . '/images/smilies/' . $src_path . "\">\n";
+            . get_stylesheet_directory_uri() . '/images/' . $src_path . "\">\n";
     }
     return $output;
 }
