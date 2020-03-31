@@ -27,6 +27,7 @@ body {
 .search-modal-inner,
     /* 小屏菜单m模态页面 */
 .menu-modal-inner,
+.menu-modal .toggle,
     /* 底部小工具 */
 .header-footer-group,
     /* 搜索、菜单等 图标 */
