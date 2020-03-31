@@ -85,9 +85,9 @@ gtag("config", "UA-46211856-1");');
 function lin_theme_switch() {
     ?>
     <div id="theme-switch">
-        <span class="theme auto" data-theme="auto">跟随系统</span>
-        <span class="theme light" data-theme="light">浅色</span>
-        <span class="theme dark" data-theme="dark">深色</span>
+        <button class="theme auto" data-theme="auto">跟随系统</button>
+        <button class="theme light" data-theme="light">浅色</button>
+        <button class="theme dark" data-theme="dark">深色</button>
     </div>
     <?php
 }
@@ -103,30 +103,25 @@ function lin_top_bottom_nav() {
     }
     ?>
     <div id="svg-nav">
-        <svg id="svg-go-top" aria-label="到页面顶部">
-            <path d="M3 25 L15 15 L27 25" fill="none" stroke="#ccc" stroke-width="3"/>
+        <!-- https://icons.bootcss.com/ -->
+        <svg id="svg-go-top" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.646 4.646a.5.5 0 01.708 0l6 6a.5.5 0 01-.708.708L8 5.707l-5.646 5.647a.5.5 0 01-.708-.708l6-6z"/>
         </svg>
         <?php if ($hasComments) { ?>
-            <svg id="svg-go-comments" aria-label="到评论列表">
-                <g fill="none" stroke="#ccc" stroke-width="3">
-                    <circle r="1.5" cx="2.5" cy="7" fill="#ccc" stroke-width="0"/>
-                    <path d="M7 7 L29 7"/>
-                    <circle r="1.5" cx="2.5" cy="15" fill="#ccc" stroke-width="0"/>
-                    <path d="M7 15 L29 15"/>
-                    <circle r="1.5" cx="2.5" cy="23" fill="#ccc" stroke-width="0"/>
-                    <path d="M7 23 L29 23"/>
-                </g>
+            <svg id="svg-go-comments" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 11.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm-3 1a1 1 0 100-2 1 1 0 000 2zm0 4a1 1 0 100-2 1 1 0 000 2zm0 4a1 1 0 100-2 1 1 0 000 2z"/>
             </svg>
         <?php } else {
             echo "<svg></svg>\n";// 用空的占个高度
         }
         if ($commentsOpen) { ?>
-            <svg id="svg-go-reply" aria-label="到评论表单">
-                <path fill="none" stroke="#ccc" stroke-width="3" d="M3 3 L27 3 L27 19 L24 19 L15 27 L19 19 L3 19 Z"/>
+            <svg id="svg-go-reply" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M14 1H2a1 1 0 00-1 1v8a1 1 0 001 1h2.5a2 2 0 011.6.8L8 14.333 9.9 11.8a2 2 0 011.6-.8H14a1 1 0 001-1V2a1 1 0 00-1-1zM2 0a2 2 0 00-2 2v8a2 2 0 002 2h2.5a1 1 0 01.8.4l1.9 2.533a1 1 0 001.6 0l1.9-2.533a1 1 0 01.8-.4H14a2 2 0 002-2V2a2 2 0 00-2-2H2z"/>
             </svg>
         <?php } ?>
-        <svg id="svg-go-bottom" aria-label="到页面底部">
-            <path d="M3 5 L15 15 L27 5" fill="none" stroke="#ccc" stroke-width="3"/>
+        <svg id="svg-go-bottom" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1.646 4.646a.5.5 0 01.708 0L8 10.293l5.646-5.647a.5.5 0 01.708.708l-6 6a.5.5 0 01-.708 0l-6-6a.5.5 0 010-.708z"/>
         </svg>
     </div>
     <?php
@@ -691,9 +686,11 @@ add_filter('comment_reply_link_args', 'lin_add_notify_text_after_replay_link', 1
 function lin_add_notify_text_after_replay_link($args, $comment, $post) {
     if (notify_when_reply($comment->comment_ID)) {
         $note = __('回复时对方会收到邮件通知');
-        $after = '<span class="notify-when-reply" title="' . $note . '"><svg aria-hidden="true" style="width:30px; height:20px;">
-    <path fill="none" stroke="#000" stroke-width="1"  d="M0 0 L30 0 L30 20 L0 20 Z"/>
-    <path fill="none" stroke="#000" stroke-width="1" stroke-dasharray="1" d="M0 0 L15 10 L30 0"/>
+        $after = '<span class="notify-when-reply" title="' . $note . '">
+<svg class="bi bi-envelope" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M14 3H2a1 1 0 00-1 1v8a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1zM2 2a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V4a2 2 0 00-2-2H2z" clip-rule="evenodd"/>
+  <path fill-rule="evenodd" d="M.071 4.243a.5.5 0 01.686-.172L8 8.417l7.243-4.346a.5.5 0 01.514.858L8 9.583.243 4.93a.5.5 0 01-.172-.686z" clip-rule="evenodd"/>
+  <path d="M6.752 8.932l.432-.252-.504-.864-.432.252.504.864zm-6 3.5l6-3.5-.504-.864-6 3.5.504.864zm8.496-3.5l-.432-.252.504-.864.432.252-.504.864zm6 3.5l-6-3.5.504-.864 6 3.5-.504.864z"/>
 </svg><span class="screen-reader-text">' . $note . '</span></span>';
         $args['after'] .= $after;
     }

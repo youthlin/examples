@@ -332,9 +332,9 @@
                 themeSwitch('auto');
             }
         };
-        document.querySelectorAll('#theme-switch span')
+        document.querySelectorAll('#theme-switch .theme')
             .forEach(e => on(e, 'click', () => {
-                document.querySelectorAll('#theme-switch span')
+                document.querySelectorAll('#theme-switch .theme')
                     .forEach(e => e.classList.remove('active'));
                 e.classList.add('active');
                 if (window.localStorage) {

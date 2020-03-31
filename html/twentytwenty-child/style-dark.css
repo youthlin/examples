@@ -68,15 +68,26 @@ caption {
     transition: opacity .5s ease-in-out;
 }
 
-/* 半透明：阅读更多、提交按钮 */
+/* 半透明：阅读更多、回复评论、提交按钮 */
 span.faux-button,
+.comment-reply-link,
 input[type=submit] {
     opacity: .5;
 }
 
 span.faux-button:hover,
-input[type=submit]:hover {
+span.faux-button:focus,
+.comment-reply-link:hover,
+.comment-reply-link:focus,
+input[type=submit]:hover,
+input[type=submit]:focus {
     opacity: .8;
+}
+
+/* 评论勾选框 */
+input[type="checkbox"]:checked::before {
+    /* Use the "Yes" SVG Dashicon */
+    content: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2020%2020%27%3E%3Cpath%20d%3D%27M14.83%204.89l1.34.94-5.81%208.38H9.02L5.78%209.67l1.34-1.25%202.57%202.4z%27%20fill%3D%27%23999999%27%2F%3E%3C%2Fsvg%3E");
 }
 
 /* 代码高亮不透明度 */
