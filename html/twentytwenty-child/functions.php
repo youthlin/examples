@@ -1,5 +1,22 @@
 <?php
+// 子主题 functions 先于父主题加载
+
 //region 样式与脚本
+add_action('init', 'lin_init');
+function lin_init() {
+    remove_action('wp_print_footer_scripts', 'twentytwenty_skip_link_focus_fix');
+}
+
+// all actions related to emojis
+remove_action('admin_print_styles', 'print_emoji_styles');
+remove_action('wp_head', 'print_emoji_detection_script', 7);
+remove_action('admin_print_scripts', 'print_emoji_detection_script');
+remove_action('wp_print_styles', 'print_emoji_styles');
+remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+remove_filter('the_content_feed', 'wp_staticize_emoji');
+remove_filter('comment_text_rss', 'wp_staticize_emoji');
+add_filter( 'emoji_svg_url', '__return_false' );
+
 add_action('wp_head', 'lin_wp_head');
 function lin_wp_head() {
     ?>
@@ -161,7 +178,7 @@ class My_Widget_Recent_Comments extends WP_Widget_Recent_Comments {
             'classname' => 'my_widget_recent_comments',
             'description' => __('近期评论(带头像)'),
         );
-        $this->WP_Widget('my-recent-comments', __('近期评论(带头像)'), $widget_ops);
+        WP_Widget::__construct('my-recent-comments', __('近期评论(带头像)'), $widget_ops);
     }
 
     /**
