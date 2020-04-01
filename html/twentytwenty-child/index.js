@@ -201,7 +201,6 @@
         const goComments = id('svg-go-comments');
         const goReply = id('svg-go-reply');
         let flag;
-        let flagBottom;
 
         function clearFlag() {
             if (flag) {
@@ -241,14 +240,22 @@
         on(goBottom, 'mouseout', () => {
             clearFlag();
         });
-        if (goComments != null && comments != null) {
+        if (goComments != null) {
             on(goComments, CLICK, () => {
-                comments.scrollIntoView(true);
+                if (comments != null) {
+                    comments.scrollIntoView(true);
+                } else if (respond != null) {
+                    respond.scrollIntoView(true);
+                }
             });
         }
-        if (goReply != null && respond != null) {
+        if (goReply != null) {
             on(goReply, CLICK, () => {
-                respond.scrollIntoView(true);
+                if (respond != null) {
+                    respond.scrollIntoView(true);
+                } else if (comments != null) {
+                    comments.scrollIntoView(true);
+                }
             });
         }
         // endregion 上下滑动
@@ -309,6 +316,7 @@
         }
         // endregion ajax comment
 
+        // 图片灯箱 https://github.com/feimosi/baguetteBox.js
         baguetteBox.run('.entry-content', {
             captions: function (a) {
                 const parent = a.parentElement;

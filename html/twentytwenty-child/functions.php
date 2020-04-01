@@ -56,7 +56,7 @@ function lin_enqueue_styles() {
     wp_enqueue_style('highlight-dark',
         'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/a11y-dark.min.css');
     wp_enqueue_style('baguetteBox',
-        'https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.css');
+        'https://cdn.jsdelivr.net/npm/baguettebox.js@1.11.1/dist/baguetteBox.min.css');
 }
 
 add_action('wp_footer', 'lin_wp_footer');
@@ -64,7 +64,7 @@ function lin_wp_footer() {
     lin_theme_switch();
     lin_top_bottom_nav();
     wp_enqueue_script('baguetteBox-js',
-        'https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.js');
+        'https://cdn.jsdelivr.net/npm/baguettebox.js@1.11.1/dist/baguetteBox.min.js');
     wp_enqueue_script('highlight-js-main',
         'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js');
     wp_enqueue_script('highlight-js-linenumber',
