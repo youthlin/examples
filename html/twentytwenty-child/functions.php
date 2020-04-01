@@ -71,7 +71,7 @@ function lin_enqueue_styles() {
     wp_enqueue_style('highlight',
         'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/default.min.css');
     wp_enqueue_style('highlight-dark',
-        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/a11y-dark.min.css');
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/tomorrow-night.min.css');
     wp_enqueue_style('baguetteBox',
         'https://cdn.jsdelivr.net/npm/baguettebox.js@1.11.1/dist/baguetteBox.min.css');
 }
