@@ -2,7 +2,7 @@
 Theme Name: Twenty Twenty Child
 Template: twentytwenty
 Text Domain:  twentytwentychild
-Version: 0.30
+Version: 0.31
 Requires at least: 4.7
 Requires PHP: 5.2.4
 Description: 2020
@@ -108,6 +108,12 @@ pre {
 /* region 评论区域 */
 p.comment-form-comment {
     margin-bottom: 0;
+}
+
+img.wp-smiley {
+    display: inline;
+    height: 1em;
+    width: 1em;
 }
 
 .my-smiley {
