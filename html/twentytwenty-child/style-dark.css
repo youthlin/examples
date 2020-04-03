@@ -16,6 +16,7 @@ body {
 
 /* 亮黑：文章页面的标题、代码高亮的切换全屏按钮 */
 .singular .entry-header,
+.archive-header,
 .hljs-action {
     background-color: var(--dark-bg-lighter);
 }
@@ -122,5 +123,9 @@ img:hover {
 
 /* 归档页面隔行背景色 */
 li.archive-item:nth-of-type(odd) {
+    background-color: var(--dark-bg-normal);
+}
+
+li.archive-item:hover {
     background-color: var(--dark-bg-lighter);
 }

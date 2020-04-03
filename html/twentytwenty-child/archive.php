@@ -4,7 +4,7 @@
         $archive_title = get_the_archive_title();
         $archive_subtitle = get_the_archive_description();
         ?>
-        <header class="archive-header has-text-align-center header-footer-group">
+        <header class="archive-header has-text-align-center">
             <div class="archive-header-inner section-inner medium">
                 <?php if ($archive_title) { ?>
                     <h1 class="archive-title"><?php echo wp_kses_post($archive_title); ?></h1>
