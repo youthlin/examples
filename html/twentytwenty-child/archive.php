@@ -63,6 +63,7 @@
     </main>
 <?php
 if (!is_page()) {
+    get_template_part( 'template-parts/pagination' );
     get_template_part('template-parts/footer-menus-widgets');
 }
 get_footer();
