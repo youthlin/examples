@@ -15,10 +15,13 @@ remove_action('wp_print_styles', 'print_emoji_styles');
 remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
 remove_filter('the_content_feed', 'wp_staticize_emoji');
 remove_filter('comment_text_rss', 'wp_staticize_emoji');
-add_filter( 'emoji_svg_url', '__return_false' );
+add_filter('emoji_svg_url', '__return_false');
 
 add_action('wp_head', 'lin_wp_head');
 function lin_wp_head() {
+    if (date('Y-m-d') == '2020-04-04') {
+        echo "<script>document.documentElement.style.filter='grayscale(1)';</script>";
+    }
     ?>
     <script>
         const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -244,7 +247,7 @@ class My_Widget_Recent_Comments extends WP_Widget_Recent_Comments {
             _prime_post_caches($post_ids, strpos(get_option('permalink_structure'), '%category%'), false);
 
             foreach ((array)$comments as $comment) {
-                $avatar = get_avatar($comment, 56, '', '头像');
+                $avatar = get_avatar($comment, 56, '', "@$comment->comment_author");
                 $output .= '<li class="recentcomments">';
                 $output .=
                     '<div class="comment-avatar">' . $avatar . '</div>'
