@@ -13,134 +13,103 @@
  * the visitor has not yet entered the password we will
  * return early without loading the comments.
 */
-if (post_password_required()) {
-    return;
+if ( post_password_required() ) {
+	return;
 }
 
-if ($comments) {
-    ?>
+if ( $comments ) {
+	?>
 
     <div class="comments" id="comments">
 
-        <?php
-        $comments_number = absint(get_comments_number());
-        ?>
+		<?php
+		$comments_number = absint( get_comments_number() );
+		?>
 
         <div class="comments-header section-inner small max-percentage">
 
             <h2 class="comment-reply-title">
-                <?php
-                if (!have_comments()) {
-                    _e('Leave a comment', 'twentytwenty');
-                } elseif ('1' === $comments_number) {
-                    /* translators: %s: post title */
-                    printf(_x('One reply on &ldquo;%s&rdquo;', 'comments title', 'twentytwenty'), esc_html(get_the_title()));
-                } else {
-                    echo sprintf(
-                    /* translators: 1: number of comments, 2: post title */
-                        _nx(
-                            '%1$s reply on &ldquo;%2$s&rdquo;',
-                            '%1$s replies on &ldquo;%2$s&rdquo;',
-                            $comments_number,
-                            'comments title',
-                            'twentytwenty'
-                        ),
-                        number_format_i18n($comments_number),
-                        esc_html(get_the_title())
-                    );
-                }
+				<?php
+				if ( ! have_comments() ) {
+					_e( 'Leave a comment', 'twentytwenty' );
+				} elseif ( '1' === $comments_number ) {
+					/* translators: %s: post title */
+					printf( _x( 'One reply on &ldquo;%s&rdquo;', 'comments title', 'twentytwenty' ), esc_html( get_the_title() ) );
+				} else {
+					echo sprintf(
+					/* translators: 1: number of comments, 2: post title */
+						_nx(
+							'%1$s reply on &ldquo;%2$s&rdquo;',
+							'%1$s replies on &ldquo;%2$s&rdquo;',
+							$comments_number,
+							'comments title',
+							'twentytwenty'
+						),
+						number_format_i18n( $comments_number ),
+						esc_html( get_the_title() )
+					);
+				}
 
-                ?>
+				?>
             </h2><!-- .comments-title -->
 
         </div><!-- .comments-header -->
 
         <div class="comments-inner section-inner thin max-percentage">
-            <div id="comment-loading" data-post="<?php echo $post->ID; ?>">
-                <!-- https://youthlin.com/demo/marked.html -->
-                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24px"
-                     height="30px" viewBox="0 0 24 30" xml:space="preserve">
-                    <rect x="0" y="10" width="4" height="10" fill="#cd2653" opacity="0.2">
-                        <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s"
-                                 repeatCount="indefinite"></animate>
-                        <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s"
-                                 repeatCount="indefinite"></animate>
-                        <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s"
-                                 repeatCount="indefinite"></animate>
-                    </rect>
-                    <rect x="8" y="10" width="4" height="10" fill="#cd2653" opacity="0.2">
-                        <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s"
-                                 dur="0.6s" repeatCount="indefinite"></animate>
-                        <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s"
-                                 repeatCount="indefinite"></animate>
-                        <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s"
-                                 repeatCount="indefinite"></animate>
-                    </rect>
-                    <rect x="16" y="10" width="4" height="10" fill="#cd2653" opacity="0.2">
-                        <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s"
-                                 repeatCount="indefinite"></animate>
-                        <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s"
-                                 repeatCount="indefinite"></animate>
-                        <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s"
-                                 repeatCount="indefinite"></animate>
-                    </rect>
-                </svg>
-            </div>
+            <div id="comment-loading" data-post="<?php echo $post->ID; ?>"><?php lin_svg_loading(); ?></div>
             <div class="comment-nav-wrap" id="comment-nav-wrap-top">
-                <nav class="nav-links comment-nav-links">
-                    <?php paginate_comments_links(); ?>
-                </nav>
+                <nav class="nav-links comment-nav-links"><?php paginate_comments_links(); ?></nav>
             </div>
             <div id="comment-nav-list">
-                <?php
-                wp_list_comments(
-                    array(
-                        'walker' => new TwentyTwenty_Walker_Comment(),
-                        'avatar_size' => 120,
-                        'style' => 'div',
-                    )
-                );
-                ?>
+				<?php
+				wp_list_comments(
+					array(
+						'walker'      => new TwentyTwenty_Walker_Comment(),
+						'avatar_size' => 120,
+						'style'       => 'div',
+					)
+				);
+				?>
             </div>
             <div class="comment-nav-wrap" id="comment-nav-wrap-bottom">
                 <nav class="nav-links comment-nav-links">
-                    <?php paginate_comments_links(); ?>
+					<?php paginate_comments_links(); ?>
                 </nav>
             </div>
         </div><!-- .comments-inner -->
 
     </div><!-- comments -->
 
-    <?php
+	<?php
 }
 
-if (comments_open() || pings_open()) {
+if ( comments_open() || pings_open() ) {
 
-    if ($comments) {
-        echo '<hr class="styled-separator is-style-wide" aria-hidden="true" />';
-    }
+	if ( $comments ) {
+		echo '<hr class="styled-separator is-style-wide" aria-hidden="true" />';
+	}
 
-    comment_form(
-        array(
-            'class_form' => 'section-inner thin max-percentage',
-            'title_reply_before' => '<h2 id="reply-title" class="comment-reply-title">',
-            'title_reply_after' => '</h2>',
-        )
-    );
+	comment_form(
+		array(
+			'class_form'         => 'section-inner thin max-percentage',
+			'title_reply_before' => '<h2 id="reply-title" class="comment-reply-title">',
+			'title_reply_after'  => '</h2>',
+		)
+	);
 
-} elseif (is_single()) {
+} elseif ( is_single() ) {
 
-    if ($comments) {
-        echo '<hr class="styled-separator is-style-wide" aria-hidden="true" />';
-    }
+	if ( $comments ) {
+		echo '<hr class="styled-separator is-style-wide" aria-hidden="true" />';
+	}
 
-    ?>
+	?>
 
     <div class="comment-respond" id="respond">
 
-        <p class="comments-closed"><?php _e('Comments are closed.', 'twentytwenty'); ?></p>
+        <p class="comments-closed"><?php _e( 'Comments are closed.', 'twentytwenty' ); ?></p>
 
     </div><!-- #respond -->
 
-    <?php
+	<?php
 }

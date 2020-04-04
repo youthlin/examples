@@ -2,9 +2,26 @@
 // 子主题 functions 先于父主题加载
 
 //region 样式与脚本
-add_action( 'init', 'lin_init' );
-function lin_init() {
-	remove_action( 'wp_print_footer_scripts', 'twentytwenty_skip_link_focus_fix' );
+
+// 移除这两个 不影响引用文章的卡片样式
+// 移除 wp-json 链接
+remove_action( 'wp_head', 'rest_output_link_wp_head', 10 );
+// 移除 oembed 链接
+remove_action( 'wp_head', 'wp_oembed_add_discovery_links', 10 );
+
+// removes EditURI/RSD (Really Simple Discovery) link.
+remove_action( 'wp_head', 'rsd_link' );
+// removes wlwmanifest (Windows Live Writer) link.
+remove_action( 'wp_head', 'wlwmanifest_link' );
+
+// 隐藏版本
+// html 和 feed 里隐藏版本
+add_filter( 'the_generator', '__return_false' );
+// js css 链接隐藏版本
+add_filter( 'style_loader_src', 'remove_version_from_style_js' );
+add_filter( 'script_loader_src', 'remove_version_from_style_js' );
+function remove_version_from_style_js( $src ) {
+	return str_replace( 'ver=' . get_bloginfo( 'version' ), 'ver=' . date( 'Ym' ), $src );
 }
 
 // all actions related to emojis
@@ -20,7 +37,7 @@ add_filter( 'emoji_svg_url', '__return_false' );
 add_action( 'wp_head', 'lin_wp_head' );
 function lin_wp_head() {
 	if ( date( 'Y-m-d' ) == '2020-04-04' ) {
-		echo "<script>document.documentElement.style.filter='grayscale(1)';</script>";
+		echo "<script>document.documentElement.style.filter='grayscale(1)';</script>\n";
 	}
 	?>
     <script>
@@ -62,6 +79,13 @@ function lin_wp_head() {
 
 add_action( 'wp_enqueue_scripts', 'lin_enqueue_styles' );
 function lin_enqueue_styles() {
+	// 修复 IE 跳转到内容的好像
+	remove_action( 'wp_print_footer_scripts', 'twentytwenty_skip_link_focus_fix' );
+	// 移除 wp-embed.min.js 移除的话引用文章没有卡片样式
+	// 实际是 iframe 的默认 style 不显示，这个文件会去掉默认 style 并调整高度
+	// 但引用文章的话 src 是 '永久链接/embed' 背景是白色的 和暗色主题不调 所以禁用吧
+	wp_deregister_script( 'wp-embed' );
+
 	// remove wp-block-library-css /wp-includes/css/dist/block-library/style.css
 	wp_dequeue_style( 'wp-block-library' );
 
@@ -148,6 +172,41 @@ function lin_top_bottom_nav() {
         </svg>
     </div>
 	<?php
+}
+
+function lin_svg_loading() {
+	echo lin_get_svg_loading();
+}
+
+function lin_get_svg_loading() {
+	// <!-- https://youthlin.com/demo/marked.html -->
+	return '<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24px"
+         height="30px" viewBox="0 0 24 30" xml:space="preserve">
+                    <rect x="0" y="10" width="4" height="10" fill="#cd2653" opacity="0.2">
+                        <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s"
+                                 repeatCount="indefinite"></animate>
+                        <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s"
+                                 repeatCount="indefinite"></animate>
+                        <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s"
+                                 repeatCount="indefinite"></animate>
+                    </rect>
+        <rect x="8" y="10" width="4" height="10" fill="#cd2653" opacity="0.2">
+            <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s"
+                     dur="0.6s" repeatCount="indefinite"></animate>
+            <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s"
+                     repeatCount="indefinite"></animate>
+            <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s"
+                     repeatCount="indefinite"></animate>
+        </rect>
+        <rect x="16" y="10" width="4" height="10" fill="#cd2653" opacity="0.2">
+            <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s"
+                     repeatCount="indefinite"></animate>
+            <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s"
+                     repeatCount="indefinite"></animate>
+            <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s"
+                     repeatCount="indefinite"></animate>
+        </rect>
+    </svg>';
 }
 
 //endregion
@@ -725,8 +784,7 @@ function lin_add_notify_when_reply_checkbox( $submit_field, $args ) {
 add_filter( 'comment_form_submit_button', 'lin_add_comment_submit_loading', 10, 2 );
 // 评论提交中
 function lin_add_comment_submit_loading( $submit_button, $args ) {
-	$submit_button .= '<span id="comment-submit-loading"><img alt="Loading" src="'
-	                  . home_url() . '/wp-includes/images/wpspin.gif">' . __( '提交中' ) . '</span>';
+	$submit_button .= '<span id="comment-submit-loading">' . lin_get_svg_loading() . '</span>';
 
 	return $submit_button;
 }

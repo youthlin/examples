@@ -2,7 +2,7 @@
 Theme Name: Twenty Twenty Child
 Template: twentytwenty
 Text Domain:  twentytwentychild
-Version: 0.32
+Version: 0.33
 Requires at least: 4.7
 Requires PHP: 5.2.4
 Description: 2020
@@ -240,3 +240,16 @@ li.archive-item a {
 }
 
 /* endregion 主题切换*/
+
+/* 区块首字下沉 */
+.has-drop-cap:not(:focus)::first-letter {
+    float: left;
+    line-height: .68;
+}
+
+/* 首字下沉区块如果行数太少，为了不让下一段挤上来 clear both 一下 */
+.has-drop-cap:not(:focus)::after {
+    content: "";
+    display: table;
+    clear: both;
+}
