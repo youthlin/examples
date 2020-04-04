@@ -62,6 +62,9 @@ function lin_wp_head() {
 
 add_action( 'wp_enqueue_scripts', 'lin_enqueue_styles' );
 function lin_enqueue_styles() {
+	// remove wp-block-library-css /wp-includes/css/dist/block-library/style.css
+	wp_dequeue_style( 'wp-block-library' );
+
 	$theme_version = wp_get_theme()->get( 'Version' );
 	$parent_style  = 'twentytwenty-style';
 

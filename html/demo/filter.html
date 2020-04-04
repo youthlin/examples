@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Filter On Firefox</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<div style="margin: 1em; height: 200vh;border: 1px solid red;text-align: center;">
+    请在 Firefox 里打开 <br>
+    <blockquote>问题描述：Firefox 下添加 filter 属性后 fixed 元素失效</blockquote>
+    这个盒子红边框 占 200vh 高度 <br>
+    右下角有个 Fixed 元素 <br>
+    <button>给 html 添加/移除 filter 属性</button>
+    <p>html 元素的 filter = <span></span></p>
+    Fixed 竟然不 fixed 了
+</div>
+<div style="position: fixed;right: 0;bottom: 0;width: 5em;height: 5em; background: #ccc;z-index: 10;">Fixed</div>
+<script>
+    const span = document.querySelector('span');
+    const htmlStyle = document.documentElement.style;
+    span.innerText = htmlStyle.filter;
+    document.querySelector('button').addEventListener('click', () => {
+        let f = htmlStyle.filter;
+        if (f) {
+            htmlStyle.filter = null;
+        } else {
+            htmlStyle.filter = 'grayscale(1)';
+        }
+        span.innerText = htmlStyle.filter;
+    });
+</script>
+</body>
+</html>
