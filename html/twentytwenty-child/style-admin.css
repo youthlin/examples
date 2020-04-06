@@ -1,0 +1,114 @@
+html {
+    --dark-bg-darken: #181818;
+    --dark-bg-normal: #282828;
+    --dark-bg-lighter: #383838;
+    --dark-fg-normal: #999;
+    --dark-fg-lighter: #aaa;
+}
+
+body, h1, h2, h3, h4, h5, h6,
+#screen-meta,
+#contextual-help-back,
+#screen-meta-links .show-settings,
+.update-nag,
+.postbox,
+#dashboard-widgets h3,
+#activity-widget #the-comment-list .comment-item,
+.community-events ul,
+.community-events li,
+.wp-core-ui .button,
+input[type], textarea, .wp-core-ui select,
+.notice,
+table.widefat, .widefat thead tr td,
+.plugins tr, .plugins td, .widefat p, .widefat tfoot tr td,
+.ac_match, .subsubsub a.current,
+.widefat tfoot tr td, .widefat tfoot tr th, .widefat thead tr td, .widefat thead tr th,
+.sub {
+    background-color: var(--dark-bg-normal);
+    color: var(--dark-fg-normal);
+}
+
+/* region help*/
+/*帮助区域*/
+#screen-meta,
+#contextual-help-back,
+#screen-meta-links .show-settings {
+    border-color: var(--dark-bg-lighter);
+}
+
+
+/*帮助项目*/
+.contextual-help-tabs .active a {
+    border-color: transparent;
+}
+
+/*当前帮助项目的左边框*/
+.contextual-help-tabs .active {
+    border-color: var(--dark-fg-normal);
+}
+
+.contextual-help-tabs .active,
+.contextual-help-tabs-wrap {
+    background-color: var(--dark-bg-lighter);
+}
+
+.contextual-help-tabs .active a {
+    color: var(--dark-fg-normal);
+}
+
+/*帮助按钮*/
+#screen-meta-links .show-settings:active,
+#screen-meta-links .show-settings:focus,
+#screen-meta-links .show-settings:hover {
+    color: var(--dark-fg-lighter);
+}
+
+/* endregion help*/
+
+.update-nag {
+    border: 1px solid var(--dark-bg-lighter);
+    border-left: 4px solid var(--dark-bg-lighter)
+}
+
+.postbox,
+.activity-block,
+.postbox .hndle,
+.stuffbox .hndle,
+.js #dashboard_quick_press .drafts,
+.community-events li {
+    border-color: var(--dark-fg-normal) !important;
+}
+
+.wp-core-ui .button.focus,
+.wp-core-ui .button.hover,
+.wp-core-ui .button:focus,
+.wp-core-ui .button:hover {
+    border-color: var(--dark-fg-normal);
+    background-color: var(--dark-bg-normal);
+    color: var(--dark-fg-lighter);
+}
+
+#activity-widget #the-comment-list .comment-item {
+    border-top: 1px solid;
+}
+
+.notify span {
+    color: var(--dark-fg-lighter) !important;
+}
+
+.striped > tbody > :nth-child(2n+1) {
+    background-color: var(--dark-bg-lighter);
+}
+
+.wrap .page-title-action,
+.wp-core-ui .button-disabled,
+.wp-core-ui .button-secondary.disabled,
+.wp-core-ui .button-secondary:disabled,
+.wp-core-ui .button-secondary[disabled],
+.wp-core-ui .button.disabled,
+.wp-core-ui .button:disabled,
+.wp-core-ui .button[disabled] {
+    background-color: var(--dark-bg-normal) !important;
+    color: var(--dark-fg-normal) !important;
+    border-color: var(--dark-bg-lighter) !important;
+}

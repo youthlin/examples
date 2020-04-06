@@ -3,6 +3,7 @@
 
 //region 样式与脚本
 
+// region remove action
 // 移除这两个 不影响引用文章的卡片样式
 // 移除 wp-json 链接
 remove_action( 'wp_head', 'rest_output_link_wp_head', 10 );
@@ -33,6 +34,7 @@ remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
 remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
 remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
 add_filter( 'emoji_svg_url', '__return_false' );
+// endregion remove action
 
 add_action( 'wp_head', 'lin_wp_head' );
 function lin_wp_head() {
@@ -207,6 +209,38 @@ function lin_get_svg_loading() {
                      repeatCount="indefinite"></animate>
         </rect>
     </svg>';
+}
+
+add_action( 'admin_enqueue_scripts', 'lin_admin_style' );
+function lin_admin_style() {
+	wp_enqueue_style( 'twentytwenty-child-admin', get_stylesheet_directory_uri() . '/style-admin.css',
+		null, wp_get_theme()->get( 'Version' ) );
+}
+
+add_action( 'all_admin_notices', 'lin_admin_notice' );
+function lin_admin_notice() {
+	?>
+    <div class="update-nag"><a href="javascript:void(0);" id="dark-switch">DarkMode</a></div>
+    <script>
+        const darkCss = document.getElementById('twentytwenty-child-admin-css');
+        const adminDark = localStorage.getItem('admin-dark');
+        if (adminDark === 'true') {
+            darkCss.disabled = null;
+        } else {
+            darkCss.disabled = 'disabled';
+        }
+        const darkSwitch = document.getElementById('dark-switch');
+        darkSwitch.addEventListener('click', () => {
+            if (darkCss.disabled) {
+                darkCss.disabled = null;
+                localStorage.setItem('admin-dark', 'true');
+            } else {
+                darkCss.disabled = 'disabled';
+                localStorage.setItem('admin-dark', 'false');
+            }
+        });
+    </script>
+	<?php
 }
 
 //endregion
