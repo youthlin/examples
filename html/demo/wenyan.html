@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="vertical-rl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, shrink-to-fit=no">
     <title>文言陰符內篇</title>
     <style>
         @font-face {
@@ -11,12 +11,12 @@
             src: url('https://cdn.jsdelivr.net/gh/wenyan-lang/book/assets/font.woff2') format('woff2');
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         .vertical-rl {
             writing-mode: vertical-rl;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -107,7 +107,7 @@
         themeSwitch(theme);
     </script>
 </head>
-<body class="vertical-rl">
+<body>
 <div class="control">
     <button class="theme auto">auto</button>
     <button class="theme light">light</button>
@@ -1677,7 +1677,7 @@
 
     // 横竖切换
     document.querySelector('.control .hon-ver').addEventListener('click', () => {
-        onVertical(document.body.classList.toggle('vertical-rl'));
+        onVertical(document.documentElement.classList.toggle('vertical-rl'));
     });
 
     /* region 主题切换*/
