@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Writing-Mode</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>文言陰符內篇</title>
     <style>
         @font-face {
             font-family: QIJI;
@@ -11,8 +12,11 @@
         }
 
         html {
-            writing-mode: vertical-rl;
             scroll-behavior: smooth;
+        }
+
+        .vertical-rl {
+            writing-mode: vertical-rl;
         }
 
         body {
@@ -46,31 +50,70 @@
             font-family: QIJI, monospace;
         }
 
-        @media (prefers-color-scheme: dark) {
-            html, body, article h1 {
-                background-color: #181818;
-                color: #999;
-            }
-
-            a:link {
-                color: #aaa;
-            }
-
-            a:visited {
-                color: #aaa;
-            }
-
-            a:hover {
-                color: #fff;
-            }
-
-            a:active {
-                color: #aaa;
-            }
+        .control {
+            /*writing-mode: horizontal-tb;*/
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            z-index: 1;
         }
     </style>
+    <style id="dark-css">
+        html, body, article h1 {
+            background-color: #181818;
+            color: #999;
+        }
+
+        a:link {
+            color: #aaa;
+        }
+
+        a:visited {
+            color: #aaa;
+        }
+
+        a:hover {
+            color: #fff;
+        }
+
+        a:active {
+            color: #aaa;
+        }
+
+        .control {
+            filter: invert(.8);
+        }
+    </style>
+    <script>
+        const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function themeSwitch(theme) {
+            console.log(`theme=${theme},sys=${darkQuery.matches}`);
+            if (theme === 'dark' || (theme === 'auto' && darkQuery.matches)) {
+                document.getElementById('dark-css').disabled = false;
+            } else {
+                document.getElementById('dark-css').disabled = 'disabled';
+            }
+        }
+
+        let theme = 'auto';
+        if (window.localStorage) {
+            // 看上次是否有保存
+            const saved = localStorage.getItem('theme');
+            if (saved) {
+                theme = saved;
+            }
+        }
+        themeSwitch(theme);
+    </script>
 </head>
-<body>
+<body class="vertical-rl">
+<div class="control">
+    <button class="theme auto">auto</button>
+    <button class="theme light">light</button>
+    <button class="theme dark">dark</button>
+    <button class="hon-ver">横/竖</button>
+</div>
 <h1><a href="https://github.com/wenyan-lang/book" target="_blank">文言陰符內篇</a></h1>
 <ul id="toc"></ul>
 <main>
@@ -1538,8 +1581,46 @@
     </ul>
 </footer>
 <script>
-    const toc = document.getElementById('toc');
-    const headingList = document.querySelectorAll('h1[id]');
+    //region util
+    const CLICK = 'click';
+    const id = function (id, parent) {
+        if (parent === undefined) {
+            parent = document;
+        }
+        return parent.getElementById(id);
+    };
+    const $ = function (selector) {
+        return document.querySelector(selector);
+    };
+    const $$ = function (selectors) {
+        return document.querySelectorAll(selectors);
+    };
+    const on = function (element, type, callback, options) {
+        if (element === null || element === undefined) {
+            return;
+        }
+        if (element.addEventListener) {
+            element.addEventListener(type, callback, options);
+        } else if (element.attachEvent) {
+            element.attachEvent('on' + type, callback);
+        } else {
+            element['on' + type] = callback;
+        }
+    };
+    const off = function (element, type, callback, options) {
+        if (element.removeEventListener) {
+            element.removeEventListener(type, callback, options);
+        } else if (element.detachEvent) {
+            element.detachEvent('on' + type, callback);
+        } else {
+            element['on' + type] = null;
+        }
+    };
+    //endregion util
+
+    //region toc
+    const toc = id('toc');
+    const headingList = $$('h1[id]');
     let cat = '';
     for (let i = 0; i < headingList.length; i++) {
         const h1 = headingList[i];
@@ -1547,13 +1628,18 @@
         h1.insertAdjacentHTML('beforeend', `<small><a href="#toc">↑</a></small>`);
     }
     toc.innerHTML = cat;
+    //endregion toc
 
-    document.body.addEventListener('wheel', e => {
-        /* 滚动 */
-        window.scrollBy({left: -e.deltaY * 42, top: 0, behavior: 'smooth'});
-        e.preventDefault();
-    });
-    document.addEventListener('keyup', e => {
+    // region 页面滚动
+    const onWheel = e => {
+        /* 如果是竖向才处理，触摸板本来就可以横向滚动 */
+        if (e.deltaY !== 0) {
+            window.scrollBy({left: -e.deltaY * 42, top: 0, behavior: 'smooth'});
+            e.preventDefault();
+        }
+    };
+    on(document, 'wheel', onWheel);
+    const onKeyUp = e => {
         /* https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values */
         switch (e.key) {
             case 'PageUp':
@@ -1572,7 +1658,41 @@
                 document.body.scrollIntoView({inline: 'start'});
                 break;
         }
+    };
+    on(document, 'keyup', onKeyUp);
+    // endregion 页面滚动
+
+    // 横竖切换
+    document.querySelector('.control .hon-ver').addEventListener('click', e => {
+        if (document.body.classList.toggle('vertical-rl')) {
+            on(document, 'wheel', onWheel);
+            on(document, 'keyUp', onKeyUp);
+        } else {
+            off(document, 'wheel', onWheel);
+            off(document, 'keyUp', onKeyUp);
+        }
     });
+
+    /* region 主题切换*/
+    $('.theme.' + theme).classList.add('active');
+    // 系统切换主题时得到通知
+    darkQuery.onchange = (e) => {
+        if ($('.theme.auto').classList.contains('active')) {
+            // 如果是跟随系统 那就跟随系统~
+            themeSwitch('auto');
+        }
+    };
+    $$('.theme').forEach(e => on(e, CLICK, () => {
+        $$('.theme').forEach(e => e.classList.remove('active'));
+        e.classList.add('active');
+        if (window.localStorage) {
+            // 每次切换 保存在浏览器本地
+            localStorage.setItem('theme', e.innerText);
+        }
+        themeSwitch(e.innerText);
+    }));
+    /* endregion 主题切换*/
+
 </script>
 </body>
 </html>
