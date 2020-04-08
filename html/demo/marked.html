@@ -88,26 +88,37 @@
     <div id="control" class="print-not-show">
         <div id="gif" title="Loading" style="display: none;float: left;">
             <!-- https://codepen.io/aurer/pen/jEGbA/ -->
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"  x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24px"
+                 height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
                 <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s"
+                             repeatCount="indefinite"></animate>
+                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s"
+                             repeatCount="indefinite"></animate>
+                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s"
+                             repeatCount="indefinite"></animate>
                 </rect>
-                <rect x="8" y="10" width="4" height="10" fill="#333"  opacity="0.2">
-                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s"
+                             repeatCount="indefinite"></animate>
+                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s"
+                             repeatCount="indefinite"></animate>
+                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s"
+                             repeatCount="indefinite"></animate>
                 </rect>
-                <rect x="16" y="10" width="4" height="10" fill="#333"  opacity="0.2">
-                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s"
+                             repeatCount="indefinite"></animate>
+                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s"
+                             repeatCount="indefinite"></animate>
+                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s"
+                             repeatCount="indefinite"></animate>
                 </rect>
             </svg>
         </div>
         <button id="btn-clear">Clear</button>
         <button id="btn-random">Random</button>
+        <button id="btn-copy-html">Copy Html</button>
     </div>
     <div id="result"></div>
     <textarea id="content" onkeyup="compile()" class="print-not-show" title="" autofocus># Markdown Preview
@@ -127,7 +138,7 @@ System.out.println("Please input markdown text here.");
 | 12 | 34 |
 </textarea>
 </div>
-<script type="text/javascript">
+<script>
     const render = new marked.Renderer();
     // id 重复问题、不支持中文 Id 问题 added on 2017-09-13 11:42
     // https://github.com/chjj/marked/issues/879#issuecomment-297654193
@@ -169,8 +180,8 @@ System.out.println("Please input markdown text here.");
 
     jQuery(document).ready(function ($) {
         // 同步滚动
-        var $divs = $('textarea#content, div#result');
-        var sync = function () {
+        let $divs = $('textarea#content, div#result');
+        let sync = function () {
             var $other = $divs.not(this).off('scroll'), other = $other.get(0);
             var percentage = this.scrollTop / (this.scrollHeight - this.offsetHeight);
             other.scrollTop = percentage * (other.scrollHeight - other.offsetHeight);
@@ -187,8 +198,7 @@ System.out.println("Please input markdown text here.");
             if (nowHtml) {
                 $result.text($result.html());
                 nowHtml = false;
-            }
-            else {
+            } else {
                 $result.html($result.text());
                 nowHtml = true;
             }
@@ -197,8 +207,8 @@ System.out.println("Please input markdown text here.");
             $('#content').val('');
             compile();
         });
-        var $loading = $('#gif');
-        var $random = $('#btn-random');
+        let $loading = $('#gif');
+        let $random = $('#btn-random');
         $random.click(function () {
             $random.attr('disabled', true);
             $loading.show();
@@ -215,9 +225,36 @@ System.out.println("Please input markdown text here.");
             });
         });
 
+        const copyBtn = document.getElementById('btn-copy-html');
+        const result = document.getElementById('result');
+        copyBtn.addEventListener('click', e => {
+            copy(result.innerHTML);
+        });
     });
+
+
+    function copy(text) {
+        let hidden = document.getElementById('hidden-textarea');
+        if (!hidden) {
+            hidden = document.createElement('textarea');
+            hidden.id = 'hidden-textarea';
+            hidden.style.position = 'absolute';
+            hidden.style.top = '0';
+            hidden.style.left = '0';
+            hidden.style.opacity = '0';
+            document.body.appendChild(hidden);
+        }
+        hidden.value = text;
+        hidden.select();
+        try {
+            const status = document.execCommand('copy');
+            if (status) {
+                console.log("Copied!");
+            }
+        } catch (err) {
+            console.log('Unable to copy.');
+        }
+    }
 </script>
 </body>
 </html>
-
-
