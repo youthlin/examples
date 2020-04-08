@@ -1638,7 +1638,10 @@
             e.preventDefault();
         }
     };
-    on(document, 'wheel', onWheel);
+    /** [Intervention] Unable to preventDefault inside passive event listener due to target being treated as passive.
+     *  {passive: false} 这样事件才可以取消 preventDefault
+     *  @link https://blog.csdn.net/lijingshan34/article/details/88350456 */
+    on(document, 'wheel', onWheel, {passive: false});
     const onKeyUp = e => {
         /* https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/key/Key_Values */
         switch (e.key) {
