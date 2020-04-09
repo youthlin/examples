@@ -17,6 +17,7 @@
 
         html {
             scroll-behavior: smooth;
+            word-break: break-all;
         }
 
         body {
@@ -52,7 +53,7 @@
 
         .control {
             /*writing-mode: horizontal-tb;*/
-            position: fixed;
+            /*position: fixed;*/
             bottom: 0;
             right: 0;
             z-index: 1;
@@ -1631,6 +1632,7 @@
     //endregion toc
 
     // region 页面滚动
+    const verticalRl = 'vertical-rl';
     const onWheel = e => {
         /* 如果是竖向才处理，触摸板本来就可以横向滚动 */
         if (e.deltaY !== 0) {
@@ -1660,6 +1662,7 @@
     };
 
     function onVertical(vertical = true) {
+        console.log(`${window.innerWidth},${window.innerHeight}`);
         if (vertical) {
             /** [Intervention] Unable to preventDefault inside passive event listener due to target being treated as passive.
              *  {passive: false} 这样事件才可以取消 preventDefault
@@ -1672,12 +1675,12 @@
         }
     }
 
-    onVertical();
+    onVertical(document.documentElement.classList.contains(verticalRl));
     // endregion 页面滚动
 
     // 横竖切换
     document.querySelector('.control .hon-ver').addEventListener('click', () => {
-        onVertical(document.documentElement.classList.toggle('vertical-rl'));
+        onVertical(document.documentElement.classList.toggle(verticalRl));
     });
 
     /* region 主题切换*/
