@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="vrl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, shrink-to-fit=no">
+    <title>Writing Mode</title>
+    <style>
+        :root {
+            writing-mode: vertical-rl;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <p>竖排时 Chrome 系列移动版浏览器 Bug 演示 <a class="append" href="#">Append</a></p>
+    <p>点击 Append 将会复制下列文字追加到 <code>body</code> 中。</p>
+    <p><strong>请按 F12 打开控制台并切换到移动版视图</strong>或者用手机打开本页</p>
+    <p> 在 Firefox 下，<code>window.innerWidth</code> 与 <code>window.innerHeight</code>都不会改变.</p>
+    <p>但是在 Chrome 下，这两个值会一直增加(有上限，和初始视口大小有关)</p>
+</div>
+<article>
+    <h1>乱序假文</h1>
+    <blockquote>Lorem ipsum dolor sit amet</blockquote>
+    <p>尽管该短语毫无意义，但它却历史悠久。数个世纪以来，印刷工人一直使用该短语来表现其字体最与众不同的特点。</p>
+    <!--<p>使用该短语是因为其中的字母以及字母组合中的字母间距可以最好地展现所用字体的粗细、设计及其他重要特点。</p>-->
+</article>
+<script>
+    const article = document.querySelector('article');
+    let last = [window.innerWidth, window.innerHeight];
+    console.log(`width,height = ${window.innerWidth},${window.innerHeight}`);
+    document.querySelector('.append').addEventListener('click', () => {
+        article.insertAdjacentElement('afterend', article.cloneNode(true));
+        alert(`width,height = ${window.innerWidth},${window.innerHeight}. `
+            + `增加了: ${window.innerWidth - last[0]},${window.innerHeight - last[1]}`);
+        last = [window.innerWidth, window.innerHeight];
+    });
+</script>
+</body>
+</html>
