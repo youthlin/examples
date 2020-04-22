@@ -3,7 +3,6 @@ package com.youthlin.example.rpc.consumer;
 import com.youthlin.example.rpc.api.service.CallBackListener;
 import com.youthlin.example.rpc.api.service.CallBackServiceProvider;
 import com.youthlin.example.rpc.api.service.HelloService;
-import org.apache.dubbo.rpc.RpcContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -24,7 +23,6 @@ public class Main {
         LOGGER.info("result = {}", hello);
         LOGGER.info("---------------------------------------\n");
 
-        @SuppressWarnings("unchecked")
         CallBackServiceProvider callBackService = context.getBean(CallBackServiceProvider.class);
         Boolean result = callBackService.process("param1", new CallBackListener() {
             @Override
@@ -40,8 +38,8 @@ public class Main {
         });
         LOGGER.info("result {}", result);
         try {
-            Object o = RpcContext.getContext().getFuture().get();
-            LOGGER.info("future result {}", o);
+            // 暂停在这里，否则客户端结束了，服务的回调客户端就会 Timeout 异常
+            System.in.read();
         } catch (Exception e) {
             LOGGER.error("", e);
         }

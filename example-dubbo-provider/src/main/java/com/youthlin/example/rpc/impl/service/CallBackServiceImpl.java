@@ -20,7 +20,9 @@ public class CallBackServiceImpl implements CallBackServiceProvider {
             LOGGER.info("处理完成 调用回调方法");
             String finished = callback.finished("result");
             LOGGER.info("客户端回调完成 结果{}", finished);
-        } catch (InterruptedException ignore) {
+            callback.foo();
+        } catch (Exception e) {
+            LOGGER.error("Exception----------", e);
         }
         return true;
     }
