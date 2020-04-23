@@ -17,9 +17,17 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author youthlin.chen
  * @date 2020-03-24 10:46
  */
-public class TestUtil {
+public class ThreadUtil {
     private static final ConcurrentMap<String, ThreadPoolExecutor> MAP = Maps.newConcurrentMap();
     private static final AtomicInteger NEXT_INT = new AtomicInteger();
+
+    public static Thread newThread(Runnable runnable) {
+        return new Thread(runnable);
+    }
+
+    public static Thread newThread(Runnable runnable, String name) {
+        return new Thread(runnable, name);
+    }
 
     public static ThreadPoolExecutor getExecutor(String name, int core, int max, int qSize) {
         ThreadPoolExecutor executor = MAP.computeIfAbsent(name, n ->

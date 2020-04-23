@@ -6,12 +6,12 @@ import java.util.concurrent.locks.LockSupport;
  * @author youthlin.chen
  * @date 2020-03-23 15:33
  */
-public class LockSupportTest {
+public class TestLockSupport {
     @SuppressWarnings("AlibabaAvoidManuallyCreateThread")
     public static void main(String[] args) {
         Thread thread = new Thread(() -> {
             System.out.println(Thread.currentThread().getName() + "将被阻塞");
-            LockSupport.park(LockSupportTest.class);
+            LockSupport.park(TestLockSupport.class);
 /*
 "Thread-0" prio=5 Id=14 WAITING on java.lang.Class@5b6f7412
 	at java.base@13/jdk.internal.misc.Unsafe.park(Native Method)
@@ -31,7 +31,7 @@ public class LockSupportTest {
             e.printStackTrace();
         }
 
-        TestUtil.dump();
+        ThreadUtil.dump();
 
         LockSupport.unpark(thread);
 

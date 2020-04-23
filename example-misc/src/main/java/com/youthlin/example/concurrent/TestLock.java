@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author youthlin.chen
  * @date 2020-03-24 10:09
  */
-public class LockTest {
+public class TestLock {
 
     private static final int THREAD_COUNT = 10;
     private static final int LOOP_SIZE = 10000;
@@ -25,7 +25,7 @@ public class LockTest {
         System.out.println("count=" + count + "-----Test lock: " + lock);
         CountDownLatch countDownLatch = new CountDownLatch(THREAD_COUNT);
         for (int i = 0; i < THREAD_COUNT; i++) {
-            TestUtil.getExecutor("Test", 10, 10, 0).execute(() -> {
+            ThreadUtil.getExecutor("Test", 10, 10, 0).execute(() -> {
                 incrementWithLock(lock);
                 System.out.println(Thread.currentThread().getName() + " end");
                 countDownLatch.countDown();
