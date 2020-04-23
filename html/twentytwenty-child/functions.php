@@ -38,9 +38,6 @@ add_filter( 'emoji_svg_url', '__return_false' );
 
 add_action( 'wp_head', 'lin_wp_head' );
 function lin_wp_head() {
-	if ( date( 'Y-m-d' ) == '2020-04-04' ) {
-		echo "<script>document.documentElement.style.filter='grayscale(1)';</script>\n";
-	}
 	?>
     <script>
         const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -101,11 +98,11 @@ function lin_enqueue_styles() {
 		array( $parent_style ), $theme_version );
 
 	wp_enqueue_style( 'highlight',
-		'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/default.min.css', array(), null );
+		'https://cdn.bootcss.com/highlight.js/9.18.1/styles/default.min.css', array(), null );
 	wp_enqueue_style( 'highlight-dark',
-		'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/tomorrow-night.min.css', array(), null );
+		'https://cdn.bootcss.com/highlight.js/9.18.1/styles/tomorrow-night.min.css', array(), null );
 	wp_enqueue_style( 'baguetteBox',
-		'https://cdn.jsdelivr.net/npm/baguettebox.js@1.11.1/dist/baguetteBox.min.css', array(), null );
+		'https://cdn.bootcss.com/baguettebox.js/1.11.1/baguetteBox.min.css', array(), null );
 }
 
 add_action( 'wp_footer', 'lin_wp_footer' );
@@ -113,11 +110,11 @@ function lin_wp_footer() {
 	lin_theme_switch();
 	lin_top_bottom_nav();
 	wp_enqueue_script( 'baguetteBox-js',
-		'https://cdn.jsdelivr.net/npm/baguettebox.js@1.11.1/dist/baguetteBox.min.js', array(), null );
+		'https://cdn.bootcss.com/baguettebox.js/1.11.1/baguetteBox.min.js', array(), null );
 	wp_enqueue_script( 'highlight-js-main',
-		'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js', array(), null );
+		'https://cdn.bootcss.com/highlight.js/9.18.1/highlight.min.js', array(), null );
 	wp_enqueue_script( 'highlight-js-linenumber',
-		'https://cdn.jsdelivr.net/npm/highlightjs-line-numbers.js@2.7.0/dist/highlightjs-line-numbers.min.js', array(), null );
+		'https://cdn.bootcss.com/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js', array(), null );
 	// 在 baguetteBox, highlight 之后
 	wp_enqueue_script( 'twentytwenty-child-js', get_stylesheet_directory_uri() . '/index.js',
 		array(), wp_get_theme()->get( 'Version' ), true );
