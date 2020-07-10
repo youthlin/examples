@@ -2,7 +2,7 @@
 Theme Name: Twenty Twenty Child
 Template: twentytwenty
 Text Domain:  twentytwentychild
-Version: 0.33
+Version: 0.34
 Requires at least: 4.7
 Requires PHP: 5.2.4
 Description: 2020
@@ -23,12 +23,17 @@ with others.
 
 /* region 代码高亮 */
 pre {
+    font-family: Consolas, Monaco, monospace;
     max-height: 500px;
     overflow: scroll;
     /*ie,edge*/
     -ms-overflow-style: none;
     /*firefox*/
     scrollbar-width: thin;
+}
+
+pre * {
+    font-family: Consolas, Monaco, monospace;
 }
 
 .hljs-action {
