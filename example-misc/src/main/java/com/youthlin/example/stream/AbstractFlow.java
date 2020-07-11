@@ -33,11 +33,11 @@ abstract class AbstractFlow<S, T> implements Flow<T> {
     /**
      * 最初迭代器
      */
-    private Visitor<?> source;
+    private final Visitor<?> source;
     /**
      * 前一个流
      */
-    private AbstractFlow prev;
+    private final AbstractFlow<?, S> prev;
     /**
      * 该流是否被消费过
      */
@@ -45,9 +45,10 @@ abstract class AbstractFlow<S, T> implements Flow<T> {
 
     AbstractFlow(Visitor<?> in) {
         source = Objects.requireNonNull(in);
+        prev = null;
     }
 
-    AbstractFlow(AbstractFlow prev) {
+    AbstractFlow(AbstractFlow<?, S> prev) {
         Objects.requireNonNull(prev);
         Preconditions.checkState(!prev.linkedOrConsumed, "already linked");
         prev.linkedOrConsumed = true;
@@ -226,7 +227,7 @@ abstract class AbstractFlow<S, T> implements Flow<T> {
     }
 
     @Override
-    @SuppressWarnings({"RedundantCast", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     public Flow<T> sorted() {
         return sorted((Comparator<T>) Comparator.naturalOrder());
     }
@@ -389,7 +390,7 @@ abstract class AbstractFlow<S, T> implements Flow<T> {
      * @see Supplier#get()
      */
     static abstract class AbstractTerminal<T, R> implements Stage.TerminalStage<T, R>, Supplier<R> {
-        private AbstractFlow<?, T> lastFlow;
+        private final AbstractFlow<?, T> lastFlow;
 
         AbstractTerminal(AbstractFlow<?, T> lastFlow) {
             Preconditions.checkArgument(!lastFlow.linkedOrConsumed, "already consumed");
@@ -403,6 +404,8 @@ abstract class AbstractFlow<S, T> implements Flow<T> {
             return get();
         }
 
+        @Override
+        public abstract R get();
     }
 
     /**
@@ -426,7 +429,7 @@ abstract class AbstractFlow<S, T> implements Flow<T> {
      * @param <S_IN> 源迭代器的元素类型
      * @return 将整个串的每个操作串起来作为一个操作
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private <S_IN> Stage<S_IN> wrapStage(Stage<T> stage) {
         for (AbstractFlow flow = this; flow.prev != null; flow = flow.prev) {
             /* flow.prev != null 即头节点不参与*/
