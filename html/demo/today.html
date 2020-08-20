@@ -57,7 +57,7 @@
             text-align: center;
         }
 
-        td:nth-child(2) {
+        td:last-child {
             text-align: start;
         }
 
@@ -73,27 +73,27 @@
         <tbody>
         <tr class="head">
             <th>开始</th>
-            <th>内容</th>
-            <th>每 n 天</th>
             <th>今天</th>
+            <th>每 n 天</th>
+            <th>内容</th>
         </tr>
         <tr>
             <td>2020-08-18</td>
-            <td>DHA</td>
-            <td>1</td>
             <td></td>
+            <td>1</td>
+            <td>DHA</td>
         </tr>
         <tr>
             <td>2020-08-19</td>
-            <td>粉色的维生素AD</td>
-            <td>2</td>
             <td></td>
+            <td>2</td>
+            <td>粉色的维生素AD</td>
         </tr>
         <tr>
             <td>2020-08-20</td>
-            <td>透明的维生素D滴剂</td>
-            <td>2</td>
             <td></td>
+            <td>2</td>
+            <td>透明的维生素D滴剂</td>
         </tr>
         </tbody>
     </table>
@@ -127,7 +127,7 @@
         }
         const start = tr.children[0].innerText.trim();
         const repeat = tr.children[2].innerText.trim();
-        const today = tr.children[3];
+        const today = tr.children[1];
         const diff = dayDiff(start);
         console.log('距离' + start + ': ' + diff + ' 天')
         if (diff % repeat === 0) {
