@@ -65,7 +65,7 @@
 </head>
 <body>
 <main>
-    <h2>⏰重复日程提醒⏰</h2>
+    <h2>⏰重复日程提醒⏰<br><small id="today"></small></h2>
     <table id="repeatTable">
         <tbody>
         <tr class="head">
@@ -103,13 +103,19 @@
         return document.querySelectorAll(selectors);
     };
 
+    const today = new Date();
+    $('#today').innerText = today.getFullYear() + '-' + toStr(today.getMonth() + 1) + '-' + toStr(today.getDate());
+    const todayZero = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
+
     function dayDiff(start) {
         start = new Date(start);
-        start = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-        const now = new Date();
-        const todayZero = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        start = new Date(start.getFullYear(), start.getMonth() + 1, start.getDate());
         const diff = (todayZero.getTime() - start.getTime()) / 1000;
         return diff / 60 / 60 / 24;
+    }
+
+    function toStr(int) {
+        return int.toString().padStart(2, '0');
     }
 
     $$('#repeatTable tr').forEach(tr => {
