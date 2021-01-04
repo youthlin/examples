@@ -16,8 +16,11 @@
 (async function () {
     'use strict';
     const SETTING_KEY = 'cssMap'
+    const RAND = (Math.random() * 100000).toFixed(0)
     const debug = function (...args) {
-        console.log(...args)
+        if (GM_getValue('debug', 'false') === 'true') {
+            console.log(...args)
+        }
     }
     const on = function (eventName, selector, handler) {
         // http://youmightnotneedjquery.com/
@@ -35,12 +38,10 @@
 
     async function start() {
         const cssMap = await cssValue()
-        const rand = (Math.random() * 100000).toFixed(0)
         const html = document.getElementsByTagName('html')[0]
         // http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html
-        html.insertAdjacentHTML('beforeend', `<div id="inject-css-${rand}" 
-style="display: none;position: absolute;left: 0;top: 0;right: 0;bottom: 0;z-index: 999; background-color: rgba(255,255,255,.9);justify-content: center;align-items: center;"></div>`)
-        const wrapper = document.getElementById('inject-css-' + rand)
+        html.insertAdjacentHTML('beforeend', `<div id="inject-css-${RAND}"></div>`)
+        const wrapper = document.getElementById(`inject-css-${RAND}`)
         GM_registerMenuCommand('Settings|设置', function (e) {
             debug('Settings', e)
             wrapper.style.display = 'flex'
@@ -90,7 +91,20 @@ style="display: none;position: absolute;left: 0;top: 0;right: 0;bottom: 0;z-inde
     async function render(cssMap, wrapper) {
         const url = window.location.href
         debug('cssMap:', cssMap, 'url:', url)
-        let injectCss = `#inject-css-setting table{
+        let injectCss = `#inject-css-${RAND}{
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 999; 
+            background-color: rgba(255,255,255,.9);
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+        }
+        #inject-css-setting table{
             border-collapse: collapse;
         }
         #inject-css-setting th, #inject-css-setting td{
