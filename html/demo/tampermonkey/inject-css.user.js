@@ -93,19 +93,32 @@
         debug('cssMap:', cssMap, 'url:', url)
         let injectCss = `#inject-css-${RAND}{
             display: none;
-            position: absolute;
+            position: fixed;
             left: 0;
             top: 0;
             right: 0;
             bottom: 0;
             z-index: 999; 
-            background-color: rgba(255,255,255,.9);
+            background-color: rgba(0,0,0,.8);
             justify-content: center;
             align-items: center;
             font-size: 16px;
         }
+        #inject-css-setting {
+            max-height: 100%
+            overflow: auto;
+        }
+        #inject-css-setting button {
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+            padding: .5em;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
         #inject-css-setting table{
             border-collapse: collapse;
+            background-color: #fff;
         }
         #inject-css-setting th, #inject-css-setting td{
             border: 1px solid #ccc;
@@ -119,7 +132,7 @@
         }
         #inject-css-setting .inject-css-delete,#inject-css-setting .inject-css-add{
             width: 100%;
-            cursor: pointer;
+            border-radius: 5px;
         }
         `
         let tableBody = ''
@@ -128,15 +141,18 @@
                 if (new RegExp(entry[0]).test(url)) {
                     injectCss += entry[1] + "\n"
                 }
-                tableBody += `<tr><td>${entry[0]}</td><td><pre>${entry[1]}</pre></td><td><button data-key="${entry[0]}" class="inject-css-delete">-</button></td></tr>`
+                tableBody += `<tr><td><code>${entry[0]}</code></td><td><pre>${entry[1]}</pre></td><td><button data-key="${entry[0]}" class="inject-css-delete">-</button></td></tr>`
             } catch (e) {
                 debug('regexp error', e)
                 cssMap.delete(entry[0])
             }
         }
         wrapper.innerHTML = `<style>${injectCss}</style><div id="inject-css-setting"><button class="inject-css-hide">关闭(Esc)</button>
-<table><tbody><tr><th>URL 正则</th><th>注入 CSS</th><th>操作</th></tr>${tableBody}
-<tr><td><input type="text" id="inject-css-url"></td><td><textarea id="inject-css-value" cols="30" rows="3"></textarea></td><td><button class="inject-css-add">+</button></td></tr>
+<table><tbody><tr><th>URL 正则</th><th>注入 CSS</th><th>操作</th></tr>
+${tableBody}
+<tr><td><label><input type="text" id="inject-css-url" placeholder="点号斜线记得转义"></label></td>
+<td><textarea id="inject-css-value" cols="30" rows="3" placeholder="html { background-color: #ccc; }"></textarea></td>
+<td><button class="inject-css-add">+</button></td></tr>
 </tbody></table></div>`
     }
 
