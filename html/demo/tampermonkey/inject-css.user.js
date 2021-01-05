@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Inject CSS
 // @name:zh      CSS 样式注入
-// @name:zh-CN   CSS 样式注入
-// @namespace    http://youthlin.com/
+// @namespace    https://youthlin.com/
 // @version      0.1
 // @description  Inject custom css to site.
+// @description:zh  插入自定义 CSS 样式到任意网址
 // @author       Youth．霖
 // @match        *
 // @include      *
@@ -13,7 +13,7 @@
 // @grant        GM_addStyle
 // @grant        GM_registerMenuCommand
 // ==/UserScript==
-(async function () {
+(function () {
     'use strict';
     const SETTING_KEY = 'cssMap'
     const RAND = (Math.random() * 100000).toFixed(0)
@@ -26,7 +26,7 @@
         // http://youmightnotneedjquery.com/
         document.addEventListener(eventName, function (e) {
             // loop parent nodes from the target to the delegation node
-            for (var target = e.target; target && target !== this; target = target.parentNode) {
+            for (let target = e.target; target && target !== this; target = target.parentNode) {
                 if (target.matches(selector)) {
                     handler.call(target, e);
                     break;
@@ -36,31 +36,36 @@
     }
     debug('Hello, Inject CSS.')
 
-    async function start() {
-        const cssMap = await cssValue()
+    function start() {
+        const cssMap = cssValue()
         const html = document.getElementsByTagName('html')[0]
-        // http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html
         html.insertAdjacentHTML('beforeend', `<div id="inject-css-${RAND}"></div>`)
         const wrapper = document.getElementById(`inject-css-${RAND}`)
         GM_registerMenuCommand('Settings|设置', function (e) {
             debug('Settings', e)
             wrapper.style.display = 'flex'
         }, 's')
-        await render(cssMap, wrapper)
-        on('click', '.inject-css-delete', async function (e) {
+        render(cssMap, wrapper)
+        on('click', '.inject-css-delete', function (e) {
             const deleteKey = e.target.dataset.key
             cssMap.delete(deleteKey)
-            await save(cssMap)
-            await render(cssMap, wrapper)
+            save(cssMap)
+            render(cssMap, wrapper)
         })
-        on('click', '.inject-css-add', async function (e) {
+        on('click', '.inject-css-add', function (e) {
             e.preventDefault()
-            const k = document.querySelector('#inject-css-url').value
-            const v = document.querySelector('#inject-css-value').value
-            if (k !== '') {
+            const k = document.querySelector('#inject-css-url').value.trim()
+            const v = document.querySelector('#inject-css-value').value.trim()
+            if (k !== '' && v !== '') {
+                try {
+                    new RegExp(k)
+                } catch (e) {
+                    alert('`' + k + '`: 不是有效的正则表达式. error=' + e)
+                    return
+                }
                 cssMap.set(k, v)
-                await save(cssMap)
-                await render(cssMap, wrapper)
+                save(cssMap)
+                render(cssMap, wrapper)
             }
         })
         on('click', '.inject-css-hide', function () {
@@ -74,24 +79,25 @@
         )
     }
 
-    async function cssValue() {
-        const settingValue = await GM_getValue(SETTING_KEY, '{}');
+    function cssValue() {
+        const settingValue = GM_getValue(SETTING_KEY, '{}');
         debug('setting value:', settingValue)
         let cssMap = JSON.parse(settingValue) // url regex -> css value
         cssMap = new Map(Object.entries(cssMap)) // to Map
         return cssMap
     }
 
-    async function save(cssMap) {
-        const s = JSON.stringify(Object.fromEntries(cssMap));
-        await GM_setValue(SETTING_KEY, s)
-        debug('saved', s, 'get:', await cssValue())
+    function save(cssMap) {
+        const s = JSON.stringify(Object.fromEntries(cssMap));// Map 需要先转为 Object 才能序列化为 JSON
+        GM_setValue(SETTING_KEY, s)
+        debug('saved', s, 'get:', cssValue())
     }
 
-    async function render(cssMap, wrapper) {
+    function render(cssMap, wrapper) {
         const url = window.location.href
         debug('cssMap:', cssMap, 'url:', url)
-        let injectCss = `#inject-css-${RAND}{
+        // http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html
+        let injectCss = `#inject-css-${RAND} {
             display: none;
             position: fixed;
             left: 0;
@@ -105,8 +111,9 @@
             font-size: 16px;
         }
         #inject-css-setting {
-            max-height: 100%
+            max-height: 100%;
             overflow: auto;
+            color: #000;
         }
         #inject-css-setting button {
             border: 1px solid #ccc;
@@ -116,21 +123,27 @@
             border-top-left-radius: 5px;
             border-top-right-radius: 5px;
         }
-        #inject-css-setting table{
+        #inject-css-setting table {
             border-collapse: collapse;
             background-color: #fff;
         }
-        #inject-css-setting th, #inject-css-setting td{
+        #inject-css-setting th, #inject-css-setting td {
             border: 1px solid #ccc;
             padding: .5em;
         }
-        #inject-css-setting tr:nth-child(even){
+        #inject-css-setting tr.active {
+            font-weight: bold; 
+        }
+        #inject-css-setting td.active:after {
+            content: ' ⭐️'
+        }
+        #inject-css-setting tr:nth-child(even) {
             background-color: #f2f2f2
         }
-        #inject-css-setting tr:hover{
+        #inject-css-setting tr:hover {
             background-color: #ddd
         }
-        #inject-css-setting .inject-css-delete,#inject-css-setting .inject-css-add{
+        #inject-css-setting .inject-css-delete,#inject-css-setting .inject-css-add {
             width: 100%;
             border-radius: 5px;
         }
@@ -138,10 +151,12 @@
         let tableBody = ''
         for (const entry of cssMap) {
             try {
+                let active = ''
                 if (new RegExp(entry[0]).test(url)) {
                     injectCss += entry[1] + "\n"
+                    active = 'active'
                 }
-                tableBody += `<tr><td><code>${entry[0]}</code></td><td><pre>${entry[1]}</pre></td><td><button data-key="${entry[0]}" class="inject-css-delete">-</button></td></tr>`
+                tableBody += `<tr class="${active}"><td class="${active}"><code>${entry[0]}</code></td><td><pre>${entry[1]}</pre></td><td><button data-key="${entry[0]}" class="inject-css-delete">-</button></td></tr>`
             } catch (e) {
                 debug('regexp error', e)
                 cssMap.delete(entry[0])
