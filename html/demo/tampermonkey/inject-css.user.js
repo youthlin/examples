@@ -77,6 +77,7 @@
                 }
             }
         )
+        document.querySelector('.inject-css-hide').click()
     }
 
     function cssValue() {
@@ -130,6 +131,8 @@
         #inject-css-setting th, #inject-css-setting td {
             border: 1px solid #ccc;
             padding: .5em;
+            max-width: 50vw;
+            overflow: auto;
         }
         #inject-css-setting tr.active {
             font-weight: bold; 
