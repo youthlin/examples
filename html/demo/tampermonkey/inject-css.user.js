@@ -39,7 +39,70 @@
     function start() {
         const cssMap = cssValue()
         const html = document.getElementsByTagName('html')[0]
-        html.insertAdjacentHTML('beforeend', `<div id="inject-css-${RAND}"></div>`)
+        const inject = `<div id="inject-watermark-${RAND}" class="inject-watermark"></div><style>
+        #inject-watermark-${RAND} {
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+        #inject-css-${RAND} {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 999; 
+            background-color: rgba(0,0,0,.8);
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+        }
+        #inject-css-setting {
+            max-height: 100%;
+            overflow: auto;
+            color: #000;
+        }
+        #inject-css-setting button {
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+            padding: .5em;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        #inject-css-setting table {
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+        #inject-css-setting th, #inject-css-setting td {
+            border: 1px solid #ccc;
+            padding: .5em;
+            max-width: 50vw;
+            overflow: auto;
+        }
+        #inject-css-setting tr.active {
+            font-weight: bold; 
+        }
+        #inject-css-setting td.active:after {
+            content: ' ⭐️';
+        }
+        #inject-css-setting tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        #inject-css-setting tr:hover {
+            background-color: #ddd;
+        }
+        #inject-css-setting .inject-css-delete,#inject-css-setting .inject-css-add {
+            width: 100%;
+            border-radius: 5px;
+        }
+</style><div id="inject-css-${RAND}"></div>`
+        html.insertAdjacentHTML('beforeend', inject)
         const wrapper = document.getElementById(`inject-css-${RAND}`)
         GM_registerMenuCommand('Settings|设置', function (e) {
             debug('Settings', e)
@@ -98,59 +161,7 @@
         const url = window.location.href
         debug('cssMap:', cssMap, 'url:', url)
         // http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html
-        let injectCss = `#inject-css-${RAND} {
-            display: none;
-            position: fixed;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 999; 
-            background-color: rgba(0,0,0,.8);
-            justify-content: center;
-            align-items: center;
-            font-size: 16px;
-        }
-        #inject-css-setting {
-            max-height: 100%;
-            overflow: auto;
-            color: #000;
-        }
-        #inject-css-setting button {
-            border: 1px solid #ccc;
-            background-color: #fff;
-            cursor: pointer;
-            padding: .5em;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-        }
-        #inject-css-setting table {
-            border-collapse: collapse;
-            background-color: #fff;
-        }
-        #inject-css-setting th, #inject-css-setting td {
-            border: 1px solid #ccc;
-            padding: .5em;
-            max-width: 50vw;
-            overflow: auto;
-        }
-        #inject-css-setting tr.active {
-            font-weight: bold; 
-        }
-        #inject-css-setting td.active:after {
-            content: ' ⭐️'
-        }
-        #inject-css-setting tr:nth-child(even) {
-            background-color: #f2f2f2
-        }
-        #inject-css-setting tr:hover {
-            background-color: #ddd
-        }
-        #inject-css-setting .inject-css-delete,#inject-css-setting .inject-css-add {
-            width: 100%;
-            border-radius: 5px;
-        }
-        `
+        let injectCss = ``
         let tableBody = ''
         for (const entry of cssMap) {
             try {
