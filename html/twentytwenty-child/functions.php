@@ -872,19 +872,20 @@ function lin_add_nop_action_notify( $actions, $comment ) {
 // endregion 评论回复邮件通知
 
 // region 暴露 rest api 使用，但不使用 cookie 来认证，而是通过后台设置的密码
+// 访问 /wp-admin/options.php 搜索 lin_rest_token 可以修改 token
+add_action( 'init', 'lin_on_init' );
+function lin_on_init() {
+	$save = get_option( 'lin_rest_token' );
+	if ( ! $save ) {
+		$generate = wp_generate_password( 64, true, true );
+		update_option( 'lin_rest_token', $generate );
+	}
+}
+
 add_action( 'rest_api_init', 'on_rest_init' );
 function on_rest_init( $wp_rest_server ) {
 	$save = get_option( 'lin_rest_token' );
 	if ( ! $save ) {
-		// 访问 /wp-json/wp/v2/users/ 以触发该选项保存
-		// 然后访问 /wp-admin/options.php 搜索 lin_rest_token 字段填入自己生成的 token
-		// https://api.wordpress.org/secret-key/1.1/salt/ 这个网址可以生成随机密码
-		update_option( 'lin_rest_token', 'default' );
-
-		return;
-	}
-	if ( $save == 'default' ) {
-		// 还没有设置
 		return;
 	}
 	if ( isset( $_SERVER['HTTP_X_LIN_TOKEN'] ) ) {
