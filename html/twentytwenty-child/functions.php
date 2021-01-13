@@ -892,7 +892,7 @@ function on_rest_init( $wp_rest_server ) {
 		$token = $_SERVER['HTTP_X_LIN_TOKEN'];
 		if ( $token == $save ) {
 			// 如果请求头和设置的密码一致，则认为是 id=1 的用户
-			set_current_user( 1 );
+			wp_set_current_user( 1 );
 		}
 	}
 }
