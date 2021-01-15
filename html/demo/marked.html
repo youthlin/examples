@@ -4,257 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MarkDown Preview</title>
-    <script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/marked/0.3.6/marked.min.js"></script>
-    <script src="https://cdn.bootcss.com/highlight.js/9.9.0/highlight.min.js"></script>
-    <link href='https://cdn.maxiang.io/res-min/themes/marxico.css' rel='stylesheet'>
-    <style type="text/css">
-        html, body {
-            height: 100%;
-        }
-
-        #control {
-            position: fixed;
-            right: 2%;
-            top: 2%;
-        }
-
-        #content, #result {
+    <style>
+        html, body { /* reset */
             width: 100%;
-            max-width: 100%;
-            min-width: 100%;
-            height: 50%;
-            max-height: 50%;
-            min-height: 50%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sr-only { /* tip text */
+            display: none;
+        }
+
+        .wrapper { /* flex two column */
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        .item {
+            width: 50%;
             padding: 1%;
         }
 
-        #content {
+        #editor {
             resize: none;
-            font-family: "courier new", "monospace", serif;
+            width: 100%;
+            height: 100%;
+            padding: 1%;
+            box-sizing: border-box;
         }
 
-        textarea:focus {
-            box-shadow: 0 0 5px rgba(81, 203, 238, 1);
-            border: 1px solid rgba(81, 203, 238, 1);
-        }
-
-        #result {
-            overflow-x: hidden;
+        #preview {
+            border: 1px solid #ccc;
+            margin: 1% 1% 1% 0;
+            padding: 0 1%;
             overflow-y: auto;
-            float: right;
+            word-break: break-word;
         }
 
-        svg path,
-        svg rect {
-            fill: #FF6700;
+        #preview * {
+            max-width: 100%;
+            overflow: auto;
+        }
+    </style>
+    <style>
+        img {
+            max-width: 100%;
         }
 
-        @media screen and (min-width: 768px) {
-            #content, #result {
-                height: 100%;
-                max-height: 100%;
-                min-height: 100%;
-                width: 50%;
-                max-width: 50%;
-                min-width: 50%;
-            }
-        }
 
-        @media print {
-            .print-not-show {
-                display: none;
-            }
-
-            html, body {
-                height: auto;
-            }
-
-            #result {
-                overflow: auto;
-                height: auto;
-                min-height: auto;
-            }
-        }
-
-        .hljs{display:block;overflow-x:auto;padding:0.5em;background:#F0F0F0}.hljs,.hljs-subst{color:#444}.hljs-comment{color:#888888}.hljs-keyword,.hljs-attribute,.hljs-selector-tag,.hljs-meta-keyword,.hljs-doctag,.hljs-name{font-weight:bold}.hljs-type,.hljs-string,.hljs-number,.hljs-selector-id,.hljs-selector-class,.hljs-quote,.hljs-template-tag,.hljs-deletion{color:#880000}.hljs-title,.hljs-section{color:#880000;font-weight:bold}.hljs-regexp,.hljs-symbol,.hljs-variable,.hljs-template-variable,.hljs-link,.hljs-selector-attr,.hljs-selector-pseudo{color:#BC6060}.hljs-literal{color:#78A960}.hljs-built_in,.hljs-bullet,.hljs-code,.hljs-addition{color:#397300}.hljs-meta{color:#1f7199}.hljs-meta-string{color:#4d99bf}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}
-        pre code, pre.prettyprint code {
-            padding: 0 !important;
-        }
     </style>
 </head>
 <body>
-<div style="height: 100%;">
-    <div id="control" class="print-not-show">
-        <div id="gif" title="Loading" style="display: none;float: left;">
-            <!-- https://codepen.io/aurer/pen/jEGbA/ -->
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24px"
-                 height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
-                <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s"
-                             repeatCount="indefinite"></animate>
-                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s"
-                             repeatCount="indefinite"></animate>
-                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s"
-                             repeatCount="indefinite"></animate>
-                </rect>
-                <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s"
-                             repeatCount="indefinite"></animate>
-                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s"
-                             repeatCount="indefinite"></animate>
-                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s"
-                             repeatCount="indefinite"></animate>
-                </rect>
-                <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s"
-                             repeatCount="indefinite"></animate>
-                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s"
-                             repeatCount="indefinite"></animate>
-                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s"
-                             repeatCount="indefinite"></animate>
-                </rect>
-            </svg>
-        </div>
-        <button id="btn-clear">Clear</button>
-        <button id="btn-random">Random</button>
-        <button id="btn-copy-html">Copy Html</button>
-    </div>
-    <div id="result"></div>
-    <textarea id="content" onkeyup="compile()" class="print-not-show" title="" autofocus># Markdown Preview
->请在此处键入 `markdown` 内容
-右侧将会_自动_生成预览。
-
-```
-System.out.println("Please input markdown text here.");
-```
-[Markdown Syntax](http://daringfireball.net/projects/markdown/syntax)
-[Markdown 语法说明 (简体中文版)](http://wowubuntu.com/markdown/)
-
-支持扩展表格语法：
-
-| ab | ab |
-|----|----|
-| 12 | 34 |
+<div class="wrapper">
+    <section class="item edit">
+        <label for="editor" class="sr-only">输入区域</label>
+        <textarea name="editor" id="editor"># Markdown Preview
+# Markdown Preview
 </textarea>
+    </section>
+    <section class="item preview" id="preview"></section>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-    const render = new marked.Renderer();
-    // id 重复问题、不支持中文 Id 问题 added on 2017-09-13 11:42
-    // https://github.com/chjj/marked/issues/879#issuecomment-297654193
-    let headings = [];
-    render.heading = function (text, level) {
-        var escapedText = text.toLowerCase();//.replace(/[^\w]+/g, '-');  // support CJK words
-        var duplicateIndex = headings.map(function (h) {
-            return h.text
-        }).indexOf(escapedText);
-        var duplicateText;
-        if (duplicateIndex === -1) {
-            headings.push({
-                text: escapedText,
-                count: 0
-            });
+    function ready(fn) {
+        if (document.readyState !== 'loading') {
+            fn();
         } else {
-            headings[duplicateIndex].count++;
-            duplicateText = escapedText + '-' + headings[duplicateIndex].count;
+            document.addEventListener('DOMContentLoaded', fn);
         }
-        return '<h' + level + ' id="' + (duplicateText || escapedText) + '">' + text + '</h' + level + '>\n';
-    };
-    const $result = jQuery('#result');
-    let nowHtml = true;
-    marked.setOptions({
-        renderer: render,	//指定渲染器
-        gfm: true,			// GitHub 风格
-        tables: true,		//支持表格
-        breaks: true,		//回车换成br
-        highlight: function (code) {
-            return hljs.highlightAuto(code).value;
-        }
-    });
-
-    function compile() {
-        headings = [];
-        $result.html(marked(jQuery("#content").val()));
-        nowHtml = true;
     }
 
-    jQuery(document).ready(function ($) {
-        // 同步滚动
-        let $divs = $('textarea#content, div#result');
-        let sync = function () {
-            var $other = $divs.not(this).off('scroll'), other = $other.get(0);
-            var percentage = this.scrollTop / (this.scrollHeight - this.offsetHeight);
-            other.scrollTop = percentage * (other.scrollHeight - other.offsetHeight);
-            setTimeout(function () {
-                $other.on('scroll', sync);
-            }, 200);
-        };
-        $divs.on('scroll', sync);
+    let links = []
 
-        compile();//页面加载后编译一次
-
-        // 双击显示源码 added on 2017年2月19日16:00:15
-        $result.dblclick(function () {
-            if (nowHtml) {
-                $result.text($result.html());
-                nowHtml = false;
-            } else {
-                $result.html($result.text());
-                nowHtml = true;
+    function compile(editor, preview) {
+        links = []
+        const tokens = marked.lexer(editor.value)
+        console.log(tokens)
+        let content = marked.parser(tokens)
+        const length = links.length
+        if (length > 0) {
+            content += '<br><hr><p>'
+            for (let i = 0; i < length; i++) {
+                content += `<span class="footnote"><span class="ft-num">[${i + 1}]</span>
+<span class="ft-text">${links[i].text}</span> <em class="ft-link">${links[i].href}</em></span><br>`
             }
+            content += "</p>"
+        }
+        preview.innerHTML = content
+    }
+
+    ready(function () {
+        marked.setOptions({
+            // https://marked.js.org/using_advanced#options
+            gfm: true,			// GitHub 风格
+            tables: true,		// 支持表格
+            breaks: true,		// 回车换成br
+            headerIds: true,    //
         });
-        $('#btn-clear').click(function () {
-            $('#content').val('');
-            compile();
-        });
-        let $loading = $('#gif');
-        let $random = $('#btn-random');
-        $random.click(function () {
-            $random.attr('disabled', true);
-            $loading.show();
-            $.ajax({
-                url: 'random-markdown.php',
-                success: function (r) {
-                    $('#content').val(r);
-                    compile();
-                },
-                complete: function () {
-                    $random.attr('disabled', false);
-                    $loading.hide();
+        const renderer = {
+            link(href, title, text) {
+                links.push({text: title ? title : text, href: href});
+                return `<a href="${href}" title="${title ? "" : title}">${text}</a><sup>[${links.length}]</sup>`;
+            },
+            image(href, title, text) {
+                if (title) {
+                    return `<figure><img src=${href} alt="${text}"><figcaption>${title}</figcaption></figure>`
                 }
-            });
-        });
-
-        const copyBtn = document.getElementById('btn-copy-html');
-        const result = document.getElementById('result');
-        copyBtn.addEventListener('click', e => {
-            copy(result.innerHTML);
-        });
-    });
-
-
-    function copy(text) {
-        let hidden = document.getElementById('hidden-textarea');
-        if (!hidden) {
-            hidden = document.createElement('textarea');
-            hidden.id = 'hidden-textarea';
-            hidden.style.position = 'absolute';
-            hidden.style.top = '0';
-            hidden.style.left = '0';
-            hidden.style.opacity = '0';
-            document.body.appendChild(hidden);
-        }
-        hidden.value = text;
-        hidden.select();
-        try {
-            const status = document.execCommand('copy');
-            if (status) {
-                console.log("Copied!");
+                return `<img src=${href} alt="${text}">`
             }
-        } catch (err) {
-            console.log('Unable to copy.');
         }
-    }
+        marked.use({renderer})
+        const editor = document.querySelector('#editor');
+        const preview = document.getElementById('preview');
+        compile(editor, preview);
+        editor.addEventListener('keyup', function () {
+            compile(editor, preview);
+        })
+
+    });
 </script>
 </body>
 </html>
