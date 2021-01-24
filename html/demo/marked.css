@@ -1,0 +1,75 @@
+#preview * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* 图片不超过容器 */
+#preview img {
+    max-width: 100%;
+}
+
+/* region 标题 */
+.heading-text {
+    display: inline-block;
+}
+
+#preview h1 {
+    padding: 5px 0;
+    color: #a0a0a0;
+    font-size: 1rem;
+    line-height: 2;
+    border-bottom: 2px solid #c5c5c5;
+}
+
+#preview h2 {
+    background-color: #fbfbfb;
+    border-bottom: 1px solid #f6f6f6;
+    line-height: 1.5;
+}
+
+#preview h2 .heading-text {
+    background-color: #212121;
+    color: #fff;
+    padding: 0 1em;
+    border-bottom-right-radius: 100px;
+}
+
+#preview h3 {
+    border-top: 1px solid #ccc;
+    line-height: 1.1;
+}
+
+#preview h3 .heading-text {
+    border-top: 2px solid #000;
+    padding-top: 1px;
+}
+
+#preview h4 {
+    border-top: 1px solid #ccc;
+    line-height: 1.1;
+}
+
+#preview h4 .heading-text {
+    margin-top: 2px;
+}
+
+#preview h5 {
+    border-top: 1px dashed #ccc;
+}
+
+#preview h6 {
+    border-top: 1px dotted #ccc;
+}
+
+/* endregion 标题 */
+
+/* region 段落 */
+#preview p {
+    /*    text-indent: 2em;*/ /* 首行缩进 */
+    text-align: start;
+    white-space: normal;
+    font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, FreeSans, sans-serif;
+    line-height: 1.5em;
+}
+
+/* endregion 段落 */
