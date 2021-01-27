@@ -4,8 +4,17 @@
 }
 
 /* 图片不超过容器 */
+#preview figure {
+    margin: 1em;
+}
+
 #preview img {
     max-width: 100%;
+}
+
+#preview figcaption {
+    text-align: center;
+    color: #888;
 }
 
 /* region 标题 */
@@ -14,17 +23,17 @@
 }
 
 #preview h1 {
-    padding: 5px 0;
     color: #a0a0a0;
-    font-size: 1rem;
-    line-height: 2;
     border-bottom: 2px solid #c5c5c5;
+    margin: .83em 0;
+    font-size: 1.5em;
 }
 
 #preview h2 {
     background-color: #fbfbfb;
     border-bottom: 1px solid #f6f6f6;
-    line-height: 1.5;
+    font-size: 1.5em;
+    margin: .8em 0;
 }
 
 #preview h2 .heading-text {
@@ -35,18 +44,19 @@
 }
 
 #preview h3 {
-    border-top: 1px solid #ccc;
-    line-height: 1.1;
+    border-bottom: 1px solid #ccc;
+    font-size: 1.2em;
+    margin: 1em 0;
 }
 
 #preview h3 .heading-text {
-    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
     padding-top: 1px;
 }
 
 #preview h4 {
     border-top: 1px solid #ccc;
-    line-height: 1.1;
+    margin: 1em 0;
 }
 
 #preview h4 .heading-text {
@@ -55,10 +65,13 @@
 
 #preview h5 {
     border-top: 1px dashed #ccc;
+    margin: 1em 0;
 }
 
 #preview h6 {
     border-top: 1px dotted #ccc;
+    margin: 1em 0 0 0;
+    padding: 1em 0;
 }
 
 /* endregion 标题 */
@@ -68,8 +81,74 @@
     /*    text-indent: 2em;*/ /* 首行缩进 */
     text-align: start;
     white-space: normal;
-    font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, FreeSans, sans-serif;
     line-height: 1.5em;
+    margin: 1em 0;
 }
 
 /* endregion 段落 */
+
+/* region 引用 */
+#preview blockquote {
+    border-left: 4px solid #ddd;
+    background-color: #eee;
+    color: #777;
+    margin: 1em 0;
+    padding: 0 1em;
+}
+
+/* endregion 引用 */
+
+/* region 链接*/
+#preview .link {
+    color: #ff3502;
+}
+
+#preview a {
+    color: #ff3502;
+    text-decoration: none;
+}
+
+/* endregion a */
+/* region 代码*/
+
+#preview p code {
+    color: #ef7060;
+    background-color: #1b1f230d;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+#preview pre {
+    overflow-x: auto;
+    padding: 1em;
+    background-color: #00000008;
+    border: 1px solid #f0f0f0;
+    border-radius: 2px;
+    white-space: pre-wrap;
+    font-family: "Operator Mono", Consolas, Monaco, Menlo, monospace;
+}
+
+#preview li::marker {
+    color: #00000055;
+}
+
+/* endregion 代码*/
+
+
+/* region 参考链接 */
+#preview .footnote {
+    display: flex;
+}
+
+#preview .ft-num {
+    width: 10%;
+    opacity: .8;
+    text-align: center;
+}
+
+#preview .ft-content {
+    width: 90%;
+    word-break: break-all;
+}
+
+/* endregion */

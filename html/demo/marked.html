@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MarkDown Preview</title>
     <link rel="stylesheet" href="marked.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/styles/default.min.css">
     <style>
         html, body { /* reset */
             width: 100%;
@@ -50,20 +52,26 @@
     <section class="item edit">
         <label for="editor" class="sr-only">输入区域</label>
         <textarea name="editor" id="editor">### 需求来源
-有些网站的广告元素很容易找，想直接把它  `display:none` 掉，或者把某些带背景图像的元素隐藏或更换背景图片。然后找到了一个 Chrome 插件 [Stylus](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne/related "Stylus") 也能用但感觉没有必要单独装一个插件，还很复杂的样子。想着油猴脚本应该有很多类似的，结果搜了一下都是针对特定网站的（比如百度/B站/知乎美化），于是就自己写了这个油猴插件。
+有些网站的广告元素很容易找，想直接把它 `display:none` 掉，或者把某些带背景图像的元素隐藏或更换背景图片。
+然后找到了一个 Chrome 插件 [Stylus](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne/related "Stylus") 也能用但感觉没有必要单独装一个插件，还很复杂的样子。
+想着油猴脚本应该有很多类似的，结果搜了一下都是针对特定网站的（比如百度/B站/知乎美化），于是就自己写了这个油猴插件。
 
-![效果图](https://youthlin.com/wp-content/uploads/2021/01/inject-css-效果图.png)
+![效果图](https://youthlin.com/wp-content/uploads/2021/01/inject-css-效果图.png "效果图")
 
 <!--more-->
 
 ### 使用方式
-需要先安装用户脚本管理器 [Tampermonkey](https://www.tampermonkey.net/index.php "Tampermonkey") （即俗称的油猴插件），然后点击 [这里](https://github.com/youthlin/examples/raw/master/html/demo/tampermonkey/inject-css.user.js "安装脚本") 安装脚本，点击 [这里](https://github.com/youthlin/examples/blob/master/html/demo/tampermonkey/inject-css.user.js "预览脚本") 预览脚本（见 [Gist 地址](https://gist.github.com/youthlin/c4c08ffe4273ca7ebbf759289cef9964) ）。油猴脚本开发可以参考之前的文章：[如何编写一个油猴脚本](https://youthlin.com/?p=1698 "如何编写一个油猴脚本")
+需要先安装用户脚本管理器 [Tampermonkey](https://www.tampermonkey.net/index.php) （即俗称的油猴插件），然后点击 [这里](https://github.com/youthlin/examples/raw/master/html/demo/tampermonkey/inject-css.user.js "安装脚本") 安装脚本，点击 [这里](https://github.com/youthlin/examples/blob/master/html/demo/tampermonkey/inject-css.user.js "预览脚本") 预览脚本（见 [Gist 地址](https://gist.github.com/youthlin/c4c08ffe4273ca7ebbf759289cef9964) ）。
+油猴脚本开发可以参考之前的文章：[如何编写一个油猴脚本](https://youthlin.com/?p=1698)
 
 ### 实现原理
-一个 URL 正则表达式对应一条 CSS 规则，将所有规则保存起来（油猴提供了两个 API `GM_getValue` / `GM_setValue` 供存取设置内容）。 然后在每个页面加载后，遍历所有规则，找到所有对本页适用的规则，直接注入到页面中。本着一个脚本做一件事的原则，这个脚本只提供注入 CSS 功能，而不提供注入 JS 的功能。
+一个 URL 正则表达式对应一条 CSS 规则，将所有规则保存起来（油猴提供了两个 API `GM_getValue` / `GM_setValue` 供存取设置内容）。
+然后在每个页面加载后，遍历所有规则，找到所有对本页适用的规则，直接注入到页面中。
+本着一个脚本做一件事的原则，这个脚本只提供注入 CSS 功能，而不提供注入 JS 的功能。
 
 ### 局限性
-在浏览 GNU 的 [ftp 站点](https://ftp.gnu.org/gnu/gettext/ "gnu ftp gettext 的站点") 时发现规则没有生效。然后认识了一个 HTTP 响应头 `Content-Security-Policy` 。该站点的此响应头是这样设置的：
+在浏览 GNU 的 [ftp 站点](https://ftp.gnu.org/gnu/gettext/ "gnu ftp gettext 的站点") 时发现规则没有生效。然后认识了一个 HTTP 响应头 `Content-Security-Policy` 。
+该站点的此响应头是这样设置的：
 ```
 Content-Security-Policy: default-src 'self'; img-src data: 'self' https://static.fsf.org https://gnu.org; object-src 'none'; frame-ancestors 'none'; child-src 'self' https://static.gnu.org https://static1p.gnu.org https://static1p.fsf.org;script-src 'unsafe-eval' 'self'
 ```
@@ -71,7 +79,11 @@ Content-Security-Policy: default-src 'self'; img-src data: 'self' https://static
 ```
 Refused to apply inline style because it violates the following Content Security Policy directive: "default-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'style-src' was not explicitly set, so 'default-src' is used as a fallback.
 ```
-这个 header 对应的值是多个分号分隔的部分，指定了页面支持哪些来源的资源。第一个 `default-src` 指定默认的资源来源是 `self` 即当前域名。根据报错信息提示，浏览器拒绝应用注入的样式，因为内容安全策略设置的 `default-src` 指定了只接受同域名的样式，而没有接受行内样式 `unsafe-inline` ，也没有指定可执行的样式的 hash, nonce 值。因为没有指定 `style-src` 所以使用的是 `default-src` 规则。更多内容安全策略的相关知识，大家可以参考 MDN 文章 [内容安全策略( CSP )](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP "内容安全策略( CSP )") 、[Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy "Content-Security-Policy") ，以及阮一峰的博文 [Content Security Policy 入门教程](https://www.ruanyifeng.com/blog/2016/09/csp.html "Content Security Policy 入门教程") 。
+这个 header 对应的值是多个分号分隔的部分，指定了页面支持哪些来源的资源。
+第一个 `default-src` 指定默认的资源来源是 `self` 即当前域名。
+根据报错信息提示，浏览器拒绝应用注入的样式，因为内容安全策略设置的 `default-src` 指定了只接受同域名的样式，而没有接受行内样式 `unsafe-inline` ，也没有指定可执行的样式的 hash, nonce 值。
+因为没有指定 `style-src` 所以使用的是 `default-src` 规则。
+更多内容安全策略的相关知识，大家可以参考 MDN 文章 [内容安全策略( CSP )](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP) 、[Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy) ，以及阮一峰的博文 [Content Security Policy 入门教程](https://www.ruanyifeng.com/blog/2016/09/csp.html) 。
 
 ### 分享一些规则
 找到了广告元素后，可以直接使用 `display: none` 将其隐藏，另外插件还注入了一个水印层， class 是 `.inject-watermark` ，也可以用来添加自定义水印～
@@ -88,63 +100,20 @@ body > div:empty {
 
 ```
 
-`svg` 可以作为背景水印，如何将文本写在 svg 上，可以参考菜鸟教程 [SVG &lt;text>](https://www.runoob.com/svg/svg-text.html "SVG <text>") 从教程的 *尝试一下* 按钮可以进入 svg 在线编辑器。另外再推荐张鑫旭的几篇相关文章：[如何让文字作为CSS背景图片显示？](https://www.zhangxinxu.com/wordpress/?p=9615 "如何让文字作为CSS背景图片显示？") ，如果想要将文字倾斜，还可以看下 svg 中如何旋转 [理解SVG transform坐标变换](https://www.zhangxinxu.com/wordpress/?p=4965 "理解SVG transform坐标变换") ，最后为了把 svg 放在背景上，通常可以使用 base64 编码 svg 后放在 `background-image` 的 url 中，不过，还有另一种可读性更好的方式 [学习了，CSS中内联SVG图片有比Base64更好的形式](https://www.zhangxinxu.com/wordpress/?p=7957 "学习了，CSS中内联SVG图片有比Base64更好的形式") 。
-
-# Falleret est unus manus solum aequales
-## a
-## a
-## 你好
-            二级标题下的段落
-### 你好
-            三级标题下的段落
-#### 你好
-            4⃣️级标题下的段落
-##### 你好
-            5级标题下的段落
-
-###### 你好
-          6级标题下的段落
-
-## 你好'吗
-## Utque ipso qui ipse acta simile ad
-
-Lorem markdownum an tamen querentes coepisse Mimasque si monte primis nec aequor
-et pars quoque, aut quae periuraque. Discubuere crinibus Theseus eligit duabuset
-citharam nec multi Echione sciret. Petit et tulit: est tum enim et tumultus,
-**in** falsa [praepes](http://aitartem.io/mutilatae.aspx). Super **modo postquam
-serum** Panopesque dubitas tibi dixisse coeamus iurasse: ortu cui lumina miseram
-alto retices namque!
-
-###  Duroque Cephalum
-
-> Hic Dite, tellusque Ithaco generatus [relicto invia et](http://satyri.org/et)
-> raptores sententia saepe! Intrat adhuc gerit aper, clausa illo fallitque
-> thalamique parva, vero, coniuge risi, litorei dempto. Via debeat Fortuna nec
-> Trinacriam regis, sed homines altum fera fingit mala membris sed Iove
-> gentibus. Praeacutae *quoque*: boum: terga quod, et et illa prunam, nec.
-
-## Duroque Cephalum
-
-Equi aquas terras ignorans lacrimas illis lenta creatis! Nunc cetera at
-quamcumque Pasiphaen partibus propiora natusque in pari latebras: ictu de
-Bromumque lacus. *Telamon vides ova* lumina reddit Aulidaque triones.
-
-    aspSearchRight(vector(runtimeMenuUltra) * address_byte, 4 + 1,
-            bittorrent_symbolic);
-    if (9 + intelligence == supply_type_nas + pppoe) {
-        vista(truncate_service_ethernet);
-        property.cdfsReader = excel;
-        pointWiredPlug.thunderbolt_gate_ram = mountNuiNvram(
-                softwarePackServices) + hover_mms;
-    } else {
-        plagiarism(driveDvdProgram, click + atm, emoticon_hibernate);
-    }
-    data += permalinkKernelRgb(-4, qwerty_kerning);
+`svg` 可以作为背景水印，如何将文本写在 svg 上，可以参考菜鸟教程 [SVG &lt;text>](https://www.runoob.com/svg/svg-text.html) 。从教程的 *尝试一下* 按钮可以进入 svg 在线编辑器。
+另外再推荐张鑫旭的几篇相关文章：
+[如何让文字作为CSS背景图片显示？](https://www.zhangxinxu.com/wordpress/?p=9615) ；
+如果想要将文字倾斜，还可以看下 svg 中如何旋转
+[理解SVG transform坐标变换](https://www.zhangxinxu.com/wordpress/?p=4965) ；
+最后为了把 svg 放在背景上，通常可以使用 base64 编码 svg 后放在 `background-image` 的 url 中，
+不过，还有另一种可读性更好的方式
+[学习了，CSS中内联SVG图片有比Base64更好的形式](https://www.zhangxinxu.com/wordpress/?p=7957) 。
 </textarea>
     </section>
     <section class="item preview" id="preview"></section>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/highlight.min.js"></script>
 <script>
     function ready(fn) {
         if (document.readyState !== 'loading') {
@@ -159,16 +128,16 @@ Bromumque lacus. *Telamon vides ova* lumina reddit Aulidaque triones.
     function compile(editor, preview) {// 转换 editor markdown 到 preview html
         links = []
         const tokens = marked.lexer(editor.value)
-        console.log(tokens)
+        // console.log(tokens)
         let content = marked.parser(tokens)
         const length = links.length
         if (length > 0) {// 有链接，添加参考资料在底部
-            content += '<br><h6>参考资料</h6><p>'
+            content += '<br><h6>参考资料</h6><section>'
             for (let i = 0; i < length; i++) {
                 content += `<span class="footnote"><span class="ft-num">[${i + 1}]</span>
-<span class="ft-text">${links[i].text}</span> <em class="ft-link">${links[i].href}</em></span><br>`
+<span class="ft-content"><span class="ft-text">${links[i].text}</span>: <em class="ft-link">${links[i].href}</em></span></span>`
             }
-            content += "</p>"
+            content += "</section><p>* 微信不支持外链，可点击 <em>阅读原文</em> 获得更佳体验</p>"
         }
         preview.innerHTML = content
     }
@@ -180,6 +149,11 @@ Bromumque lacus. *Telamon vides ova* lumina reddit Aulidaque triones.
             tables: true,		// 支持表格
             breaks: true,		// 回车换成 br
             headerIds: true,    // 标题添加 id
+            // highlight: function (code, lang, callback) {
+            //     const result = hljs.highlightAuto(code).value
+            //     const line = result.split('\n')
+            //     return result
+            // },
         });
         const renderer = {
             // https://marked.js.org/using_pro#renderer
@@ -187,16 +161,17 @@ Bromumque lacus. *Telamon vides ova* lumina reddit Aulidaque triones.
                 // raw: '
                 // text: &#39;
                 // encodeURI 会保留 &
-                const escapedText = encodeURIComponent(slugger.slug(raw.toLowerCase()))//.replace(/[^\w]+/g, '-');
-                return `
-            <h${level}>
-              <a name="${escapedText}" class="anchor" href="#${escapedText}"></a>
-              <span class="heading-text">${text}</span>
-            </h${level}>`;
+                const escapedText = encodeURIComponent(slugger.slug(raw.toLowerCase()))
+                return `<h${level}><a name="${escapedText}" class="anchor" href="#${escapedText}"></a><span class="heading-text">${text}</span></h${level}>`;
+            },
+            code(code, lang, escaped) {// 代码高亮
+                const result = hljs.highlightAuto(code).value
+                const item = result.split('\n').map(line => `<li class="code-line">${line}</li>`).join('')
+                return `<pre><code><ol class="code">${item}</ol></code></pre>`
             },
             link(href, title, text) { // 链接 a 标签
                 links.push({text: title ? title : text, href: href});
-                return `<a href="${href}" title="${title ? "" : title}">${text}</a><sup>[${links.length}]</sup>`;
+                return `<span class="link"><a href="${href}" title="${title ? "" : title}">${text}</a><sup>[${links.length}]</sup></span>`;
             },
             image(href, title, text) { // 图片
                 if (title) {
