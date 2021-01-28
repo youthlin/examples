@@ -126,6 +126,31 @@ function lin_wp_footer() {
 function gtag(){dataLayer.push(arguments);}
 gtag("js", new Date());
 gtag("config", "UA-46211856-1");' );
+	wp_enqueue_script( 'google-adsense', 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', array(), null );
+	wp_script_add_data( 'google-adsense', 'data-keys', array( 'data-ad-client' ) );
+	wp_script_add_data( 'google-adsense', 'data-ad-client', 'ca-pub-2099119617202841' );
+}
+
+add_filter( 'script_loader_tag', 'lin_add_data_to_script', 10, 2 );
+function lin_add_data_to_script( $tag, $handle ) {
+	$keys = wp_scripts()->get_data( $handle, "data-keys" );
+	if ( ! $keys ) {
+		return $tag;
+	}
+	foreach ( $keys as $attr ) {
+		$v = wp_scripts()->get_data( $handle, $attr );
+		if ( ! $v ) {
+			$v = '';
+		} else {
+			$v = "='$v'";
+		}
+		// Prevent adding attribute when already added in #12009.
+		if ( ! preg_match( ":\s$attr(=|>|\s):", $tag ) ) {
+			$tag = preg_replace( ':(?=></script>):', " $attr$v", $tag, 1 );
+		}
+	}
+
+	return $tag;
 }
 
 function lin_theme_switch() {
