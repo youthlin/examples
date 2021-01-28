@@ -19,29 +19,45 @@
             display: none;
         }
 
-        .wrapper { /* flex two column */
+        .wrapper { /* 占满全屏 flex 3 column 左输入框 中宽度调整 右预览*/
             width: 100%;
             height: 100%;
             display: flex;
         }
 
-        .item { /* left=editor, right=priview */
-            width: 50%;
-            padding: 1%;
+        .edit {
+            width: calc(50% - 5px); /* 2px = divide border */
         }
 
-        #editor {
+        .divide {
+            width: 5px;
+            border: 1px dotted #ccc;
+            cursor: col-resize;
+        }
+
+        .divide:hover {
+            border: 1px dashed #aaa;
+        }
+
+        .preview {
+            width: 50%;
+        }
+
+        textarea#editor {
+            box-sizing: border-box;
+            width: 99%;
+            height: 98%;
+            margin: 1% 0 1% 1%;
+            padding: 1%;
             resize: none;
+            border-color: #ccc;
+        }
+
+        main#preview {
+            box-sizing: border-box;
             width: 100%;
             height: 100%;
             padding: 1%;
-            box-sizing: border-box;
-        }
-
-        #preview {
-            border: 1px solid #ccc;
-            margin: 1% 1% 1% 0;
-            padding: 0 1%;
             overflow-y: auto;
             word-break: break-word;
         }
@@ -110,7 +126,10 @@ body > div:empty {
 [学习了，CSS中内联SVG图片有比Base64更好的形式](https://www.zhangxinxu.com/wordpress/?p=7957) 。
 </textarea>
     </section>
-    <section class="item preview" id="preview"></section>
+    <div class="item divide"></div>
+    <section class="item preview">
+        <main id="preview"></main>
+    </section>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/highlight.min.js"></script>
