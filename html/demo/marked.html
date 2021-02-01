@@ -13,6 +13,7 @@
             height: 100%;
             padding: 0;
             margin: 0;
+            scroll-behavior: smooth;
         }
 
         .sr-only { /* tip text */
@@ -134,13 +135,13 @@ body > div:empty {
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/highlight.min.js"></script>
 <script>
-    function ready(fn) {
+    const ready = function (fn) {
         if (document.readyState !== 'loading') {
             fn();
         } else {
             document.addEventListener('DOMContentLoaded', fn);
         }
-    }
+    };
 
     let links = [] // 文中所有链接 []{text, href}
 
@@ -200,12 +201,58 @@ body > div:empty {
             }
         }
         marked.use({renderer})
+
         const editor = document.querySelector('#editor');
         const preview = document.getElementById('preview');
+
+        // 实时编译预览
         compile(editor, preview);
         editor.addEventListener('keyup', function () {
             compile(editor, preview);
         })
+
+        // region 同步滚动
+        // 这两个,标记当前滚动的是哪个元素
+        let fromEditor = false;
+        let fromPreview = false;
+
+        function onScroll(e) {
+            // console.log(e);
+            const thisScroll = e.target;
+            const thatScroll = thisScroll === editor ? preview : editor;
+            if (thisScroll === editor) {
+                fromEditor = true;// 当前滚动的是输入框
+                if (fromPreview) {// 但是预览栏也在滚动，说明是预览的滚动导致输入框滚动，就不用再触发预览滚动了
+                    // 所以重置两个标记
+                    fromEditor = false;
+                    fromPreview = false;
+                    return;// 直接结束即可
+                }
+            } else {// 同理
+                fromPreview = true;
+                if (fromEditor) {
+                    fromEditor = false;
+                    fromPreview = false;
+                    return;
+                }
+            }
+            // https://zh.javascript.info/size-and-scroll
+            // scrollTop 滚动出去在界面上方的高度(已经滚动的高度)
+            // clientHeight 元素不包括边框含 padding 的高度
+            // scrollHeight 元素内容的高度(包括已经滚动出去和还没显示的部分)
+            // offsetHeight 元素包括边框的高度
+
+            // // 错误的百分比: 可能导致 editor 在顶部，preview 却滚动了一点点
+            // const percent = (thisScroll.scrollTop + thisScroll.clientHeight) / thisScroll.scrollHeight;
+            // thatScroll.scrollTop = thatScroll.scrollHeight * percent - thatScroll.clientHeight;
+
+            const percent = thisScroll.scrollTop / (thisScroll.scrollHeight - thisScroll.offsetHeight);
+            thatScroll.scrollTop = percent * (thatScroll.scrollHeight - thatScroll.offsetHeight);
+        }
+
+        editor.addEventListener('scroll', onScroll);
+        preview.addEventListener('scroll', onScroll);
+        // endregion 同步滚动
 
     });
 </script>
