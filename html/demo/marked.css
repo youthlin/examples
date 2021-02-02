@@ -109,6 +109,7 @@
 }
 
 /* endregion a */
+
 /* region 代码*/
 
 #preview p code {
@@ -134,6 +135,17 @@
 
 /* endregion 代码*/
 
+/* region 表格 */
+#preview table {
+    border-collapse: collapse;
+}
+
+#preview th, #preview td {
+    border: 1px solid #dfe2e5;
+    padding: .6em 1em;
+}
+
+/* endregion table */
 
 /* region 参考链接 */
 #preview .footnote {

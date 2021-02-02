@@ -2,11 +2,11 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>MarkDown Preview</title>
-    <link rel="stylesheet" href="marked.css">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/styles/default.min.css">
+    <link href="marked.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/styles/default.min.css"
+          rel="stylesheet">
     <style>
         html, body { /* reset */
             width: 100%;
@@ -23,11 +23,13 @@
         .wrapper { /* 占满全屏 flex 3 column 左输入框 中宽度调整 右预览*/
             width: 100%;
             height: 100%;
-            display: flex;
+            display: flex; /* http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html */
         }
 
-        .edit {
-            width: calc(50% - 5px); /* 2px = divide border */
+        .edit { /* left */
+            width: calc(50% - 5px); /* 5px = divide border */
+            display: flex;
+            flex-direction: column;
         }
 
         .divide {
@@ -40,15 +42,23 @@
             border: 1px dashed #aaa;
         }
 
-        .preview {
+        .preview { /* right */
             width: 50%;
+        }
+
+        #tool {
+            text-align: end;
+        }
+
+        #tool > * {
+            line-height: 1em;
         }
 
         textarea#editor {
             box-sizing: border-box;
             width: 99%;
-            height: 98%;
-            margin: 1% 0 1% 1%;
+            height: 100%;
+            margin: 0 0 1% 1%;
             padding: 1%;
             resize: none;
             border-color: #ccc;
@@ -62,72 +72,100 @@
             overflow-y: auto;
             word-break: break-word;
         }
+
+        /* mobile 上下分栏 */
+        @media screen and (max-width: 810px) {
+            .wrapper {
+                flex-direction: column-reverse;
+            }
+
+            .item {
+                height: 50%;
+                width: 100%;
+            }
+
+            .divide {
+                height: 1px;
+                border-color: red;
+            }
+        }
+
+        /* 打印 */
+        @media print {
+            .print-not-show {
+                display: none;
+            }
+
+            .wrapper {
+                height: auto;
+            }
+
+            .preview {
+                width: 100%;
+                height: auto;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="wrapper">
-    <section class="item edit">
-        <label for="editor" class="sr-only">输入区域</label>
-        <textarea name="editor" id="editor">### 需求来源
-有些网站的广告元素很容易找，想直接把它 `display:none` 掉，或者把某些带背景图像的元素隐藏或更换背景图片。
-然后找到了一个 Chrome 插件 [Stylus](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne/related "Stylus") 也能用但感觉没有必要单独装一个插件，还很复杂的样子。
-想着油猴脚本应该有很多类似的，结果搜了一下都是针对特定网站的（比如百度/B站/知乎美化），于是就自己写了这个油猴插件。
+    <section class="item edit print-not-show">
+        <div id="tool">
+            <button id="btnClear">清空</button>
+            <button id="btnRandom">Random</button>
+            <label for="type">模式</label>
+            <select id="type" name="type">
+                <option value="wp">WordPress</option>
+                <option value="wx">微信</option>
+            </select>
+            <button id="btnCopy">复制</button>
+            <button id="btnSource">HTML/可视化</button>
+        </div>
+        <label class="sr-only" for="editor">输入区域</label>
+        <textarea id="editor" name="editor"># Markdown 预览
+## 两种渲染模式
+1. WordPress
+   适配 *古腾堡* 区块，在各个区块前后添加区块标记。
+2. 微信公众号
+   链接使用上角标，在底部以 *参考资料* 的形式列出。
 
-![效果图](https://youthlin.com/wp-content/uploads/2021/01/inject-css-效果图.png "效果图")
+## 功能
+- 清空按钮
+- 随机内容
+- 复制渲染内容
+- 显示渲染的 `HTML` 源代码
 
-<!--more-->
+## 第三方库
 
-### 使用方式
-需要先安装用户脚本管理器 [Tampermonkey](https://www.tampermonkey.net/index.php) （即俗称的油猴插件），然后点击 [这里](https://github.com/youthlin/examples/raw/master/html/demo/tampermonkey/inject-css.user.js "安装脚本") 安装脚本，点击 [这里](https://github.com/youthlin/examples/blob/master/html/demo/tampermonkey/inject-css.user.js "预览脚本") 预览脚本（见 [Gist 地址](https://gist.github.com/youthlin/c4c08ffe4273ca7ebbf759289cef9964) ）。
-油猴脚本开发可以参考之前的文章：[如何编写一个油猴脚本](https://youthlin.com/?p=1698)
+> Markdown 预览: [https://github.com/markedjs/marked](https://github.com/markedjs/marked "Markdown 预览")
+> 代码高亮: [https://github.com/highlightjs/highlight.js](https://github.com/highlightjs/highlight.js "代码高亮")
 
-### 实现原理
-一个 URL 正则表达式对应一条 CSS 规则，将所有规则保存起来（油猴提供了两个 API `GM_getValue` / `GM_setValue` 供存取设置内容）。
-然后在每个页面加载后，遍历所有规则，找到所有对本页适用的规则，直接注入到页面中。
-本着一个脚本做一件事的原则，这个脚本只提供注入 CSS 功能，而不提供注入 JS 的功能。
+## 参考
+- [现代 JavaScript 教程](https://zh.javascript.info/)
+- [如何用原生 JavaScript 替代 jQuery](http://youmightnotneedjquery.com/) (You might not need jQuery)
+- [Flex 布局教程：语法篇](http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html)
 
-### 局限性
-在浏览 GNU 的 [ftp 站点](https://ftp.gnu.org/gnu/gettext/ "gnu ftp gettext 的站点") 时发现规则没有生效。然后认识了一个 HTTP 响应头 `Content-Security-Policy` 。
-该站点的此响应头是这样设置的：
-```
-Content-Security-Policy: default-src 'self'; img-src data: 'self' https://static.fsf.org https://gnu.org; object-src 'none'; frame-ancestors 'none'; child-src 'self' https://static.gnu.org https://static1p.gnu.org https://static1p.fsf.org;script-src 'unsafe-eval' 'self'
-```
-报错信息如下：
-```
-Refused to apply inline style because it violates the following Content Security Policy directive: "default-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'style-src' was not explicitly set, so 'default-src' is used as a fallback.
-```
-这个 header 对应的值是多个分号分隔的部分，指定了页面支持哪些来源的资源。
-第一个 `default-src` 指定默认的资源来源是 `self` 即当前域名。
-根据报错信息提示，浏览器拒绝应用注入的样式，因为内容安全策略设置的 `default-src` 指定了只接受同域名的样式，而没有接受行内样式 `unsafe-inline` ，也没有指定可执行的样式的 hash, nonce 值。
-因为没有指定 `style-src` 所以使用的是 `default-src` 规则。
-更多内容安全策略的相关知识，大家可以参考 MDN 文章 [内容安全策略( CSP )](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP) 、[Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy) ，以及阮一峰的博文 [Content Security Policy 入门教程](https://www.ruanyifeng.com/blog/2016/09/csp.html) 。
-
-### 分享一些规则
-找到了广告元素后，可以直接使用 `display: none` 将其隐藏，另外插件还注入了一个水印层， class 是 `.inject-watermark` ，也可以用来添加自定义水印～
-```css
-body > div:empty {
-  /* body 的空的子元素去除背景 */
-  background: transparent !important;
-}
-
-.inject-watermark {
-  /* 插件注入的元素，覆盖整个页面。可以添加自定义水印 */
-  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='%23a2a9b6' fill-opacity='0.5' font-family='system-ui, sans-serif' text-anchor='middle' dominant-baseline='middle' transform='rotate(-45 50 50)'%3Eyouthlin.com%3C/text%3E%3C/svg%3E")
-}
-
-```
-
-`svg` 可以作为背景水印，如何将文本写在 svg 上，可以参考菜鸟教程 [SVG &lt;text>](https://www.runoob.com/svg/svg-text.html) 。从教程的 *尝试一下* 按钮可以进入 svg 在线编辑器。
-另外再推荐张鑫旭的几篇相关文章：
-[如何让文字作为CSS背景图片显示？](https://www.zhangxinxu.com/wordpress/?p=9615) ；
-如果想要将文字倾斜，还可以看下 svg 中如何旋转
-[理解SVG transform坐标变换](https://www.zhangxinxu.com/wordpress/?p=4965) ；
-最后为了把 svg 放在背景上，通常可以使用 base64 编码 svg 后放在 `background-image` 的 url 中，
-不过，还有另一种可读性更好的方式
-[学习了，CSS中内联SVG图片有比Base64更好的形式](https://www.zhangxinxu.com/wordpress/?p=7957) 。
+## Markdown 语法速成
+<!-- 表格源码较乱，请看预览栏更清晰 -->
+| Markdown | 写法二 | 预览 | HTML |
+|----------|-------|-----|------|
+| \*倾斜*   |\_加粗_|*加粗*|`<em>加粗</em>`|
+| \**加粗** |\__加粗__|**加粗**|`<strong>加粗</strong>`|
+| \# 一级标题|一级标题<br>=======|<h1>一级标题</h1>|`<h1>一级标题</h1>`|
+| \## 二级标题|二级标题<br>-------|<h2>二级标题</h2>|`<h2>二级标题</h2>`|
+| \[链接文字](http://a.com)|\[链接文字]\[1]<br>...<br>\[1]: http://a.com|[链接文字](http://a.com)|`<a href="http://a.com">链接文字</a>>`|
+|\!\[图片说明](http://url/a.png)|\![图片说明]\[1]<br>...<br>\[1]: http://url/b.png|![WordPress](https://cn.wordpress.org/favicon.ico)|`<img src="http://url/a.png" alt="图片说明">`|
+|\> 引用 | | <blockquote>引用</blockquote> | `<blockquote>引用</blockquote>` |
+| \- 列表<br>- 列表|\* 列表<br>* 列表 | <ul><li>列表<li>列表 | `<ul><li>列表</li><li>列表</li></ul>` |
+| 1. 列表<br>2. 列表|1) 列表<br>2) 列表 | <ol><li>列表<li>列表 | `<ol><li>列表</li><li>列表</li></ol>` |
+| 分割线<br>--- | 分割线<br>*** | 分割线<hr> | `分割线<hr` |
+| \`行内代码` | | `行内代码` | `<code>行内代码</code>` |
+| \```<br>#块级代码<br>print 'hello'<br>``` |....#块级代码<br>....print 'hello'<br>|<pre><code>#块级代码<br>print 'hello'</code></pre>|`<pre><code>#块级代码<br>print 'hello'</>code></>pre>`|
+> from https://commonmark.org/help/
+> 另请参阅 https://markdown.com.cn/
 </textarea>
     </section>
-    <div class="item divide"></div>
+    <div class="item divide print-not-show"></div>
     <section class="item preview">
         <main id="preview"></main>
     </section>
@@ -135,88 +173,211 @@ body > div:empty {
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/highlight.min.js"></script>
 <script>
-    const ready = function (fn) {
+    function ready(fn) {
         if (document.readyState !== 'loading') {
             fn();
         } else {
             document.addEventListener('DOMContentLoaded', fn);
         }
-    };
-
-    let links = [] // 文中所有链接 []{text, href}
-
-    function compile(editor, preview) {// 转换 editor markdown 到 preview html
-        links = []
-        const tokens = marked.lexer(editor.value)
-        // console.log(tokens)
-        let content = marked.parser(tokens)
-        const length = links.length
-        if (length > 0) {// 有链接，添加参考资料在底部
-            content += '<br><h6>参考资料</h6><section>'
-            for (let i = 0; i < length; i++) {
-                content += `<span class="footnote"><span class="ft-num">[${i + 1}]</span>
-<span class="ft-content"><span class="ft-text">${links[i].text}</span>: <em class="ft-link">${links[i].href}</em></span></span>`
-            }
-            content += "</section><p>* 微信不支持外链，可点击 <em>阅读原文</em> 获得更佳体验</p>"
-        }
-        preview.innerHTML = content
     }
 
-    ready(function () {
-        marked.setOptions({
-            // https://marked.js.org/using_advanced#options
-            gfm: true,			// GitHub 风格
-            tables: true,		// 支持表格
-            breaks: true,		// 回车换成 br
-            headerIds: true,    // 标题添加 id
-            // highlight: function (code, lang, callback) {
-            //     const result = hljs.highlightAuto(code).value
-            //     const line = result.split('\n')
-            //     return result
-            // },
-        });
-        const renderer = {
+    // http://youmightnotneedjquery.com/#parse_html
+    function parseHTML(html) {
+        const doc = document.implementation.createHTMLDocument();
+        doc.body.innerHTML = html;
+        return doc.body.children;
+    }
+
+    // 转换 editor markdown 到 preview html
+    function compile(editor, preview, renderer) {
+        renderer.before();
+        marked.use({renderer})
+        const tokens = marked.lexer(editor.value)
+        // console.log(tokens);
+        preview.innerHTML = renderer.after(marked.parser(tokens));
+        preview.dataset.source = '';
+    }
+
+    const defaultRenderer = new marked.Renderer();
+    const wpRenderer = wp();
+    const wxRenderer = wx();
+
+    // 转为 wordpress 区块
+    function wp() {
+        /*
+            // wordpress 的 block 列表
+            // https://wordpress.org/support/article/blocks/
+            // https://wordpress.stackexchange.com/a/360975
+            // 文章编辑页面，控制台查看 wp.types.map( type => type.substr('core/'.length) )
+        */
+        return {
+            before() {
+            },
+            // https://marked.js.org/using_pro#renderer
+            code(code, infostring, escaped) {
+                return '<!-- wp:code -->' + defaultRenderer.code(...arguments) + '<!-- /wp:code -->';
+            },
+            blockquote(quote) {
+                return '<!-- wp:quote -->' + defaultRenderer.blockquote(...arguments) + '<!-- /wp:quote -->';
+            },
+            html(html) {
+                if (html.trim() === '<!--more-->') {
+                    return '<!-- wp:more --><!--more--><!-- /wp:more -->';
+                }
+                return '<!-- wp:html -->' + defaultRenderer.html(...arguments) + '<!-- /wp:html -->';
+            },
+            heading(text, level, raw, slugger) {
+                return '<!-- wp:heading -->' + defaultRenderer.heading(...arguments) + '<!-- /wp:heading -->';
+            },
+            hr() {
+                return '<!-- wp:separator --><hr class="wp-block-separator"/><!-- /wp:separator -->';
+            },
+            list(body, ordered, start) {
+                return '<!-- wp:list ' + (ordered ? '{"ordered": true}' : '') + '-->' + defaultRenderer.list(...arguments) + '<!-- /wp:list -->';
+            },
+            // listitem, checkbox
+            paragraph(text) {
+                return '<!-- wp:paragraph -->' + defaultRenderer.paragraph(...arguments) + '<!-- /wp:paragraph -->';
+            },
+            table(header, body) {
+                return '<!-- wp:table -->' + defaultRenderer.table(...arguments) + '<!-- /wp:table -->';
+            },
+            // tablerow, tablecell, strong, em, codespan, br, del
+            link(href, title, text) {
+                const a = parseHTML(defaultRenderer.link(...arguments))[0];
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                return a.outerHTML;
+            },
+            image(href, title, text) {
+                if (title) {
+                    return '<!-- wp:image --><figure class="wp-block-image">' + defaultRenderer.image(...arguments) + '<figcaption>' + title + '</figcaption></figure><!-- /wp:image -->';
+                }
+                return defaultRenderer.image(...arguments);
+            },
+            // text
+            after(out) {
+                return out;
+            },
+        };
+    }
+
+    // 粘贴到微信公众号后台
+    function wx() {
+        let links = [];// 文中所有链接 []{text, href}
+        return {
+            before() {
+                links = [];
+            },
             // https://marked.js.org/using_pro#renderer
             heading(text, level, raw, slugger) {
-                // raw: '
-                // text: &#39;
-                // encodeURI 会保留 &
-                const escapedText = encodeURIComponent(slugger.slug(raw.toLowerCase()))
-                return `<h${level}><a name="${escapedText}" class="anchor" href="#${escapedText}"></a><span class="heading-text">${text}</span></h${level}>`;
+                return `<h${level} id="${slugger.slug(raw)}"><span class="heading-text">${text}</span></h${level}>`;
             },
             code(code, lang, escaped) {// 代码高亮
                 const result = hljs.highlightAuto(code).value
                 const item = result.split('\n').map(line => `<li class="code-line">${line}</li>`).join('')
-                return `<pre><code><ol class="code">${item}</ol></code></pre>`
+                return `<pre><code><ol class="code">${item}</ol></code></pre> `
             },
             link(href, title, text) { // 链接 a 标签
                 links.push({text: title ? title : text, href: href});
-                return `<span class="link"><a href="${href}" title="${title ? "" : title}">${text}</a><sup>[${links.length}]</sup></span>`;
+                const a = wpRenderer.link(...arguments);
+                return `<span class="link">${a}<sup>[${links.length}]</sup></span>`;
             },
             image(href, title, text) { // 图片
                 if (title) {
                     return `<figure><img src=${href} alt="${text}"><figcaption>${title}</figcaption></figure>`
                 }
                 return `<img src=${href} alt="${text}">`
+            },
+            after(out) {
+                const length = links.length
+                if (length > 0) {// 有链接，添加参考资料在底部
+                    out += '<br><h6>参考资料</h6><section>'
+                    for (let i = 0; i < length; i++) {
+                        let txt = `<span class="ft-text">${links[i].text}</span> `;
+                        if (links[i].text === links[i].href) {
+                            txt = '';
+                        }
+                        out += `<span class="footnote"><span class="ft-num">[${i + 1}]</span>
+<span class="ft-content">${txt}<em class="ft-link">${links[i].href}</em></span></span>`
+                    }
+                    out += "</section><p>* 微信不支持外链，可点击 <em>阅读原文</em> 获得更佳体验</p>"
+                }
+                return out;
+            },
+        };
+    }
+
+    const editor = document.querySelector('#editor');
+    const preview = document.getElementById('preview');
+    let renderer = wpRenderer;
+
+    // 工具按钮
+    function handleTool() {
+        // 清空
+        const btnClear = document.getElementById('btnClear');
+        btnClear.addEventListener('click', () => {
+            editor.value = '';
+            compile(editor, preview, renderer);
+        });
+        // 随机
+        const btnRandom = document.getElementById('btnRandom');
+        btnRandom.addEventListener('click', async () => {
+            btnRandom.disabled = true;
+            // https://zh.javascript.info/fetch
+            const response = await fetch('random-markdown.php');
+            editor.value = await response.text();
+            compile(editor, preview, renderer);
+            btnRandom.disabled = false;
+        });
+        // 模式转换
+        const typeSelect = document.getElementById('type');
+        typeSelect.addEventListener('change', () => {
+            renderer = typeSelect.value === 'wx' ? wxRenderer : wpRenderer;
+            marked.setOptions({renderer: new marked.Renderer()})// 重置 renderer
+            compile(editor, preview, renderer);// 转换模式
+        });
+        // 全选
+        const btnCopy = document.getElementById('btnCopy');
+        const range = document.createRange();
+        range.selectNode(preview);
+        btnCopy.addEventListener('click', () => {
+            // Selection-Range: https://zh.javascript.info/selection-range
+            // 必须先 removeAllRanges 再 add: https://stackoverflow.com/a/43443101
+            document.getSelection().removeAllRanges();
+            document.getSelection().addRange(range);
+            try {
+                document.execCommand('copy');
+            } catch (e) {
+                console.log('unable copy', e)
             }
-        }
-        marked.use({renderer})
+        });
+        // html/可视化
+        const btnSource = document.getElementById('btnSource');
+        btnSource.addEventListener('click', () => {
+            if (preview.dataset.source) {
+                compile(editor, preview, renderer);
+            } else {
+                preview.dataset.source = 'true';
+                preview.innerText = preview.innerHTML;
+            }
+        });
+    }
 
-        const editor = document.querySelector('#editor');
-        const preview = document.getElementById('preview');
-
-        // 实时编译预览
-        compile(editor, preview);
+    // 实时预览
+    function handleInput() {
+        compile(editor, preview, renderer);
         editor.addEventListener('keyup', function () {
-            compile(editor, preview);
+            compile(editor, preview, renderer);
         })
+    }
 
-        // region 同步滚动
+    // 滚动
+    function handleScroll() {
         // 这两个,标记当前滚动的是哪个元素
         let fromEditor = false;
         let fromPreview = false;
-
-        function onScroll(e) {
+        const onScroll = (e) => {
             // console.log(e);
             const thisScroll = e.target;
             const thatScroll = thisScroll === editor ? preview : editor;
@@ -249,11 +410,21 @@ body > div:empty {
             const percent = thisScroll.scrollTop / (thisScroll.scrollHeight - thisScroll.offsetHeight);
             thatScroll.scrollTop = percent * (thatScroll.scrollHeight - thatScroll.offsetHeight);
         }
-
         editor.addEventListener('scroll', onScroll);
         preview.addEventListener('scroll', onScroll);
-        // endregion 同步滚动
+    }
 
+    ready(function () {
+        marked.setOptions({
+            // https://marked.js.org/using_advanced#options
+            gfm: true,			// GitHub 风格
+            tables: true,		// 支持表格
+            breaks: true,		// 回车换成 br
+            headerIds: true,    // 标题添加 id
+        });
+        handleInput();
+        handleTool();
+        handleScroll();
     });
 </script>
 </body>
