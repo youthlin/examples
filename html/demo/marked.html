@@ -27,7 +27,7 @@
         }
 
         .edit { /* left */
-            width: calc(50% - 5px); /* 5px = divide border */
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
@@ -113,13 +113,14 @@
         <div id="tool">
             <button id="btnClear">清空</button>
             <button id="btnRandom">Random</button>
-            <label for="type">模式</label>
+            <label for="type" id="labelType">模式</label>
             <select id="type" name="type">
                 <option value="wp">WordPress</option>
                 <option value="wx">微信</option>
             </select>
             <button id="btnCopy">复制</button>
             <button id="btnSource">HTML/可视化</button>
+            <label>预览栏<input id="btnWidth" max="70" min="30" type="number" value="50">%</label>
         </div>
         <label class="sr-only" for="editor">输入区域</label>
         <textarea id="editor" name="editor"># Markdown 预览
@@ -196,6 +197,7 @@
         // console.log(tokens);
         preview.innerHTML = renderer.after(marked.parser(tokens));
         preview.dataset.source = '';
+        localStorage.setItem('content', editor.value);
     }
 
     const defaultRenderer = new marked.Renderer();
@@ -265,9 +267,11 @@
     // 粘贴到微信公众号后台
     function wx() {
         let links = [];// 文中所有链接 []{text, href}
+        let linkMap = new Map(); // href -> seq
         return {
             before() {
                 links = [];
+                linkMap.clear();
             },
             // https://marked.js.org/using_pro#renderer
             heading(text, level, raw, slugger) {
@@ -279,9 +283,18 @@
                 return `<pre><code><ol class="code">${item}</ol></code></pre> `
             },
             link(href, title, text) { // 链接 a 标签
-                links.push({text: title ? title : text, href: href});
                 const a = wpRenderer.link(...arguments);
-                return `<span class="link">${a}<sup>[${links.length}]</sup></span>`;
+                if (title === undefined) {
+                    // 纯链接 href ，不是 [text](href title) 形式
+                    return a;
+                }
+                let seq = linkMap.get(href);
+                if (!seq) {
+                    links.push({text: title ? title : text, href: href});
+                    seq = links.length;
+                    linkMap.set(href, seq);
+                }
+                return `<span class="link">${a}<sup>[${seq}]</sup></span>`;
             },
             image(href, title, text) { // 图片
                 if (title) {
@@ -312,6 +325,14 @@
     const preview = document.getElementById('preview');
     let renderer = wpRenderer;
 
+    function loadStorage() {
+        // https://zh.javascript.info/localstorage
+        let content = localStorage.getItem('content');
+        if (content) {
+            editor.value = content;
+        }
+    }
+
     // 工具按钮
     function handleTool() {
         // 清空
@@ -332,10 +353,16 @@
         });
         // 模式转换
         const typeSelect = document.getElementById('type');
-        typeSelect.addEventListener('change', () => {
+        const onchange = () => {
             renderer = typeSelect.value === 'wx' ? wxRenderer : wpRenderer;
             marked.setOptions({renderer: new marked.Renderer()})// 重置 renderer
-            compile(editor, preview, renderer);// 转换模式
+            compile(editor, preview, renderer);
+        };
+        typeSelect.addEventListener('change', onchange);
+        const labelType = document.getElementById('labelType');
+        labelType.addEventListener('click', () => {
+            typeSelect.selectedIndex = (typeSelect.selectedIndex + 1) % typeSelect.length;
+            onchange();
         });
         // 全选
         const btnCopy = document.getElementById('btnCopy');
@@ -361,6 +388,12 @@
                 preview.dataset.source = 'true';
                 preview.innerText = preview.innerHTML;
             }
+        });
+        // 宽度
+        const btnWidth = document.getElementById('btnWidth');
+        btnWidth.addEventListener('change', e => {
+            const preview = document.querySelector('.preview');
+            preview.style.width = btnWidth.value + '%';
         });
     }
 
@@ -414,6 +447,41 @@
         preview.addEventListener('scroll', onScroll);
     }
 
+    // 拖动
+    function handleDrag() {
+        const divide = document.querySelector('.divide');
+        const preview = document.querySelector('.preview');
+        const btnWidth = document.getElementById('btnWidth');
+        let startX = 0;
+
+        function move(e) {
+            let x = e.clientX - startX;
+            let width = window.getComputedStyle(preview, null).getPropertyValue('width');
+            if (width.endsWith('px')) {
+                width = width.substr(0, width.length - 2);
+            }
+            width = Number(width);
+            console.log(x, width);
+            const value = width - x;
+            if (value > 400 && value < document.body.clientWidth - 400) {
+                preview.style.width = value + 'px';
+                btnWidth.value = value * 100 / document.body.clientWidth;
+            }
+        }
+
+        document.addEventListener('mousedown', e => {
+            if (e.target !== divide) {
+                return;
+            }
+            startX = e.clientX;
+            document.addEventListener('mousemove', move);
+
+        });
+        document.addEventListener('mouseup', e => {
+            document.removeEventListener('mousemove', move)
+        });
+    }
+
     ready(function () {
         marked.setOptions({
             // https://marked.js.org/using_advanced#options
@@ -422,9 +490,11 @@
             breaks: true,		// 回车换成 br
             headerIds: true,    // 标题添加 id
         });
+        loadStorage();
         handleInput();
         handleTool();
         handleScroll();
+        handleDrag();
     });
 </script>
 </body>
