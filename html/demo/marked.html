@@ -125,8 +125,8 @@
                 </select></label>
             <button class="tool tool-copy" id="btnCopy">复制</button>
             <button class="tool tool-source" id="btnSource">源码</button>
-            <label class="tool tool-width n-sm">预览栏<input id="btnWidth" max="70" min="30" type="number"
-                                                          value="50">%</label>
+            <label class="tool tool-width n-sm">预览栏
+                <input id="btnWidth" max="70" min="30" type="number" value="50">%</label>
         </div>
         <label class="sr-only" for="editor">输入区域</label>
         <textarea id="editor" name="editor"># Markdown 预览
@@ -320,9 +320,9 @@
                             txt = '';
                         }
                         out += `<span class="footnote"><span class="ft-num">[${i + 1}]</span>
-<span class="ft-content">${txt}<em class="ft-link">${links[i].href}</em></span></span>`
+<span class="ft-content">${txt}<em class="ft-link">${links[i].href}</em></span></span>`;
                     }
-                    out += "</section><p>* 微信不支持外链，可点击 <em>阅读原文</em> 获得更佳体验</p>"
+                    out += "</section><p>* 微信不支持外链，可点击 <em>阅读原文</em> 获得更佳体验</p>";
                 }
                 return out;
             },
@@ -401,9 +401,14 @@
         });
         // 宽度
         const btnWidth = document.getElementById('btnWidth');
-        btnWidth.addEventListener('change', e => {
-            const preview = document.querySelector('.preview');
-            preview.style.width = btnWidth.value + '%';
+        const previewWrapper = document.querySelector('.preview');
+        const onWidthChange = () => {
+            previewWrapper.style.width = btnWidth.value + '%';
+        };
+        btnWidth.addEventListener('change', onWidthChange);
+        window.addEventListener('resize', () => {
+            btnWidth.value = 50;
+            previewWrapper.style.width = '';
         });
     }
 
@@ -471,7 +476,7 @@
                 width = width.substr(0, width.length - 2);
             }
             width = Number(width);
-            console.log(x, width);
+            // console.log(x, width);
             const value = width - x;
             if (value > 400 && value < document.body.clientWidth - 400) {
                 preview.style.width = value + 'px';
