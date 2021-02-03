@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>MarkDown Preview</title>
-    <link href="marked.css" rel="stylesheet">
+    <link href="marked.css?v=1" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/styles/default.min.css"
           rel="stylesheet">
     <style>
@@ -88,6 +88,10 @@
                 height: 1px;
                 border-color: red;
             }
+
+            .n-sm {
+                display: none;
+            }
         }
 
         /* 打印 */
@@ -111,16 +115,18 @@
 <div class="wrapper">
     <section class="item edit print-not-show">
         <div id="tool">
-            <button id="btnClear">清空</button>
-            <button id="btnRandom">Random</button>
-            <label for="type" id="labelType">模式</label>
-            <select id="type" name="type">
-                <option value="wp">WordPress</option>
-                <option value="wx">微信</option>
-            </select>
-            <button id="btnCopy">复制</button>
-            <button id="btnSource">HTML/可视化</button>
-            <label>预览栏<input id="btnWidth" max="70" min="30" type="number" value="50">%</label>
+            <button class="tool tool-clear" id="btnClear">清空</button>
+            <button class="tool tool-random" id="btnRandom">随机</button>
+            <label class="tool tool-mode">
+                <span id="labelType">模式</span>
+                <select id="type" name="type">
+                    <option value="wp">WordPress</option>
+                    <option value="wx">微信公众号</option>
+                </select></label>
+            <button class="tool tool-copy" id="btnCopy">复制</button>
+            <button class="tool tool-source" id="btnSource">源码</button>
+            <label class="tool tool-width n-sm">预览栏<input id="btnWidth" max="70" min="30" type="number"
+                                                          value="50">%</label>
         </div>
         <label class="sr-only" for="editor">输入区域</label>
         <textarea id="editor" name="editor"># Markdown 预览
@@ -135,6 +141,7 @@
 - 随机内容
 - 复制渲染内容
 - 显示渲染的 `HTML` 源代码
+- 本地存草稿
 
 ## 第三方库
 
@@ -164,6 +171,7 @@
 | \```<br>#块级代码<br>print 'hello'<br>``` |....#块级代码<br>....print 'hello'<br>|<pre><code>#块级代码<br>print 'hello'</code></pre>|`<pre><code>#块级代码<br>print 'hello'</>code></>pre>`|
 > from https://commonmark.org/help/
 > 另请参阅 https://markdown.com.cn/
+
 </textarea>
     </section>
     <div class="item divide print-not-show"></div>
@@ -384,9 +392,11 @@
         btnSource.addEventListener('click', () => {
             if (preview.dataset.source) {
                 compile(editor, preview, renderer);
+                btnSource.innerText = '源码';
             } else {
                 preview.dataset.source = 'true';
                 preview.innerText = preview.innerHTML;
+                btnSource.innerText = '预览';
             }
         });
         // 宽度
