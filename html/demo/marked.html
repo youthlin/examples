@@ -120,8 +120,8 @@
             <label class="tool tool-mode">
                 <span id="labelType">模式</span>
                 <select id="type" name="type">
-                    <option value="wp">WordPress</option>
-                    <option value="wx">微信公众号</option>
+                    <option value="default">默认</option>
+                    <option value="wx">微信</option>
                 </select></label>
             <button class="tool tool-copy" id="btnCopy">复制</button>
             <button class="tool tool-source" id="btnSource">源码</button>
@@ -130,9 +130,11 @@
         </div>
         <label class="sr-only" for="editor">输入区域</label>
         <textarea id="editor" name="editor"># Markdown 预览
+by https://youthlin.com/
+
 ## 两种渲染模式
-1. WordPress
-   适配 *古腾堡* 区块，在各个区块前后添加区块标记。
+1. 默认
+   直接渲染出 HTML, 可以粘贴到 WordPress 后台编辑一键转为 *古腾堡* 区块。
 2. 微信公众号
    链接使用上角标，在底部以 *参考资料* 的形式列出。
 
@@ -172,6 +174,22 @@
 > from https://commonmark.org/help/
 > 另请参阅 https://markdown.com.cn/
 
+## 示例
+普通段落。
+![WordPress](https://cn.wordpress.org/favicon.ico "Wp Logo")
+
+### 三级标题
+> 引用文字
+第二行
+```go
+fmt.Println("你好")
+```
+第二种代码块
+
+    System.out.println("上面要空一行");
+    System.out.println("然后每行开头四个空格");
+这里是 `code` 然后 **加粗** *倾斜* ~删除~。
+
 </textarea>
     </section>
     <div class="item divide print-not-show"></div>
@@ -205,71 +223,35 @@
         // console.log(tokens);
         preview.innerHTML = renderer.after(marked.parser(tokens));
         preview.dataset.source = '';
+        document.getElementById('btnSource').innerText = '源码';
         localStorage.setItem('content', editor.value);
     }
 
-    const defaultRenderer = new marked.Renderer();
-    const wpRenderer = wp();
+    const defaultRenderer = getRenderer();
     const wxRenderer = wx();
 
-    // 转为 wordpress 区块
-    function wp() {
-        /*
-            // wordpress 的 block 列表
-            // https://wordpress.org/support/article/blocks/
-            // https://wordpress.stackexchange.com/a/360975
-            // 文章编辑页面，控制台查看 wp.types.map( type => type.substr('core/'.length) )
-        */
+    function getRenderer() {
+        const markedRenderer = new marked.Renderer();
         return {
             before() {
             },
-            // https://marked.js.org/using_pro#renderer
-            code(code, infostring, escaped) {
-                return '<!-- wp:code -->' + defaultRenderer.code(...arguments) + '<!-- /wp:code -->';
-            },
-            blockquote(quote) {
-                return '<!-- wp:quote -->' + defaultRenderer.blockquote(...arguments) + '<!-- /wp:quote -->';
-            },
-            html(html) {
-                if (html.trim() === '<!--more-->') {
-                    return '<!-- wp:more --><!--more--><!-- /wp:more -->';
-                }
-                return '<!-- wp:html -->' + defaultRenderer.html(...arguments) + '<!-- /wp:html -->';
-            },
-            heading(text, level, raw, slugger) {
-                return '<!-- wp:heading -->' + defaultRenderer.heading(...arguments) + '<!-- /wp:heading -->';
-            },
-            hr() {
-                return '<!-- wp:separator --><hr class="wp-block-separator"/><!-- /wp:separator -->';
-            },
-            list(body, ordered, start) {
-                return '<!-- wp:list ' + (ordered ? '{"ordered": true}' : '') + '-->' + defaultRenderer.list(...arguments) + '<!-- /wp:list -->';
-            },
-            // listitem, checkbox
-            paragraph(text) {
-                return '<!-- wp:paragraph -->' + defaultRenderer.paragraph(...arguments) + '<!-- /wp:paragraph -->';
-            },
-            table(header, body) {
-                return '<!-- wp:table -->' + defaultRenderer.table(...arguments) + '<!-- /wp:table -->';
-            },
-            // tablerow, tablecell, strong, em, codespan, br, del
             link(href, title, text) {
-                const a = parseHTML(defaultRenderer.link(...arguments))[0];
+                const a = parseHTML(markedRenderer.link(...arguments))[0];
                 a.target = '_blank';
                 a.rel = 'noopener noreferrer';
                 return a.outerHTML;
             },
             image(href, title, text) {
                 if (title) {
-                    return '<!-- wp:image --><figure class="wp-block-image">' + defaultRenderer.image(...arguments) + '<figcaption>' + title + '</figcaption></figure><!-- /wp:image -->';
+                    return '<figure>' + markedRenderer.image(...arguments)
+                        + '<figcaption>' + title + '</figcaption></figure>';
                 }
-                return defaultRenderer.image(...arguments);
+                return markedRenderer.image(...arguments);
             },
-            // text
-            after(out) {
-                return out;
-            },
-        };
+            after(o) {
+                return o;
+            }
+        }
     }
 
     // 粘贴到微信公众号后台
@@ -291,7 +273,7 @@
                 return `<pre><code><ol class="code">${item}</ol></code></pre> `
             },
             link(href, title, text) { // 链接 a 标签
-                const a = wpRenderer.link(...arguments);
+                const a = defaultRenderer.link(...arguments);
                 if (title === undefined) {
                     // 纯链接 href ，不是 [text](href title) 形式
                     return a;
@@ -305,24 +287,20 @@
                 return `<span class="link">${a}<sup>[${seq}]</sup></span>`;
             },
             image(href, title, text) { // 图片
-                if (title) {
-                    return `<figure><img src=${href} alt="${text}"><figcaption>${title}</figcaption></figure>`
-                }
-                return `<img src=${href} alt="${text}">`
+                return defaultRenderer.image(...arguments);
             },
             after(out) {
                 const length = links.length
                 if (length > 0) {// 有链接，添加参考资料在底部
-                    out += '<br><h6>参考资料</h6><section>'
+                    out += '<br><h6>参考资料</h6><ol class="ft">'
                     for (let i = 0; i < length; i++) {
                         let txt = `<span class="ft-text">${links[i].text}</span> `;
                         if (links[i].text === links[i].href) {
                             txt = '';
                         }
-                        out += `<span class="footnote"><span class="ft-num">[${i + 1}]</span>
-<span class="ft-content">${txt}<em class="ft-link">${links[i].href}</em></span></span>`;
+                        out += `<li class="footnote">${txt}<em class="ft-link">${links[i].href}</em></li>`;
                     }
-                    out += "</section><p>* 微信不支持外链，可点击 <em>阅读原文</em> 获得更佳体验</p>";
+                    out += "</ol><p>* 微信不支持外链，可点击 <em>阅读原文</em> 获得更佳体验</p>";
                 }
                 return out;
             },
@@ -331,8 +309,9 @@
 
     const editor = document.querySelector('#editor');
     const preview = document.getElementById('preview');
-    let renderer = wpRenderer;
+    let renderer = defaultRenderer;
 
+    // 本地草稿
     function loadStorage() {
         // https://zh.javascript.info/localstorage
         let content = localStorage.getItem('content');

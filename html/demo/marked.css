@@ -4,17 +4,21 @@
 }
 
 /* 图片不超过容器 */
-#preview figure {
-    margin: 1em;
-}
-
 #preview img {
     max-width: 100%;
 }
 
-#preview figcaption {
+#preview figure {
+    margin: 1em;
     text-align: center;
+}
+
+#preview figcaption {
     color: #888;
+}
+
+#preview li::marker {
+    color: #00000055;
 }
 
 /* region 标题 */
@@ -93,7 +97,7 @@
     background-color: #eee;
     color: #777;
     margin: 1em 0;
-    padding: 0 1em;
+    padding: .5em 1em;
 }
 
 /* endregion 引用 */
@@ -129,8 +133,14 @@
     font-family: "Operator Mono", Consolas, Monaco, Menlo, monospace;
 }
 
-#preview li::marker {
-    color: #00000055;
+#preview li.code-line {
+    border-left: 2px solid #aaa;
+    margin-left: -0.5em;
+    padding-left: .5em;
+}
+
+#preview li.code-line::marker {
+    content: counter(num) " ";
 }
 
 /* endregion 代码*/
@@ -148,18 +158,20 @@
 /* endregion table */
 
 /* region 参考链接 */
-#preview .footnote {
-    display: flex;
+#preview ol {
+    counter-reset: num;
 }
 
-#preview .ft-num {
-    width: 10%;
-    opacity: .8;
-    text-align: center;
+#preview li {
+    counter-increment: num;
+}
+
+#preview li.footnote::marker {
+    content: "[" counter(num) "] ";
+    font-family: monospace;
 }
 
 #preview .ft-content {
-    width: 90%;
     word-break: break-all;
 }
 
