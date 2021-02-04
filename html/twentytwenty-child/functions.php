@@ -103,6 +103,10 @@ function lin_enqueue_styles() {
 		'https://cdn.bootcss.com/highlight.js/9.18.1/styles/tomorrow-night.min.css', array(), null );
 	wp_enqueue_style( 'baguetteBox',
 		'https://cdn.bootcss.com/baguettebox.js/1.11.1/baguetteBox.min.css', array(), null );
+	wp_enqueue_script( 'google-adsense', 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', array(), null );
+	wp_script_add_data( 'google-adsense', 'async', true );
+	wp_script_add_data( 'google-adsense', 'data-keys', array( 'data-ad-client' ) );
+	wp_script_add_data( 'google-adsense', 'data-ad-client', 'ca-pub-2099119617202841' );
 }
 
 add_action( 'wp_footer', 'lin_wp_footer' );
@@ -118,17 +122,12 @@ function lin_wp_footer() {
 	// 在 baguetteBox, highlight 之后
 	wp_enqueue_script( 'twentytwenty-child-js', get_stylesheet_directory_uri() . '/index.js',
 		array(), wp_get_theme()->get( 'Version' ), true );
-	wp_enqueue_script( 'ta-js', 'https://tajs.qq.com/stats?sId=30683215', array(), null );
-	wp_script_add_data( 'ta-js', 'async', true );
 	wp_enqueue_script( 'gtag', 'https://www.googletagmanager.com/gtag/js?id=UA-46211856-1', array(), null );
 	wp_script_add_data( 'gtag', 'async', true );
 	wp_add_inline_script( 'gtag', 'window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag("js", new Date());
 gtag("config", "UA-46211856-1");' );
-	wp_enqueue_script( 'google-adsense', 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', array(), null );
-	wp_script_add_data( 'google-adsense', 'data-keys', array( 'data-ad-client' ) );
-	wp_script_add_data( 'google-adsense', 'data-ad-client', 'ca-pub-2099119617202841' );
 }
 
 add_filter( 'script_loader_tag', 'lin_add_data_to_script', 10, 2 );
