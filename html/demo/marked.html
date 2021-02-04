@@ -341,7 +341,14 @@ fmt.Println("你好")
         // 模式转换
         const typeSelect = document.getElementById('type');
         const onchange = () => {
-            renderer = typeSelect.value === 'wx' ? wxRenderer : wpRenderer;
+            switch (typeSelect.value) {
+                case 'default':
+                    renderer = defaultRenderer;
+                    break;
+                case 'wx':
+                    renderer = wxRenderer;
+                    break;
+            }
             marked.setOptions({renderer: new marked.Renderer()})// 重置 renderer
             compile(editor, preview, renderer);
         };
