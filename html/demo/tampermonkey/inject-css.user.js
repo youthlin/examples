@@ -2,7 +2,7 @@
 // @name         Inject CSS
 // @name:zh      CSS 样式注入
 // @namespace    https://youthlin.com/
-// @version      0.1
+// @version      0.2
 // @description  Inject custom css to site.
 // @description:zh  插入自定义 CSS 样式到任意网址
 // @author       Youth．霖
@@ -15,6 +15,7 @@
 // ==/UserScript==
 (function () {
     'use strict';
+    // https://gist.github.com/youthlin/c4c08ffe4273ca7ebbf759289cef9964
     const SETTING_KEY = 'cssMap'
     const RAND = (Math.random() * 100000).toFixed(0)
     const debug = function (...args) {
@@ -27,8 +28,11 @@
         document.addEventListener(eventName, function (e) {
             // loop parent nodes from the target to the delegation node
             for (let target = e.target; target && target !== this; target = target.parentNode) {
-                if (target.matches(selector)) {
+                if (target.matches !== undefined && target.matches(selector)) {
                     handler.call(target, e);
+                    break;
+                }
+                if (target.tagName === 'HTML') {
                     break;
                 }
             }
