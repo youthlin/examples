@@ -1,0 +1,244 @@
+/*
+Theme Name: Twenty Twenty-One Child
+Template: twentytwentyone
+Theme URI: https://youthlin.com/
+Author: YouthLin Chen
+Author URI: https://youthlin.com/
+Description: Twenty Twenty-One is a blank canvas for your ideas and it makes the block editor your best brush. With new block patterns, which allow you to create a beautiful layout in a matter of seconds, this theme’s soft colors and eye-catching — yet timeless — design will let your work shine. Take it for a spin! See how Twenty Twenty-One elevates your portfolio, business website, or personal blog.
+Requires at least: 5.3
+Tested up to: 5.6
+Requires PHP: 5.6
+Version: 1.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: theme2021
+Tags: one-column, accessibility-ready, custom-colors, custom-menu, custom-logo, editor-style, featured-images, footer-widgets, block-patterns, rtl-language-support, sticky-post, threaded-comments, translation-ready
+
+Twenty Twenty-One WordPress Theme, (C) 2020 WordPress.org
+Twenty Twenty-One is distributed under the terms of the GNU GPL.
+*/
+
+/* region 代码高亮 */
+pre {
+    font-family: Consolas, Monaco, monospace;
+    max-height: 500px;
+    overflow: scroll;
+    /*ie,edge*/
+    -ms-overflow-style: none;
+    /*firefox*/
+    scrollbar-width: thin;
+}
+
+pre * {
+    font-family: Consolas, Monaco, monospace;
+}
+
+.hljs-action {
+    display: none;
+    text-align: right;
+    background-color: rgb(220, 215, 202);
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+@media (min-width: 580px) {
+    .hljs-action {
+        display: block;
+    }
+}
+
+.hljs table {
+    overflow: auto;
+}
+
+.hljs table, .hljs td {
+    border: none;
+    margin: 0;
+}
+
+.hljs-ln td.hljs-ln-numbers {
+    color: #ccc;
+    border-right: 1px solid #ccc;
+    text-align: right;
+    padding-right: 5px;
+}
+
+.hljs-ln td.hljs-ln-code {
+    padding-left: 5px;
+}
+
+.hljs tr:nth-of-type(even) {
+    background-color: #f5f5f5;
+}
+
+.hljs tr:hover {
+    background-color: #ddd;
+}
+
+/* endregion 代码高亮 */
+
+/* region 小工具 */
+.widget ul {
+    list-style: none;
+    margin: 0;
+}
+
+.my_widget_recent_comments .comment-avatar {
+    float: left;
+    margin-top: .5em;
+}
+
+.my_widget_recent_comments .comment-content {
+    margin-left: 60px;
+}
+
+.widget li {
+    padding: .5em 0;
+}
+
+.my_widget_recent_comments .line-1 {
+    margin-bottom: 0;
+}
+
+.my_widget_recent_comments .line-2 {
+    font-size: smaller;
+    margin-top: 0;
+}
+
+.widget_saying h2 img {
+    float: left;
+    border-radius: 30px;
+    margin-right: 1rem;
+}
+
+
+.copyright-li {
+    margin-left: 1em;
+}
+
+/* endregion 小工具 */
+
+/* region 评论区域 */
+p.comment-form-comment {
+    margin-bottom: 0;
+}
+
+img.wp-smiley {
+    display: inline;
+    height: 1em;
+    width: 1em;
+}
+
+.my-smiley {
+    cursor: pointer;
+}
+
+#comment-loading {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: #cdcdcd;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+#comment-nav-wrap-bottom {
+    padding-top: 3.5rem;
+}
+
+.comment-awaiting-moderation {
+    font-style: italic;
+    border: 1px solid #cd2653;
+}
+
+nav.comment-nav-links {
+    display: flex;
+    justify-content: space-between;
+}
+
+nav.comment-nav-links * {
+    margin: 0;
+}
+
+form *:disabled {
+    cursor: not-allowed;
+    opacity: .5;
+}
+
+.form-submit {
+    display: flex;
+}
+
+#comment-submit-loading {
+    display: none; /*flex*/
+    align-items: center;
+}
+
+/* endregion 评论区域 */
+
+/* region 导航 */
+#svg-nav {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+}
+
+#svg-nav svg {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+/* endregion 导航 */
+
+/* region archive */
+li.archive-item {
+    margin: 0;
+    padding: 1rem;
+    list-style: none;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex;
+}
+
+li.archive-item:nth-of-type(odd) {
+    background-color: #eee;
+}
+
+li.archive-item span {
+    font-family: monospace;
+    padding-right: 1rem;
+    flex: none; /* none = 0 0 auto = flex-grow 0=不自动增长到剩余空间 flex-shrink 0=不缩减宽度  flex-basis auto=原本宽度 */
+}
+
+li.archive-item a {
+    flex: auto; /* auto = 1 1 auto */
+}
+
+@media (min-width: 1000px) {
+    li.archive-item span {
+        flex: 1 0 auto; /* 宽屏 自动增长宽度以使标题居中 */
+    }
+}
+
+/* endregion archive */
+
+/* 区块首字下沉 */
+.has-drop-cap:not(:focus)::first-letter {
+    float: left;
+    line-height: .68;
+}
+
+/* 首字下沉区块如果行数太少，为了不让下一段挤上来 clear both 一下 */
+.has-drop-cap:not(:focus)::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* 深色模式按钮 */
+#dark-mode-toggler.fixed-bottom {
+    right: 2em !important;
+}
