@@ -165,10 +165,7 @@ func showLangs(c *cli.Context) error {
 	fmt.Println(t.N("One language supported.", "%d languages supported.", count, count))
 	for _, lang := range supports {
 		tag := language.Make(lang)
-		fmt.Println(t.X(
-			// TRANSLATORS: 1=language code(ll_CC); 2=display name
-			"to display support language",
-			"\t- %[1]v(%[2]v)", lang, display.Self.Name(tag)))
+		fmt.Printf("\t- %[1]v (%[2]v)\n", lang, display.Self.Name(tag))
 	}
 	return nil
 }

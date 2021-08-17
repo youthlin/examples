@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Guess Number\n"
-"POT-Creation-Date: 2021-08-17 20:28+0800\n"
-"PO-Revision-Date: 2021-08-17 20:28+0800\n"
+"POT-Creation-Date: 2021-08-17 20:46+0800\n"
+"PO-Revision-Date: 2021-08-17 20:46+0800\n"
 "Last-Translator: Lin <youthlinchen@outlook.com>\n"
 "Language-Team: youthlin.com\n"
 "Language: zh_CN\n"
@@ -12,120 +12,115 @@ msgstr ""
 "X-Generator: Poedit 2.4.2\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Poedit-KeywordsList: T;N:1,2\n"
+"X-Poedit-KeywordsList: T;N:1,2;X:1c,2\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: app.go:59
+#: app.go:60
 msgid "Incorrect Usage."
 msgstr "不正确的用法。"
 
-#: app.go:71
+#: app.go:72
 msgid "Guess Numer"
 msgstr "猜数字"
 
-#: app.go:72
+#: app.go:73
 msgid "A cli demo about i18n(use github.com/youthlin/t)"
 msgstr "GO 语言控制台应用的国际化示例（使用 github.com/youthlin/t）"
 
-#: app.go:73
+#: app.go:74
 msgid "%v [global options] command [command options] [arguments...]"
 msgstr "%v [全局选项] 命令 [命令选项] [参数…]"
 
-#: app.go:77 app.go:96
+#: app.go:77 app.go:88
 msgid "NAME:"
 msgstr "名称："
 
-#: app.go:78 app.go:97
+#: app.go:78 app.go:89
 msgid "USAGE:"
 msgstr "用法："
 
 #: app.go:79
-msgid "CATEGORY:"
-msgstr "类别："
+msgid "VERSION:"
+msgstr "版本："
 
-#: app.go:80 app.go:99
+#: app.go:80 app.go:91
 msgid "DESCRIPTION:"
 msgstr "描述："
 
 #: app.go:81
+msgid "AUTHOR"
+msgstr "作者"
+
+#: app.go:82
+msgid "COMMANDS:"
+msgstr "命令："
+
+#: app.go:83
+msgid "GLOBAL OPTIONS:"
+msgstr "全局选项："
+
+#: app.go:84
+msgid "COPYRIGHT:"
+msgstr "版权："
+
+#: app.go:90
+msgid "CATEGORY:"
+msgstr "类别："
+
+#: app.go:92
 msgid "OPTIONS:"
 msgstr "选项："
 
-#: app.go:83
+#: app.go:94
 msgid "language to use"
 msgstr "要使用的语言"
 
-#: app.go:84
+#: app.go:95
 msgid "list all loaded languages"
 msgstr "列出所有加载的语言"
 
-#: app.go:85
+#: app.go:96
 msgid "[arguments...]"
 msgstr "[参数…]"
 
-#: app.go:87
+#: app.go:98
 msgid "Shows a list of commands or help for one command"
 msgstr "显示可用的命令或者显示一个命令的帮助信息"
 
-#: app.go:88
+#: app.go:99
 msgctxt "usage of `help` command"
 msgid "%v help [command options] [command]"
 msgstr "%v help [命令选项] [命令]"
 
-#: app.go:89
+#: app.go:100
 msgid "[command]"
 msgstr "[命令]"
 
-#: app.go:98
-msgid "VERSION:"
-msgstr "版本："
-
-#: app.go:100
-msgid "AUTHOR"
-msgstr "作者"
-
-#: app.go:101
-msgid "COMMANDS:"
-msgstr "命令："
-
-#: app.go:102
-msgid "GLOBAL OPTIONS:"
-msgstr "全局选项："
-
-#: app.go:103
-msgid "COPYRIGHT:"
-msgstr "版权："
-
-#: app.go:134
+#: app.go:129
 #, c-format
 msgid "Input your guess[%02d-%02d]> "
 msgstr "输入你猜的数字[%02d-%02d]> "
 
-#: app.go:139
+#: app.go:134
 msgid "Please input a number between %[1]d and %[2]d. (error message: %v)"
 msgstr "请输入一个 %[1]d 到 %[2d] 之间的数字。（错误信息：%v）"
 
-#: app.go:144
+#: app.go:139
 msgid "Too short!"
 msgstr "太小了！"
 
 #. TRANSLATORS: 1=the secret number; 2=steps
-#: app.go:151
+#: app.go:146
 msgid "You got that: %[1]d! (used only one step!)"
 msgid_plural "You got that: %[1]d! (used %[2]d steps.)"
 msgstr[0] "恭喜你用了 %[2]d 步猜中了： %[1]d！"
 
-#: app.go:158
+#: app.go:153
 msgid "Too large!"
 msgstr "太大了！"
 
-#: app.go:170
+#: app.go:165
 #, c-format
 msgid "One language supported."
 msgid_plural "%d languages supported."
 msgstr[0] "支持 %d 种语言。"
-
-#: app.go:176
-msgctxt "to display support language"
-msgid "\t- %[1]v(%[2]v)"
-msgstr "\t- %[1]v(%[2]v)"
