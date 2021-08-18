@@ -1,0 +1,41 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2021-08-18 14:22+0800\n"
+"PO-Revision-Date: 2021-08-18 14:22+0800\n"
+"Last-Translator: Lin <youthlinchen@outlook.com>\n"
+"Language-Team: \n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.2\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-KeywordsList: T;N:1,2;X:2,1c;XN:2,3,1c\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: main.go:34
+msgid "Hello"
+msgstr "你好"
+
+#: main.go:36
+msgid "File"
+msgstr "文件"
+
+#: main.go:38
+msgid "Font"
+msgstr "字体"
+
+#: main.go:60
+msgid "Hello Fyne!"
+msgstr "你好 Fyne!"
+
+#: main.go:60
+msgid "Welcome :)"
+msgstr "欢迎 :)"
+
+#: main.go:66
+msgid "Hi!"
+msgstr "嗨！"
