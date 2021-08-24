@@ -1,0 +1,17 @@
+{{define "content"}}
+<p>
+    {{- .t.T "Hello, Gin" -}}
+</p>
+<p>{{.t.T "Available languages"}}</p>
+<ul>
+    {{- range .langs}}
+    <li><a href="?lang={{.Code}}">
+            {{- if .Used -}}
+            <strong>{{.Code}}: {{.Self}}</strong>
+            {{- else -}}
+            {{.Code}}: {{.Display}} {{.Self}}
+            {{- end -}}
+        </a></li>
+    {{- end}}
+</ul>
+{{end}}
