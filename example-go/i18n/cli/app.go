@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"errors"
 	"fmt"
 	"io"
@@ -16,16 +17,20 @@ import (
 	"golang.org/x/text/language/display"
 )
 
+//go:embed lang
+var langDir embed.FS
+
 // Init init rand seed and language
 func Init() {
 	rand.Seed(time.Now().UnixNano())
 
 	path := os.Getenv("LANG_PATH")
-	if path == "" {
-		path = "./lang"
+	if path != "" {
+		t.Load(path)
+	} else {
+		t.LoadFS(langDir)
 	}
-	t.BindDefaultDomain(path) // load po/mo files
-	t.SetLocale("")           // use system language
+	t.SetLocale("") // use system language
 }
 
 // main app entrance
@@ -74,22 +79,22 @@ func setAppOutputs(app *cli.App) {
 	app.UsageText = t.T("%v [global options] command [command options] [arguments...]", appName)
 	app.CustomAppHelpTemplate = replace(
 		cli.AppHelpTemplate,
-		t.Noop.T("NAME:"),
-		t.Noop.T("USAGE:"),
-		t.Noop.T("VERSION:"),
-		t.Noop.T("DESCRIPTION:"),
-		t.Noop.T("AUTHOR"),
-		t.Noop.T("COMMANDS:"),
-		t.Noop.T("GLOBAL OPTIONS:"),
-		t.Noop.T("COPYRIGHT:"),
+		t.Mark.T("NAME:"),
+		t.Mark.T("USAGE:"),
+		t.Mark.T("VERSION:"),
+		t.Mark.T("DESCRIPTION:"),
+		t.Mark.T("AUTHOR"),
+		t.Mark.T("COMMANDS:"),
+		t.Mark.T("GLOBAL OPTIONS:"),
+		t.Mark.T("COPYRIGHT:"),
 	)
 	commandHelpTmpl := replace(
 		cli.CommandHelpTemplate,
-		t.Noop.T("NAME:"),
-		t.Noop.T("USAGE:"),
-		t.Noop.T("CATEGORY:"),
-		t.Noop.T("DESCRIPTION:"),
-		t.Noop.T("OPTIONS:"),
+		t.Mark.T("NAME:"),
+		t.Mark.T("USAGE:"),
+		t.Mark.T("CATEGORY:"),
+		t.Mark.T("DESCRIPTION:"),
+		t.Mark.T("OPTIONS:"),
 	)
 	app.Flags[0].(*cli.StringFlag).Usage = t.T("language to use")
 	app.Commands[0].Usage = t.T("list all loaded languages")
@@ -160,12 +165,18 @@ func run(c *cli.Context) error {
 
 // showLangs is a sub-command, shows all supported languages.
 func showLangs(c *cli.Context) error {
-	supports := t.SupportLangs(t.DefaultDomain)
+	used := t.UsedLocale()
+	namer := display.Tags(language.Make(used))
+	supports := t.Locales()
 	count := len(supports)
 	fmt.Println(t.N("One language supported.", "%d languages supported.", count, count))
 	for _, lang := range supports {
 		tag := language.Make(lang)
-		fmt.Printf("\t- %[1]v (%[2]v)\n", lang, display.Self.Name(tag))
+		if lang == used {
+			fmt.Printf("\t- %[1]v(%[2]v)\n", lang, display.Self.Name(tag))
+		} else {
+			fmt.Printf("\t- %[1]v(%[2]v) %[3]v\n", lang, display.Self.Name(tag), namer.Name(tag))
+		}
 	}
 	return nil
 }

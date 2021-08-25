@@ -25,10 +25,10 @@ func Init() {
 		if err == nil { // 获取可执行文件所在目录的绝对路径
 			path = filepath.Join(abs, "lang")
 			if _, err := os.Stat(path); os.IsNotExist(err) {
-				z.Info("目录不存在: %v", path) // go run 时
+				z.Info("语言目录不存在: %v", path) // go run 时
 				path = ""
 			} else {
-				z.Info("从路径搜索到了 lang 目录: abs=%v | err=%+v", abs, err)
+				z.Info("搜索到了语言目录: abs=%v | err=%+v", abs, err)
 			}
 		}
 	}
@@ -36,7 +36,7 @@ func Init() {
 		path = "./lang"
 	}
 	z.Info("LANG_PATH=%v", path)
-	t.BindDefaultDomain(path)
+	t.Load(path)
 	t.SetLocale("")
 }
 

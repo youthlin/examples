@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"github.com/youthlin/examples/example-go/i18n/web/handler/middleware"
-	"github.com/youthlin/t"
 	"github.com/youthlin/z"
 )
 
@@ -72,12 +71,8 @@ func viewKey(layout string, part ...string) string {
 
 // withLocale 将翻译组件注入数据
 func withLocale(c *gin.Context, data gin.H) gin.H {
-	ts := t.Global()
-	locale, ok := c.Get(middleware.GinCtxKeyTranslation)
-	if ok {
-		ts = locale.(*t.Translations)
-		z.Info("got transtions: %v", ts.Locale())
-	}
+	ts := middleware.GetTs(c)
+	z.Info("设置的语言=%v, 实际使用的语言=%v",ts.Locale(), ts.UsedLocale())
 	if data == nil {
 		data = make(gin.H)
 	}

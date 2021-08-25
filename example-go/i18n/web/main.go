@@ -24,6 +24,7 @@ func Init() {
 	z.Info("pid=%d work dir=%s err=%+v", os.Getpid(), wd, err)
 
 	t.Load("./lang")
+	z.Info("supported langs: %v", t.Locales())
 }
 
 func main() {
