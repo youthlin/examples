@@ -53,7 +53,7 @@
         <maven.compiler.source>13</maven.compiler.source>
         <maven.compiler.target>13</maven.compiler.target>
         <maven.compiler.release>13</maven.compiler.release>
-        <dubbo.version>2.7.13</dubbo.version>
+        <dubbo.version>2.7.15</dubbo.version>
         <antlr.version>4.7.1</antlr.version>
         <lombok.version>1.18.10</lombok.version>
         <jaxb.version>2.3.0</jaxb.version>
