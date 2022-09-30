@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通过 CSS 直接显示网页源码</title>
+</head>
+
+<body>
+    <h1>通过 CSS 直接显示网页源码</h1>
+    <p>在 <a href="https://www.ruanyifeng.com/blog/" target="_blank">阮一峰的网络日志</a>
+        的<span title="2022年9月30日">最新一期</span><a href="https://www.ruanyifeng.com/blog/2022/09/weekly-issue-225.html"
+            target="_blank">
+            科技爱好者周刊（第 225 期）：NPC 演员也是一种职业</a> 看到 <a href="https://secretgeek.github.io/html_wysiwyg/html.html"
+            target="_blank">巧用 CSS 显示 HTML 源码</a> 这篇文章。不过是英文的，所以想简单演绎一篇中文说明出来。
+    </p>
+
+    <h2>如何实现</h2>
+    <h3>展示所有标签中的内容</h3>
+    <p>你知道 CSS 可以指定 <strong>任意</strong> 元素的可见性吗，包括 <code>title</code>, <code>style</code>, <code>script</code>
+        这些默认不可见的元素！使用以下规则将所有的标签展示出来：</p>
+    <style>
+        * {
+            display: block;
+        }
+    </style>
+    <p>但是还需要把 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Inline_elements" target="_blank">行内元素</a> 修正回来：
+    </p>
+    <style>
+        b,
+        big,
+        i,
+        small,
+        tt,
+        abbr,
+        acronym,
+        cite,
+        code,
+        dfn,
+        em,
+        kbd,
+        strong,
+        samp,
+        var,
+        a,
+        bdo,
+        br,
+        img,
+        map,
+        object,
+        q,
+        script,
+        span,
+        sub,
+        sup,
+        button,
+        input,
+        label,
+        select,
+        textarea {
+            display: inline;
+        }
+    </style>
+    <p>为了看起来更像浏览器的“显示网页源代码”页面，可以指定网页字体为等宽字体 <code>monospace</code>. （补充：同时指定元素最大宽度不超过视口以便在移动设备中更友好。）</p>
+    <style>
+        * {
+            font-family: monospace;
+            margin: 1.5em 0;
+            padding: 0;
+            /*超链接无下划线：*/
+            text-decoration: none;
+            max-width: 100%;
+            overflow: auto;
+        }
+    </style>
+    <p>如果需要让源代码中的换行在网页渲染出来也换行，可以将 <code>white-space</code> 设置为
+        <code>pre</code>（默认地，<code>pre</code> 标签就是这样），如
+    </p>
+    <style>
+        style,
+        script {
+            white-space: pre;
+        }
+    </style>
+    <h2>展示标签名</h2>
+    <p>可以使用 <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/::before" target="_blank">::before</a>
+        和 <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/::after" target="_blank">::after</a> 在标签前后创建
+        <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-elements"
+            target="_blank">伪元素</a>，并设置伪元素的内容为标签名。
+    </p>
+    <style>
+        p::before {
+            content: '<p>';
+        }
+
+        p::after {
+            content: '</p>'
+        }
+    </style>
+    <p>如果能一次性为所有的元素都指定 before/after 内容就好了：</p>
+    <pre>
+*::before{
+        content: '&lt;' name() '>'
+        }
+        *::after{
+        content: '&lt;/' name() '>'
+        }
+    </pre>
+    <p>但是伪元素(还)不支持<code>name()</code>这种用法。原文是枚举出网页中用到的标签，然后手写规则。为了通用性，我们也可以用 js 来动态控制（虽然这样就不是纯 CSS 方法了）。</p>
+    <div>
+        <script>
+            // script 当前和 pre 一样展示了
+            // 宽度超过视口时父元素会出现滚动条
+            // 为了避免整个 body 横行滚动
+            // 放在 div 里面
+
+            // 页面加载完后才执行
+            document.addEventListener('DOMContentLoaded', () => {
+                var rules = '';
+                // data-ats 用于显示标签属性,详见下文。
+                for (node of new Set(Array.from(document.querySelectorAll('*')).map(e => e.nodeName.toLocaleLowerCase()))) {
+                    rules += `${node}::before{
+                    content: '<${node}' attr(data-ats) '>'
+                }
+                ${node}::after{
+                    content: '<\/${node}>'
+                }
+                `;
+                }
+                document.querySelector('#rule-tag-name').innerText = rules;
+                // 插入后内容较多所以这个 id 的 style 放在底部了
+            });
+        </script>
+    </div>
+    <p>再给这些伪元素加点颜色以便与正文区分吧：</p>
+    <style>
+        *::before,
+        *::after {
+            color: rgba(136, 18, 128, 0.5);
+            font-weight: 100;
+            font-size: .9em
+        }
+    </style>
+    <p>让网页更加有可读性，限制一下页面宽度</p>
+    <style>
+        html {
+            max-width: 760px;
+            margin: auto;
+        }
+    </style>
+    <h2>补充</h2>
+    <h3>替换元素无法使用 before/after 伪元素</h3>
+    <blockquote>
+        注意： 由::before 和::after 生成的伪元素 <a href="https://www.w3.org/TR/CSS2/generate.html#before-after-content"
+            target="_blank">包含在元素格式框内</a>，因此不能应用在<a
+            href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/Replaced_element" target="_blank">可替换元素</a>上，
+        比如<code>img</code>或<code>br</code>元素。
+    </blockquote>
+    <p>那么试着直接用 js 将标签名插入文档吧：</p>
+    <div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('audio,canvas,embed,iframe,img,input,object,video').forEach(e => {
+                    const ats = [...e.attributes].map(e => ' ' + e.nodeName + '="' + e.nodeValue + '"').join('')
+                    const name = e.nodeName.toLocaleLowerCase()
+                    e.insertAdjacentText('beforebegin', `<${name}${ats}>`)
+                    e.insertAdjacentText('afterend', `</${name}>`)
+                })
+            });
+        </script>
+    </div>
+    <p>但是这样插入的是实实在在的文本，和上面那些不能<kbd>Ctrl+A</kbd>选中的伪元素不同，颜色风格上有些不搭……</p>
+    <p>下面来测试一下</p>
+    <figure>
+        <img src="https://cdn.beekka.com/blogimg/asset/202209/bg2022092603.webp" alt="原文截图">
+        <figcaption>原文截图</figcaption>
+    </figure>
+    <form action="#" target="_blank">
+        <table>
+            <tr>
+                <td><label for="name">用户名</label></td>
+                <td> <input type="text" id="name" readonly></td>
+            </tr>
+            <tr>
+                <td><label for="password">密码</label></td>
+                <td> <input type="password" id="password" disabled></td>
+            </tr>
+        </table>
+    </form>
+    <h3>显示所有元素的属性</h3>
+    <p>原文对 <code>a</code> 标签做了特殊处理，以便显示其 <code>href</code> 属性，
+        其实我们可以通过 js 来获得元素所有的属性，然后配合上面 js 中 content 的 <code>attr()</code> 写法即可。</p>
+    <div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('*').forEach(e => {
+                    const ats = [...e.attributes];
+                    if (ats.length > 0) {
+                        e.dataset.ats = ats.map(e => ' ' + e.nodeName + '="' + e.nodeValue + '"').join('')
+                    }
+                })
+            })
+        </script>
+    </div>
+    分<br>割<br>线
+    <hr>
+    <p>下面这个 style 会在网页运行时被 js 填充：</p>
+    <style id="rule-tag-name"></style>
+</body>
+
+</html>
