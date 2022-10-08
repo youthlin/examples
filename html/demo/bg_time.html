@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .clock {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: xx-large;
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <pre class="clock">#000000</pre>
+    <script>
+        function hex2rgb(r, g, b) {
+            // 16进制转10进制
+            r = parseInt('0x' + r)
+            g = parseInt('0x' + g)
+            b = parseInt('0x' + b)
+            return [r, g, b]
+        }
+        function rgb2hex(r, g, b) {
+            return [r.toString(16), g.toString(16), b.toString(16)]
+        }
+        function getRevertColor(r, g, b) {
+            // 16进制转10进制
+            r = parseInt('0x' + r)
+            g = parseInt('0x' + g)
+            b = parseInt('0x' + b)
+            return [(255 - r).toString(16), (255 - g).toString(16), (255 - b).toString(16)];
+        }
+
+        const $clock = document.querySelector('.clock');
+        function refresh() {
+            const now = new Date();
+            const sH = now.getHours().toString().padStart(2, '0');
+            const sM = now.getMinutes().toString().padStart(2, '0');
+            const sS = now.getSeconds().toString().padStart(2, '0');
+            const bgColor = '#' + sH + sM + sS
+            const rgb = hex2rgb(sH, sM, sS)// 背景色
+            const fRGB = rgb.map(e => 255 - e)// 前景色
+            const fColor = rgb2hex(...fRGB)// 前景色hex
+            $clock.style.backgroundColor = bgColor
+            $clock.style.color = '#' + fColor.join('')
+            $clock.innerHTML = `n o w : ${bgColor} = RGB(${rgb.map(e => e.toString().padStart(3, ' ')).join(', ')})<br>revert: #${fColor.join('')} = RGB(${fRGB.map(e => e.toString().padStart(3, ' ')).join(', ')})`
+        }
+        refresh();
+        setInterval(refresh, 1000);
+    </script>
+</body>
+
+</html>
