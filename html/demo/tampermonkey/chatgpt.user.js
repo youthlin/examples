@@ -220,7 +220,7 @@
                     moveAt(e.pageX, e.pageY)
                 }
 
-                moveAt(e.pageX, e.pageY)
+                // moveAt(e.pageX, e.pageY) 不要按下时就漂移
 
                 document.addEventListener('mousemove', onMove)
 
