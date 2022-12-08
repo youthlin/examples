@@ -78,6 +78,7 @@
                 padding: 1em 1em 0;
                 border: 1px solid #ccc;
                 background: #eee;
+                color: #000;
                 box-shadow: 3px 3px 3px #ccc;
                 width: 400px;
                 max-width: 100%;
@@ -101,6 +102,8 @@
             .answer:before {}
             textarea {
                 width: 100%;
+                background: transparent;
+                resize: vertical; /*只能上下拉伸*/
             }
             .bar {
                 cursor: grabbing; /*手型拖动*/
@@ -318,6 +321,7 @@
             }
         }
         console.log(`request:`, data)
+        callback(`思考中...`)
         // 不能用 EventSource, 会有跨域问题, 只能通过脚本管理器的 GM_xmlhttpRequest 发起网络请求
         GM_xmlhttpRequest({
             url: ConversationURL,
