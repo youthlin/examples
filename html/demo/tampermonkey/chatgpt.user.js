@@ -23,9 +23,23 @@
     // 选中内容自动弹出复制、翻译按钮，怎么实现的？js获取页面光标选中的内容
     // https://juejin.cn/post/7083680217494978597
 
-    const TokenKey = "token"
-    const SessionURL = "https://chat.openai.com/api/auth/session"
-    const ConversationURL = 'https://chat.openai.com/backend-api/conversation'
+
+    const ApiMapKey = 'api_map'
+    const DefaultApiMap = JSON.stringify({
+        "原站": {
+            session_url: 'https://chat.openai.com/api/auth/session',
+            token: '',
+            conversation_url: 'https://chat.openai.com/backend-api/conversation',
+            conversation_mode: false,
+        },
+        "gpt.chatapi.art": {
+            session_url: '',// 暂时无需鉴权
+            token: '',
+            conversation_url: 'https://gpt.chatapi.art/backend-api/conversation',
+            conversation_mode: true,
+        }
+    })
+
     const ready = function (fn) {
         if (document.readyState !== 'loading') {
             fn();
@@ -33,6 +47,8 @@
             document.addEventListener('DOMContentLoaded', fn);
         }
     }
+
+    let selectApi // 当前 api
     let selectText = '' // 选中的文字
     let conversationID = '' // 一次会话的标记
 
@@ -54,21 +70,21 @@
         connectedCallback() {// 添加到文档时回调
             this.shadow.innerHTML = `<div class='ask-chat-gpt-wrapper'>
             <style>
-            button {
+            button, select {
                 padding: .3em;
+                margin-right: .3em;
                 color: #1d1d2e;
                 background-color: #f7f7fa;
-                border: 1px solid transparent
-                border-color: #f7f7fa;
                 border-radius: 4px;
                 cursor: pointer;
+                height: 2em;
             }
             .icon {
                 display: none;
                 position: fixed;
                 top: 0;
                 left: 0;
-                z-index: 999;
+                z-index: 9999;
             }
             .wrap {
                 display: none;
@@ -82,7 +98,10 @@
                 box-shadow: 3px 3px 3px #ccc;
                 width: 400px;
                 max-width: 100%;
-                z-index: 999;
+                z-index: 9999;
+            }
+            .msg {
+                color: red;
             }
             ol {
                 padding: 0;
@@ -112,7 +131,7 @@
                 background: #3d71ff;
                 color: #fff;
             }
-            .close {
+            .right {
                 float: right;
             }
             .footer {
@@ -124,13 +143,15 @@
             <button class='icon'>Ask</button>
             <div class='wrap'>
                 <div>
+                    <p class='msg'></p>
                     <ol id='list'></ol>
                     <textarea class='q'></textarea>
                 </div>
                 <div class='bar'>
                     <button class='ask'>Ask</button>
                     <button class='reset'>Reset</button>
-                    <button class='close'>关闭</button>
+                    <button class='close right'>关闭</button>
+                    <select class='api-list right'></select>
                     <p class='footer'>
                         &copy; 2022 Powered by
                         <a href='https://youthlin.com' target='_blank'>Youth．霖</a>
@@ -140,12 +161,57 @@
                 </div>
             </div>
             </div>`
+            this.initApiList()
             this.setEvents()// 设置各事件处理方法
+        }
+
+        initApiList() {
+            const select = this.getDom('.api-list')
+            const apiMap = this.getApiMap()
+            console.log(apiMap)
+            if (apiMap.size == 0) {
+                this.showMsg('无接口可用,请查看帮助文档')
+                return
+            }
+            let lastSelectName = this.getLastSelectName()
+            for (let key of apiMap.keys()) {
+                let selected = ''
+                if (lastSelectName == key) {
+                    selected = 'selected'
+                }
+                select.insertAdjacentHTML('beforeend', `<option value="${key}" ${selected}>${key}</option>`)
+            }
+            const that = this
+            function onSelectChange() {
+                lastSelectName = select.selectedOptions[0].value
+                selectApi = apiMap.get(lastSelectName)
+                console.log('selectApi', selectApi)
+                that.setLastSelectName(lastSelectName)
+                that.reset()
+            }
+            onSelectChange()
+            select.addEventListener('change', onSelectChange)
+        }
+
+        getApiMap() {
+            const m = GM_getValue(ApiMapKey, '')
+            if (m == '') {
+                m = DefaultApiMap
+                GM_setValue(ApiMapKey, m)// 保存到脚本数据中，可以通过脚本管理器修改
+            }
+            const apiMap = new Map(Object.entries(JSON.parse(m)))
+            return apiMap
         }
 
         getDom(selector) {
             return this.shadow.querySelector(selector)
         }
+
+        showMsg(msg) { this.getDom('.msg').innerText = msg }
+        clearMsg() { this.getDom('.msg').innerText = '' }
+
+        getLastSelectName() { return GM_getValue('selectApi', '') }
+        setLastSelectName(name) { GM_setValue('selectApi', name) }
 
         setEvents() {
             // 选中文本弹出悬浮按钮
@@ -161,6 +227,7 @@
             // 重置会话
             this.getDom('.reset').addEventListener('click', this.reset.bind(this))
         }
+
 
         setOnSelection() {
             window.addEventListener('mouseup', e => {// 鼠标松开
@@ -190,7 +257,7 @@
             dom.style.top = e.pageY + 'px'
             this.getDom('.q').value = selectText// 将之前记录的选中文本填充到文本框中
             if (conversationID == '') {
-                this.getDom('.ask').click()// 发起查询
+                // this.getDom('.ask').click()// 发起查询
             }// 已经有会话时不自动查询选中文字
         }
 
@@ -249,8 +316,7 @@
             const answer = list.querySelector('.answer')
             // answer.scrollIntoView() // 会移动整个页面
             try {
-                const token = await getToken()
-                doAsk(token, question, r => answer.innerText = r)
+                await doAsk(question, r => answer.innerText = r)
             } catch (err) {
                 answer.innerText = `Error: ${err}`
             }
@@ -258,6 +324,7 @@
 
         reset() {
             conversationID = '';// 会话 id 重置
+            this.clearMsg()
             this.getDom('#list').innerHTML = ''// 对话列表清空
         }
     }
@@ -269,14 +336,17 @@
         body.insertAdjacentElement('beforeend', dom)
     }
 
+    function getTokenKey() {
+        return `TokenOf_${selectApi.session_url}`
+    }
     function clearToken() {
-        GM_setValue(TokenKey, '')
+        GM_setValue(getTokenKey(), '')
     }
     async function getToken() {
-        let token = GM_getValue(TokenKey, '')
+        let token = GM_getValue(getTokenKey(), '')
         if (token == '') {
             token = await doGetToken()
-            GM_setValue(TokenKey, token)
+            GM_setValue(getTokenKey(), token)
         }
         return token
     }
@@ -284,7 +354,7 @@
     async function doGetToken() {
         return new Promise((ok, fail) => {
             GM_xmlhttpRequest({
-                url: SessionURL,
+                url: selectApi.session_url,
                 onload: function (response) {
                     const r = JSON.parse(response.responseText)
                     ok(r.accessToken)
@@ -296,7 +366,11 @@
         })
     }
 
-    function doAsk(token, question, callback) {
+    async function doAsk(question, callback) {
+        let token = ''
+        if (selectApi.session_url) { // 需要 token
+            token = await getToken()
+        }
         const data = {
             action: "next",
             messages: [
@@ -311,32 +385,33 @@
             ],
             parent_message_id: generateUUID(),
             model: "text-davinci-002-render",
-            // conversation_id: conversationID,
         }
         if (conversationID != '') {
-            if (GM_getValue('conversation_mode', '')) {
+            if (selectApi.conversation_mode) {
                 data.conversation_id = conversationID
             } else {
-                console.log('当前插件还不支持会话模式 设置 conversation_mode=true 尝试开启会话模式')
+                console.log('当前 API 还不支持会话模式')
             }
         }
-        console.log(`request:`, data)
+        const url = new URL(selectApi.conversation_url)
+        let headers = {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+            Origin: url.origin,
+            Referer: '',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.41',
+        }
+        console.log(`request, headers:`, data, headers)
         callback(`思考中...`)
         // 不能用 EventSource, 会有跨域问题, 只能通过脚本管理器的 GM_xmlhttpRequest 发起网络请求
         GM_xmlhttpRequest({
-            url: ConversationURL,
+            url: selectApi.conversation_url,
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-                Origin: 'https://chat.openai.com',
-                Referer: 'https://chat.openai.com/chat',
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.41',
-            },
+            headers: headers,
             data: JSON.stringify(data),
             onprogress: function (response) {
                 callback(`${response.loaded} 接收数据中...`)
-                // 这里读取不到 response.response? Why
+                // 这里读取不到 response.response? Why?
             },
             onerror: function (err) {
                 callback(`Error: ${err}`)
