@@ -2,7 +2,7 @@
 // @name         AskChatGPT
 // @name:zh      问问 ChatGPT
 // @namespace    https://youthlin.com/
-// @version      0.1
+// @version      0.1.1
 // @description  Ask ChatGPT
 // @description:zh  问问 ChatGPT
 // @author       Youth．霖
@@ -257,7 +257,7 @@
             dom.style.top = e.pageY + 'px'
             this.getDom('.q').value = selectText// 将之前记录的选中文本填充到文本框中
             if (conversationID == '') {
-                // this.getDom('.ask').click()// 发起查询
+                this.getDom('.ask').click()// 发起查询
             }// 已经有会话时不自动查询选中文字
         }
 
