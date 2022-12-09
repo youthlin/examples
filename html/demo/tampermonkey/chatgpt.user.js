@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         AskChatGPT
 // @name:zh      问问 ChatGPT
-// @namespace    https://youthlin.com/
-// @version      0.1.2
+// @namespace    https://youthlin.com/?p=1850
+// @version      0.2
 // @description  Ask ChatGPT
-// @description:zh  问问 ChatGPT
+// @description:zh  划词提问 ChatGPT
 // @author       Youth．霖
+// @license      MIT
 // @match        *://*/*
 // @include      *://*/*
 // @grant        GM_getValue
@@ -13,7 +14,7 @@
 // @grant        GM_addStyle
 // @grant        GM_registerMenuCommand
 // @grant        GM_xmlhttpRequest
-// @downloadURL  https://github.com/youthlin/examples/raw/master/html/demo/tampermonkey/chatgpt.user.js
+// @downloadURL  https://github.com/youthlin/AskChatGPT/raw/main/chatgpt.user.js
 // ==/UserScript==
 (function () {
     'use strict';
@@ -143,7 +144,9 @@
             <button class='icon'>Ask</button>
             <div class='wrap'>
                 <div>
-                    <p class='msg'></p>
+                    <p class='msg'>
+                    <a href='https://github.com/youthlin/AskChatGPT'>请使用新版本脚本https://github.com/youthlin/AskChatGPT</a>
+                    </p>
                     <ol id='list'></ol>
                     <textarea class='q'></textarea>
                 </div>
@@ -227,7 +230,6 @@
             // 重置会话
             this.getDom('.reset').addEventListener('click', this.reset.bind(this))
         }
-
 
         setOnSelection() {
             window.addEventListener('mouseup', e => {// 鼠标松开
@@ -318,12 +320,14 @@
             try {
                 await doAsk(question, r => answer.innerText = r)
             } catch (err) {
+                console.log(err)
                 answer.innerText = `Error: ${err}`
             }
         }
 
         reset() {
             conversationID = '';// 会话 id 重置
+            clearToken()
             this.clearMsg()
             this.getDom('#list').innerHTML = ''// 对话列表清空
         }
@@ -336,12 +340,9 @@
         body.insertAdjacentElement('beforeend', dom)
     }
 
-    function getTokenKey() {
-        return `TokenOf_${selectApi.session_url}`
-    }
-    function clearToken() {
-        GM_setValue(getTokenKey(), '')
-    }
+    function getTokenKey() { return `TokenOf_${selectApi.session_url}` }
+    function clearToken() { GM_setValue(getTokenKey(), '') }
+
     async function getToken() {
         let token = GM_getValue(getTokenKey(), '')
         if (token == '') {
@@ -397,9 +398,10 @@
         let headers = {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
+            Accept: 'text/event-stream',
             Origin: url.origin,
-            Referer: '',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.41',
+            Referer: url.origin,
+            'x-openai-assistant-app-id': '',
         }
         console.log(`request, headers:`, data, headers)
         callback(`思考中...`)
@@ -413,6 +415,9 @@
                 callback(`${response.loaded} 接收数据中...`)
                 // 这里读取不到 response.response? Why?
             },
+            onreadystatechange: function (e) {
+                // console.log(`state=${e.readyState}`, e)
+            },
             onerror: function (err) {
                 callback(`Error: ${err}`)
             },
@@ -423,6 +428,19 @@
                 const data = response.response
                 if (status != 200) {
                     callback(`Error. status=${status}. \n${data}`)
+                    if (status == 401) {
+                        try {
+                            const j = JSON.parse(data)
+                            if (j.detail.code == 'token_expired') {
+                                console.log('token expired')
+                                callback('Token expired, retry...')
+                                clearToken()
+                                getToken().then(token => {
+                                    doAsk(token, question, callback)
+                                })
+                            }
+                        } catch (ignore) { }
+                    }
                     return
                 }
                 try {
@@ -430,17 +448,7 @@
                     conversationID = r.conversation_id
                     callback(r.message?.content?.parts?.[0])
                 } catch (err) {
-                    try {
-                        const j = JSON.parse(data)
-                        if (j.detail.code == 'token_expired') {
-                            console.log('token expired')
-                            callback('Token expired, retry...')
-                            clearToken()
-                            getToken().then(token => {
-                                doAsk(token, question, callback)
-                            })
-                        }
-                    } catch (ignore) { }
+
                     callback(`Error: ${err}. \nresponse=${data}`)
                 }
             },
@@ -460,7 +468,7 @@
         return JSON.parse(r)
     }
 
-    function generateUUID() {
+    function generateUUID() {// 这个是 ChatGPT 给出的算法
         return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
             (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
         );
