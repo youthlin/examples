@@ -2,7 +2,7 @@
 // @name         AskChatGPT
 // @name:zh      问问 ChatGPT
 // @namespace    https://youthlin.com/
-// @version      0.1.1
+// @version      0.1.2
 // @description  Ask ChatGPT
 // @description:zh  问问 ChatGPT
 // @author       Youth．霖
