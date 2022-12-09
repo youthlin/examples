@@ -194,7 +194,7 @@
         }
 
         getApiMap() {
-            const m = GM_getValue(ApiMapKey, '')
+            let m = GM_getValue(ApiMapKey, '')
             if (m == '') {
                 m = DefaultApiMap
                 GM_setValue(ApiMapKey, m)// 保存到脚本数据中，可以通过脚本管理器修改
