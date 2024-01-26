@@ -228,7 +228,7 @@ fmt.Println("你好")
         function compile(editor, preview, renderer) {
             renderer.before();
             const use = renderer.use();
-            marked.use({use})
+            marked.use({renderer: use})
             const tokens = marked.lexer(editor.value)
             // console.log(tokens);
             preview.innerHTML = renderer.after(marked.parser(tokens));
@@ -280,8 +280,8 @@ fmt.Println("你好")
                 use() {
                     return {
                         // https://marked.js.org/using_pro#renderer
-                        heading(text, level, raw, slugger) {
-                            return `<h${level} id="${slugger.slug(raw)}"><span class="heading-text">${text}</span></h${level}>`;
+                        heading(text, level) {
+                            return `<h${level}}"><span class="heading-text">${text}</span></h${level}>`;
                         },
                         code(code, lang, escaped) {// 代码高亮
                             const result = hljs.highlightAuto(code).value
@@ -289,7 +289,7 @@ fmt.Println("你好")
                             return `<pre><code><ol class="code">${item}</ol></code></pre> `
                         },
                         link(href, title, text) { // 链接 a 标签
-                            const a = defaultRenderer.link(...arguments);
+                            const a = defaultRenderer.use().link(...arguments);
                             if (title === undefined) {
                                 // 纯链接 href ，不是 [text](href title) 形式
                                 return a;
@@ -303,7 +303,7 @@ fmt.Println("你好")
                             return `<span class="link">${a}<sup>[${seq}]</sup></span>`;
                         },
                         image(href, title, text) { // 图片
-                            return defaultRenderer.image(...arguments);
+                            return defaultRenderer.use().image(...arguments);
                         },
                     }
                 },
