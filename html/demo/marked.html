@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>MarkDown Preview</title>
     <link href="marked.css?v=2" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/styles/default.min.css"
-          rel="stylesheet">
+        rel="stylesheet">
     <style>
-        html, body { /* reset */
+        html,
+        body {
+            /* reset */
             width: 100%;
             height: 100%;
             padding: 0;
@@ -16,17 +19,21 @@
             scroll-behavior: smooth;
         }
 
-        .sr-only { /* tip text */
+        .sr-only {
+            /* tip text */
             display: none;
         }
 
-        .wrapper { /* 占满全屏 flex 3 column 左输入框 中宽度调整 右预览*/
+        .wrapper {
+            /* 占满全屏 flex 3 column 左输入框 中宽度调整 右预览*/
             width: 100%;
             height: 100%;
-            display: flex; /* http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html */
+            display: flex;
+            /* http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html */
         }
 
-        .edit { /* left */
+        .edit {
+            /* left */
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -42,7 +49,8 @@
             border: 1px dashed #aaa;
         }
 
-        .preview { /* right */
+        .preview {
+            /* right */
             width: 50%;
         }
 
@@ -50,7 +58,7 @@
             text-align: end;
         }
 
-        #tool > * {
+        #tool>* {
             line-height: 1em;
         }
 
@@ -111,25 +119,26 @@
         }
     </style>
 </head>
+
 <body>
-<div class="wrapper">
-    <section class="item edit print-not-show">
-        <div id="tool">
-            <button class="tool tool-clear" id="btnClear">清空</button>
-            <button class="tool tool-random" id="btnRandom">随机</button>
-            <label class="tool tool-mode">
-                <span id="labelType">模式</span>
-                <select id="type" name="type">
-                    <option value="default">默认</option>
-                    <option value="wx">微信</option>
-                </select></label>
-            <button class="tool tool-copy" id="btnCopy">复制</button>
-            <button class="tool tool-source" id="btnSource">源码</button>
-            <label class="tool tool-width n-sm">预览栏
-                <input id="btnWidth" max="70" min="30" type="number" value="50">%</label>
-        </div>
-        <label class="sr-only" for="editor">输入区域</label>
-        <textarea id="editor" name="editor"># Markdown 预览
+    <div class="wrapper">
+        <section class="item edit print-not-show">
+            <div id="tool">
+                <button class="tool tool-clear" id="btnClear">清空</button>
+                <button class="tool tool-random" id="btnRandom">随机</button>
+                <label class="tool tool-mode">
+                    <span id="labelType">模式</span>
+                    <select id="type" name="type">
+                        <option value="default">默认</option>
+                        <option value="wx">微信</option>
+                    </select></label>
+                <button class="tool tool-copy" id="btnCopy">复制</button>
+                <button class="tool tool-source" id="btnSource">源码</button>
+                <label class="tool tool-width n-sm">预览栏
+                    <input id="btnWidth" max="70" min="30" type="number" value="50">%</label>
+            </div>
+            <label class="sr-only" for="editor">输入区域</label>
+            <textarea id="editor" name="editor"># Markdown 预览
 by https://youthlin.com/
 
 ## 两种渲染模式
@@ -191,312 +200,322 @@ fmt.Println("你好")
 这里是 `code` 然后 **加粗** *倾斜* ~删除~。
 
 </textarea>
-    </section>
-    <div class="item divide print-not-show"></div>
-    <section class="item preview">
-        <main id="preview"></main>
-    </section>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/highlight.min.js"></script>
-<script>
-    function ready(fn) {
-        if (document.readyState !== 'loading') {
-            fn();
-        } else {
-            document.addEventListener('DOMContentLoaded', fn);
-        }
-    }
-
-    // http://youmightnotneedjquery.com/#parse_html
-    function parseHTML(html) {
-        const doc = document.implementation.createHTMLDocument();
-        doc.body.innerHTML = html;
-        return doc.body.children;
-    }
-
-    // 转换 editor markdown 到 preview html
-    function compile(editor, preview, renderer) {
-        renderer.before();
-        marked.use({renderer})
-        const tokens = marked.lexer(editor.value)
-        // console.log(tokens);
-        preview.innerHTML = renderer.after(marked.parser(tokens));
-        preview.dataset.source = '';
-        document.getElementById('btnSource').innerText = '源码';
-        localStorage.setItem('content', editor.value);
-    }
-
-    const defaultRenderer = getRenderer();
-    const wxRenderer = wx();
-
-    function getRenderer() {
-        const markedRenderer = new marked.Renderer();
-        return {
-            before() {
-            },
-            link(href, title, text) {
-                const a = parseHTML(markedRenderer.link(...arguments))[0];
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
-                return a.outerHTML;
-            },
-            image(href, title, text) {
-                if (title) {
-                    return '<figure>' + markedRenderer.image(...arguments)
-                        + '<figcaption>' + title + '</figcaption></figure>';
-                }
-                return markedRenderer.image(...arguments);
-            },
-            after(o) {
-                return o;
-            }
-        }
-    }
-
-    // 粘贴到微信公众号后台
-    function wx() {
-        let links = [];// 文中所有链接 []{text, href}
-        let linkMap = new Map(); // href -> seq
-        return {
-            before() {
-                links = [];
-                linkMap.clear();
-            },
-            // https://marked.js.org/using_pro#renderer
-            heading(text, level, raw, slugger) {
-                return `<h${level} id="${slugger.slug(raw)}"><span class="heading-text">${text}</span></h${level}>`;
-            },
-            code(code, lang, escaped) {// 代码高亮
-                const result = hljs.highlightAuto(code).value
-                const item = result.split('\n').map(line => `<li class="code-line">${line}</li>`).join('')
-                return `<pre><code><ol class="code">${item}</ol></code></pre> `
-            },
-            link(href, title, text) { // 链接 a 标签
-                const a = defaultRenderer.link(...arguments);
-                if (title === undefined) {
-                    // 纯链接 href ，不是 [text](href title) 形式
-                    return a;
-                }
-                let seq = linkMap.get(href);
-                if (!seq) {
-                    links.push({text: title ? title : text, href: href});
-                    seq = links.length;
-                    linkMap.set(href, seq);
-                }
-                return `<span class="link">${a}<sup>[${seq}]</sup></span>`;
-            },
-            image(href, title, text) { // 图片
-                return defaultRenderer.image(...arguments);
-            },
-            after(out) {
-                const length = links.length
-                if (length > 0) {// 有链接，添加参考资料在底部
-                    out += '<br><h6>参考资料</h6><ol class="ft">'
-                    for (let i = 0; i < length; i++) {
-                        let txt = `<span class="ft-text">${links[i].text}</span> `;
-                        if (links[i].text === links[i].href) {
-                            txt = '';
-                        }
-                        out += `<li class="footnote">${txt}<em class="ft-link">${links[i].href}</em></li>`;
-                    }
-                    out += "</ol><p>* 微信不支持外链，可点击 <em>阅读原文</em> 获得更佳体验</p>";
-                }
-                return out;
-            },
-        };
-    }
-
-    const editor = document.querySelector('#editor');
-    const preview = document.getElementById('preview');
-    let renderer = defaultRenderer;
-
-    // 本地草稿
-    function loadStorage() {
-        // https://zh.javascript.info/localstorage
-        let content = localStorage.getItem('content');
-        if (content) {
-            editor.value = content;
-        }
-    }
-
-    // 工具按钮
-    function handleTool() {
-        // 清空
-        const btnClear = document.getElementById('btnClear');
-        btnClear.addEventListener('click', () => {
-            editor.value = '';
-            compile(editor, preview, renderer);
-        });
-        // 随机
-        const btnRandom = document.getElementById('btnRandom');
-        btnRandom.addEventListener('click', async () => {
-            btnRandom.disabled = true;
-            // https://zh.javascript.info/fetch
-            const response = await fetch('random-markdown.php');
-            editor.value = await response.text();
-            compile(editor, preview, renderer);
-            btnRandom.disabled = false;
-        });
-        // 模式转换
-        const typeSelect = document.getElementById('type');
-        const onchange = () => {
-            switch (typeSelect.value) {
-                case 'default':
-                    renderer = defaultRenderer;
-                    break;
-                case 'wx':
-                    renderer = wxRenderer;
-                    break;
-            }
-            marked.setOptions({renderer: new marked.Renderer()})// 重置 renderer
-            compile(editor, preview, renderer);
-        };
-        typeSelect.addEventListener('change', onchange);
-        const labelType = document.getElementById('labelType');
-        labelType.addEventListener('click', () => {
-            typeSelect.selectedIndex = (typeSelect.selectedIndex + 1) % typeSelect.length;
-            onchange();
-        });
-        // 全选
-        const btnCopy = document.getElementById('btnCopy');
-        const range = document.createRange();
-        range.selectNode(preview);
-        btnCopy.addEventListener('click', () => {
-            // Selection-Range: https://zh.javascript.info/selection-range
-            // 必须先 removeAllRanges 再 add: https://stackoverflow.com/a/43443101
-            document.getSelection().removeAllRanges();
-            document.getSelection().addRange(range);
-            try {
-                document.execCommand('copy');
-            } catch (e) {
-                console.log('unable copy', e)
-            }
-        });
-        // html/可视化
-        const btnSource = document.getElementById('btnSource');
-        btnSource.addEventListener('click', () => {
-            if (preview.dataset.source) {
-                compile(editor, preview, renderer);
-                btnSource.innerText = '源码';
+        </section>
+        <div class="item divide print-not-show"></div>
+        <section class="item preview">
+            <main id="preview"></main>
+        </section>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/highlight.min.js"></script>
+    <script>
+        function ready(fn) {
+            if (document.readyState !== 'loading') {
+                fn();
             } else {
-                preview.dataset.source = 'true';
-                preview.innerText = preview.innerHTML;
-                btnSource.innerText = '预览';
+                document.addEventListener('DOMContentLoaded', fn);
             }
-        });
-        // 宽度
-        const btnWidth = document.getElementById('btnWidth');
-        const previewWrapper = document.querySelector('.preview');
-        const onWidthChange = () => {
-            previewWrapper.style.width = btnWidth.value + '%';
-        };
-        btnWidth.addEventListener('change', onWidthChange);
-        window.addEventListener('resize', () => {
-            btnWidth.value = 50;
-            previewWrapper.style.width = '';
-        });
-    }
+        }
 
-    // 实时预览
-    function handleInput() {
-        compile(editor, preview, renderer);
-        editor.addEventListener('keyup', function () {
-            compile(editor, preview, renderer);
-        })
-    }
+        // http://youmightnotneedjquery.com/#parse_html
+        function parseHTML(html) {
+            const doc = document.implementation.createHTMLDocument();
+            doc.body.innerHTML = html;
+            return doc.body.children;
+        }
 
-    // 滚动
-    function handleScroll() {
-        // 这两个,标记当前滚动的是哪个元素
-        let fromEditor = false;
-        let fromPreview = false;
-        const onScroll = (e) => {
-            // console.log(e);
-            const thisScroll = e.target;
-            const thatScroll = thisScroll === editor ? preview : editor;
-            if (thisScroll === editor) {
-                fromEditor = true;// 当前滚动的是输入框
-                if (fromPreview) {// 但是预览栏也在滚动，说明是预览的滚动导致输入框滚动，就不用再触发预览滚动了
-                    // 所以重置两个标记
-                    fromEditor = false;
-                    fromPreview = false;
-                    return;// 直接结束即可
+        // 转换 editor markdown 到 preview html
+        function compile(editor, preview, renderer) {
+            renderer.before();
+            const use = renderer.use();
+            marked.use({use})
+            const tokens = marked.lexer(editor.value)
+            // console.log(tokens);
+            preview.innerHTML = renderer.after(marked.parser(tokens));
+            preview.dataset.source = '';
+            document.getElementById('btnSource').innerText = '源码';
+            localStorage.setItem('content', editor.value);
+        }
+
+        const defaultRenderer = getRenderer();
+        const wxRenderer = wx();
+
+        function getRenderer() {
+            const markedRenderer = new marked.Renderer();
+            return {
+                before() {
+                },
+                use() {
+                    return {
+                        link(href, title, text) {
+                            const a = parseHTML(markedRenderer.link(...arguments))[0];
+                            a.target = '_blank';
+                            a.rel = 'noopener noreferrer';
+                            return a.outerHTML;
+                        },
+                        image(href, title, text) {
+                            if (title) {
+                                return '<figure>' + markedRenderer.image(...arguments)
+                                    + '<figcaption>' + title + '</figcaption></figure>';
+                            }
+                            return markedRenderer.image(...arguments);
+                        },
+                    }
+                },
+                after(o) {
+                    return o;
                 }
-            } else {// 同理
-                fromPreview = true;
-                if (fromEditor) {
-                    fromEditor = false;
-                    fromPreview = false;
+            }
+        }
+
+        // 粘贴到微信公众号后台
+        function wx() {
+            let links = [];// 文中所有链接 []{text, href}
+            let linkMap = new Map(); // href -> seq
+            return {
+                before() {
+                    links = [];
+                    linkMap.clear();
+                },
+                use() {
+                    return {
+                        // https://marked.js.org/using_pro#renderer
+                        heading(text, level, raw, slugger) {
+                            return `<h${level} id="${slugger.slug(raw)}"><span class="heading-text">${text}</span></h${level}>`;
+                        },
+                        code(code, lang, escaped) {// 代码高亮
+                            const result = hljs.highlightAuto(code).value
+                            const item = result.split('\n').map(line => `<li class="code-line">${line}</li>`).join('')
+                            return `<pre><code><ol class="code">${item}</ol></code></pre> `
+                        },
+                        link(href, title, text) { // 链接 a 标签
+                            const a = defaultRenderer.link(...arguments);
+                            if (title === undefined) {
+                                // 纯链接 href ，不是 [text](href title) 形式
+                                return a;
+                            }
+                            let seq = linkMap.get(href);
+                            if (!seq) {
+                                links.push({text: title ? title : text, href: href});
+                                seq = links.length;
+                                linkMap.set(href, seq);
+                            }
+                            return `<span class="link">${a}<sup>[${seq}]</sup></span>`;
+                        },
+                        image(href, title, text) { // 图片
+                            return defaultRenderer.image(...arguments);
+                        }, Ø
+                    }
+                },
+                after(out) {
+                    const length = links.length
+                    if (length > 0) {// 有链接，添加参考资料在底部
+                        out += '<br><h6>参考资料</h6><ol class="ft">'
+                        for (let i = 0; i < length; i++) {
+                            let txt = `<span class="ft-text">${links[i].text}</span> `;
+                            if (links[i].text === links[i].href) {
+                                txt = '';
+                            }
+                            out += `<li class="footnote">${txt}<em class="ft-link">${links[i].href}</em></li>`;
+                        }
+                        out += "</ol><p>* 微信不支持外链，可点击 <em>阅读原文</em> 获得更佳体验</p>";
+                    }
+                    return out;
+                },
+            };
+        }
+
+        const editor = document.querySelector('#editor');
+        const preview = document.getElementById('preview');
+        let renderer = defaultRenderer;
+
+        // 本地草稿
+        function loadStorage() {
+            // https://zh.javascript.info/localstorage
+            let content = localStorage.getItem('content');
+            if (content) {
+                editor.value = content;
+            }
+        }
+
+        // 工具按钮
+        function handleTool() {
+            // 清空
+            const btnClear = document.getElementById('btnClear');
+            btnClear.addEventListener('click', () => {
+                editor.value = '';
+                compile(editor, preview, renderer);
+            });
+            // 随机
+            const btnRandom = document.getElementById('btnRandom');
+            btnRandom.addEventListener('click', async () => {
+                btnRandom.disabled = true;
+                // https://zh.javascript.info/fetch
+                const response = await fetch('random-markdown.php');
+                editor.value = await response.text();
+                compile(editor, preview, renderer);
+                btnRandom.disabled = false;
+            });
+            // 模式转换
+            const typeSelect = document.getElementById('type');
+            const onchange = () => {
+                switch (typeSelect.value) {
+                    case 'default':
+                        renderer = defaultRenderer;
+                        break;
+                    case 'wx':
+                        renderer = wxRenderer;
+                        break;
+                }
+                marked.setOptions({renderer: new marked.Renderer()})// 重置 renderer
+                compile(editor, preview, renderer);
+            };
+            typeSelect.addEventListener('change', onchange);
+            const labelType = document.getElementById('labelType');
+            labelType.addEventListener('click', () => {
+                typeSelect.selectedIndex = (typeSelect.selectedIndex + 1) % typeSelect.length;
+                onchange();
+            });
+            // 全选
+            const btnCopy = document.getElementById('btnCopy');
+            const range = document.createRange();
+            range.selectNode(preview);
+            btnCopy.addEventListener('click', () => {
+                // Selection-Range: https://zh.javascript.info/selection-range
+                // 必须先 removeAllRanges 再 add: https://stackoverflow.com/a/43443101
+                document.getSelection().removeAllRanges();
+                document.getSelection().addRange(range);
+                try {
+                    document.execCommand('copy');
+                } catch (e) {
+                    console.log('unable copy', e)
+                }
+            });
+            // html/可视化
+            const btnSource = document.getElementById('btnSource');
+            btnSource.addEventListener('click', () => {
+                if (preview.dataset.source) {
+                    compile(editor, preview, renderer);
+                    btnSource.innerText = '源码';
+                } else {
+                    preview.dataset.source = 'true';
+                    preview.innerText = preview.innerHTML;
+                    btnSource.innerText = '预览';
+                }
+            });
+            // 宽度
+            const btnWidth = document.getElementById('btnWidth');
+            const previewWrapper = document.querySelector('.preview');
+            const onWidthChange = () => {
+                previewWrapper.style.width = btnWidth.value + '%';
+            };
+            btnWidth.addEventListener('change', onWidthChange);
+            window.addEventListener('resize', () => {
+                btnWidth.value = 50;
+                previewWrapper.style.width = '';
+            });
+        }
+
+        // 实时预览
+        function handleInput() {
+            compile(editor, preview, renderer);
+            editor.addEventListener('keyup', function () {
+                compile(editor, preview, renderer);
+            })
+        }
+
+        // 滚动
+        function handleScroll() {
+            // 这两个,标记当前滚动的是哪个元素
+            let fromEditor = false;
+            let fromPreview = false;
+            const onScroll = (e) => {
+                // console.log(e);
+                const thisScroll = e.target;
+                const thatScroll = thisScroll === editor ? preview : editor;
+                if (thisScroll === editor) {
+                    fromEditor = true;// 当前滚动的是输入框
+                    if (fromPreview) {// 但是预览栏也在滚动，说明是预览的滚动导致输入框滚动，就不用再触发预览滚动了
+                        // 所以重置两个标记
+                        fromEditor = false;
+                        fromPreview = false;
+                        return;// 直接结束即可
+                    }
+                } else {// 同理
+                    fromPreview = true;
+                    if (fromEditor) {
+                        fromEditor = false;
+                        fromPreview = false;
+                        return;
+                    }
+                }
+                // https://zh.javascript.info/size-and-scroll
+                // scrollTop 滚动出去在界面上方的高度(已经滚动的高度)
+                // clientHeight 元素不包括边框含 padding 的高度
+                // scrollHeight 元素内容的高度(包括已经滚动出去和还没显示的部分)
+                // offsetHeight 元素包括边框的高度
+
+                // // 错误的百分比: 可能导致 editor 在顶部，preview 却滚动了一点点
+                // const percent = (thisScroll.scrollTop + thisScroll.clientHeight) / thisScroll.scrollHeight;
+                // thatScroll.scrollTop = thatScroll.scrollHeight * percent - thatScroll.clientHeight;
+
+                const percent = thisScroll.scrollTop / (thisScroll.scrollHeight - thisScroll.offsetHeight);
+                thatScroll.scrollTop = percent * (thatScroll.scrollHeight - thatScroll.offsetHeight);
+            }
+            editor.addEventListener('scroll', onScroll);
+            preview.addEventListener('scroll', onScroll);
+        }
+
+        // 拖动
+        function handleDrag() {
+            const divide = document.querySelector('.divide');
+            const preview = document.querySelector('.preview');
+            const btnWidth = document.getElementById('btnWidth');
+            let startX = 0;
+
+            function move(e) {
+                let x = e.clientX - startX;
+                let width = window.getComputedStyle(preview, null).getPropertyValue('width');
+                if (width.endsWith('px')) {
+                    width = width.substr(0, width.length - 2);
+                }
+                width = Number(width);
+                // console.log(x, width);
+                const value = width - x;
+                if (value > 400 && value < document.body.clientWidth - 400) {
+                    preview.style.width = value + 'px';
+                    btnWidth.value = value * 100 / document.body.clientWidth;
+                }
+            }
+
+            document.addEventListener('mousedown', e => {
+                if (e.target !== divide) {
                     return;
                 }
-            }
-            // https://zh.javascript.info/size-and-scroll
-            // scrollTop 滚动出去在界面上方的高度(已经滚动的高度)
-            // clientHeight 元素不包括边框含 padding 的高度
-            // scrollHeight 元素内容的高度(包括已经滚动出去和还没显示的部分)
-            // offsetHeight 元素包括边框的高度
+                startX = e.clientX;
+                document.addEventListener('mousemove', move);
 
-            // // 错误的百分比: 可能导致 editor 在顶部，preview 却滚动了一点点
-            // const percent = (thisScroll.scrollTop + thisScroll.clientHeight) / thisScroll.scrollHeight;
-            // thatScroll.scrollTop = thatScroll.scrollHeight * percent - thatScroll.clientHeight;
-
-            const percent = thisScroll.scrollTop / (thisScroll.scrollHeight - thisScroll.offsetHeight);
-            thatScroll.scrollTop = percent * (thatScroll.scrollHeight - thatScroll.offsetHeight);
-        }
-        editor.addEventListener('scroll', onScroll);
-        preview.addEventListener('scroll', onScroll);
-    }
-
-    // 拖动
-    function handleDrag() {
-        const divide = document.querySelector('.divide');
-        const preview = document.querySelector('.preview');
-        const btnWidth = document.getElementById('btnWidth');
-        let startX = 0;
-
-        function move(e) {
-            let x = e.clientX - startX;
-            let width = window.getComputedStyle(preview, null).getPropertyValue('width');
-            if (width.endsWith('px')) {
-                width = width.substr(0, width.length - 2);
-            }
-            width = Number(width);
-            // console.log(x, width);
-            const value = width - x;
-            if (value > 400 && value < document.body.clientWidth - 400) {
-                preview.style.width = value + 'px';
-                btnWidth.value = value * 100 / document.body.clientWidth;
-            }
+            });
+            document.addEventListener('mouseup', e => {
+                document.removeEventListener('mousemove', move)
+            });
         }
 
-        document.addEventListener('mousedown', e => {
-            if (e.target !== divide) {
-                return;
-            }
-            startX = e.clientX;
-            document.addEventListener('mousemove', move);
-
+        ready(function () {
+            marked.setOptions({
+                // https://marked.js.org/using_advanced#options
+                gfm: true,			// GitHub 风格
+                tables: true,		// 支持表格
+                breaks: true,		// 回车换成 br
+                headerIds: true,    // 标题添加 id
+            });
+            loadStorage();
+            handleInput();
+            handleTool();
+            handleScroll();
+            handleDrag();
         });
-        document.addEventListener('mouseup', e => {
-            document.removeEventListener('mousemove', move)
-        });
-    }
-
-    ready(function () {
-        marked.setOptions({
-            // https://marked.js.org/using_advanced#options
-            gfm: true,			// GitHub 风格
-            tables: true,		// 支持表格
-            breaks: true,		// 回车换成 br
-            headerIds: true,    // 标题添加 id
-        });
-        loadStorage();
-        handleInput();
-        handleTool();
-        handleScroll();
-        handleDrag();
-    });
-</script>
+    </script>
 </body>
+
 </html>
