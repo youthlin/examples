@@ -281,7 +281,7 @@ fmt.Println("你好")
                     return {
                         // https://marked.js.org/using_pro#renderer
                         heading(text, level) {
-                            return `<h${level}}"><span class="heading-text">${text}</span></h${level}>`;
+                            return `<h${level}><span class="heading-text">${text}</span></h${level}>`;
                         },
                         code(code, lang, escaped) {// 代码高亮
                             const result = hljs.highlightAuto(code).value
