@@ -5,9 +5,9 @@ $im = imagecreate(130, 30);
 //http://www.php.net/ImageColorAllocate
 $background_color = ImageColorAllocate($im, 255, 255, 255);
 unset($ip);
-if ($_SERVER['HTTP_CLIENT_IP']) {
+if (array_key_exists('HTTP_CLIENT_IP', $_SERVER)) {
     $ip = $_SERVER['HTTP_CLIENT_IP'];
-} else if ($_SERVER['HTTP_X_FORWARDED_FOR']) {
+} else if (array_key_exists('HTTP_X_FORWARDED_FOR',$_SERVER)) {
     $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
 } else {
     $ip = $_SERVER['REMOTE_ADDR'];
