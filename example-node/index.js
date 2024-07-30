@@ -9,6 +9,11 @@ const root = path.resolve(process.argv[2] || '.');
 console.log('Static root dir: ' + root);
 
 let server = http.createServer((request, response) => {
+    if (path.normalize(decodeURI(request.url)) !== decodeURI(request.url)) {
+        response.statusCode = 403;
+        response.end();
+        return;
+    }
     try {
         // 获得URL的path，类似 '/css/bootstrap.css':
         const pathname = decodeURI(url.parse(request.url).pathname);
