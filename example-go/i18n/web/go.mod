@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/cockroachdb/errors v1.8.6
-	github.com/gin-gonic/gin v1.7.4
+	github.com/gin-gonic/gin v1.7.7
 	github.com/youthlin/t v0.0.4
 	github.com/youthlin/z v0.0.4
 	go.uber.org/multierr v1.7.0 // indirect
